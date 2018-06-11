@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/tigon">
+        <file>Resources/ProblemDescription.xsd</file>
+    </qresource>
+</RCC>

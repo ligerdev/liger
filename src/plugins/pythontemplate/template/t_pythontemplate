@@ -1,0 +1,33 @@
+##<TIGON_PYTHON_FUNC_HEADER_START>
+## {
+##  "functionProperties": {
+##      "name": "{ FUNC_NAME }",
+##      "description": "{ FUNC_DESCRIPTION }"
+##  },
+##  "input": {
+##      "name": [{ INPUT_NAMES }],
+##      "description": [{ INPUT_DESCRIPTIONS }],
+##      "type": [{ INPUT_TYPES }],
+##      "unit": [{ INPUT_UNITES }],
+##      "lbounds": [{ INPUT_LBOUNDS }],
+##      "ubounds": [{ INPUT_UBOUNDS }]
+##  },
+##  "output": {
+##      "name": [{ OUTPUT_NAMES }],
+##      "description": [{ OUTPUT_DESCRIPTIONS }],
+##      "type": [{ OUTPUT_TYPES }],
+##      "unit": [{ OUTPUT_UNITS }]
+##  }
+## }
+##<TIGON_PYTHON_FUNC_HEADER_END>
+
+def { FUNC_NAME }(X):
+    Y=[]
+
+    ## Implement your functions v
+    #
+    # Y = ...
+    #
+    ## Implement your functions ^
+
+    return Y

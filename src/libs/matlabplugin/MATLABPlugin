@@ -1,0 +1,3 @@
+#include<matlabplugin/Representation/Functions/Matlab/MatlabFunction.h>
+#include<matlabplugin/Utils/MatlabPool.h>
+#include<matlabplugin/Utils/MatlabEngine.h>

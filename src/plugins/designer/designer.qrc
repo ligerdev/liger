@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/designer">
+        <file>images/add-process.png</file>
+        <file>images/cursor-mouse.png</file>
+        <file>images/link.png</file>
+        <file>Designer.mimetypes.xml</file>
+        <file>images/run_small.png</file>
+        <file>images/run.png</file>
+        <file>images/run@2x.png</file>
+        <file>images/stop_small.png</file>
+        <file>images/stop.png</file>
+        <file>images/copy.png</file>
+        <file>images/cut.png</file>
+        <file>images/delete.png</file>
+        <file>images/qt_ui.png</file>
+        <file>images/pause.png</file>
+        <file>images/pause_small.png</file>
+        <file>images/paste.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+    <mime-type type="application/lgr">
+        <alias type="text/lgr"/>
+        <sub-class-of type="text/plain"/>
+        <comment>LiGeR document</comment>
+        <glob pattern="*.lgr"/>
+        <alias type="text/lgr"/>
+    </mime-type>
+</mime-info>

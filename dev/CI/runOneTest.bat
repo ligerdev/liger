@@ -1,0 +1,8 @@
+REM  runOneTestExe ligerBIN pathTOFile outPutFile 
+SET LIGER_BIN=%1
+SET LIGER_PLUGINS=%LIGER_BIN%\..\lib\liger\plugins
+SET PATH=%PATH%;%LIGER_BIN%
+SET PATH=%PATH%;%LIGER_PLUGINS%
+SET EXE=%2
+SET OUT=%3
+%EXE% > %OUT%

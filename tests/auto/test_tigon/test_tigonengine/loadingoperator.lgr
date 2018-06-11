@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<LigerData>
+  <ProcessNode ClassName="QTigon::QOpRandomInitNode">
+    <GUIProperties>
+      <NodeId>80740d4f-5212-476c-a699-d1a626ae418f</NodeId>
+      <xpos>-375</xpos>
+      <ypos>-317</ypos>
+    </GUIProperties>
+    <Properties ProcessType="OPERATOR_NODE">
+      <TigonOperator>Tigon::Operators::RandomInit</TigonOperator>
+      <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
+      <OptimizationSetSize>12345</OptimizationSetSize>
+    </Properties>
+  </ProcessNode>
+</LigerData>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<LigerData>
+  <ProcessNode ClassName="QTigon::QOpProbGeneratorNode">
+    <GUIProperties>
+      <NodeId>62053ad4-da96-4ecb-b0be-ee03d79572d8</NodeId>
+      <xpos>-121</xpos>
+      <ypos>-219</ypos>
+    </GUIProperties>
+    <Properties ProcessType="PROBLEM_NODE">
+      <TigonOperator>Tigon::Operators::ProblemGenerator</TigonOperator>
+      <funcTypes>Internal;Internal</funcTypes>
+      <funcPathes>Tigon::Representation::CODeM1;Tigon::Representation::CODeM4</funcPathes>
+      <funcPrpts>[{&quot;NumberOfInputs&quot;:&quot;5&quot;,&quot;NumberOfOutputs&quot;:&quot;3&quot;},{&quot;NumberOfInputs&quot;:&quot;5&quot;,&quot;NumberOfOutputs&quot;:&quot;3&quot;}]</funcPrpts>
+      <iprts>[[{&quot;description&quot;:&quot;Direction variable&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Input_Var_0&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Direction variable&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Input_Var_1&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Input_Var_2&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:3,&quot;name&quot;:&quot;Input_Var_3&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:4,&quot;name&quot;:&quot;Input_Var_4&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}],[{&quot;description&quot;:&quot;Direction variable&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Input_Var_0&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Direction variable&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Input_Var_1&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Input_Var_2&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:3,&quot;name&quot;:&quot;Input_Var_3&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:4,&quot;name&quot;:&quot;Input_Var_4&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</iprts>
+      <oprts>[[{&quot;description&quot;:&quot;Output_VarDesc_0&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Output_Var_0&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Output_VarDesc_1&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Output_Var_1&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Output_VarDesc_2&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Output_Var_2&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}],[{&quot;description&quot;:&quot;Output_VarDesc_0&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;C41&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Output_VarDesc_1&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;C42&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Output_VarDesc_2&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;C43&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</oprts>
+      <lbounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0}]</lbounds>
+      <ubounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:2},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:6},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:8}]</ubounds>
+      <paramValueVec>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:6},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1}]</paramValueVec>
+      <externalParam>[false,false]</externalParam>
+      <externalParamGroups>[]</externalParamGroups>
+      <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884700000000002e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307}]</goals>
+      <thresholds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:8.9884700000000002e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:8.9884700000000002e+307}]</thresholds>
+      <dVecUncertainties>[{},{},{}]</dVecUncertainties>
+      <funcOutUncertainties>[[{},{},{}],[{},{},{}]]</funcOutUncertainties>
+      <f2dMap>[[0,2,3],[0,2,3]]</f2dMap>
+      <f2pMap>[[1,4],[1,4]]</f2pMap>
+      <f2oMap>[[0,-1,-1,-1],[-1,0,1,2]]</f2oMap>
+      <f2cMap>[[2,-1],[-1,1]]</f2cMap>
+      <f2uMap>[[1],[-1]]</f2uMap>
+    </Properties>
+  </ProcessNode>
+</LigerData>

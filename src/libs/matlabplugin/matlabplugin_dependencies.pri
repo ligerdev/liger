@@ -1,0 +1,2 @@
+QTC_LIB_NAME = MATLABPlugin
+QTC_LIB_DEPENDS += tigon

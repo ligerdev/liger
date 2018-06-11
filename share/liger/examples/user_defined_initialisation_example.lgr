@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<LigerData>
+  <ProcessNode ClassName="QTigon::MasterStartNode">
+    <GUIProperties>
+      <NodeId>eb7ba640-a22b-4c0b-b139-f4198f1aab52</NodeId>
+      <xpos>-609</xpos>
+      <ypos>-296</ypos>
+      <isUserDefinedSeed>false</isUserDefinedSeed>
+      <userDefinedSeed>3452816845</userDefinedSeed>
+    </GUIProperties>
+    <Properties ProcessType="MASTER_START_NODE"/>
+  </ProcessNode>
+  <ProcessNode ClassName="QTigon::QOpProbGeneratorNode">
+    <GUIProperties>
+      <NodeId>2796bf80-a324-4e90-8461-9d2421f951a5</NodeId>
+      <xpos>-444</xpos>
+      <ypos>-298</ypos>
+    </GUIProperties>
+    <Properties ProcessType="PROBLEM_NODE">
+      <TigonOperator>Tigon::Operators::ProblemGenerator</TigonOperator>
+      <funcTypes>Internal</funcTypes>
+      <funcPathes>Tigon::Representation::DTLZ2</funcPathes>
+      <funcPrpts>[{&quot;NumberOfInputs&quot;:&quot;5&quot;,&quot;NumberOfOutputs&quot;:&quot;2&quot;}]</funcPrpts>
+      <iprts>[[{&quot;description&quot;:&quot;Direction variable&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Input_Var_0&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Input_Var_1&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Input_Var_2&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:3,&quot;name&quot;:&quot;Input_Var_3&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:4,&quot;name&quot;:&quot;Input_Var_4&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</iprts>
+      <oprts>[[{&quot;description&quot;:&quot;Output_VarDesc_0&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Output_Var_0&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Output_VarDesc_1&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Output_Var_1&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</oprts>
+      <lbounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0}]</lbounds>
+      <ubounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1}]</ubounds>
+      <paramValueVec>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0}]</paramValueVec>
+      <externalParam>[false,false,false]</externalParam>
+      <externalParamGroups>[]</externalParamGroups>
+      <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307}]</goals>
+      <thresholds>[]</thresholds>
+      <dVecUncertainties>[{},{}]</dVecUncertainties>
+      <funcOutUncertainties>[[{},{}]]</funcOutUncertainties>
+      <f2dMap>[[0,1]]</f2dMap>
+      <f2pMap>[[2,3,4]]</f2pMap>
+      <f2oMap>[[0]]</f2oMap>
+      <f2cMap>[[]]</f2cMap>
+      <f2uMap>[[1]]</f2uMap>
+    </Properties>
+  </ProcessNode>
+  <ProcessNode ClassName="QTigon::QOpUserDefinedInitNode">
+    <GUIProperties>
+      <NodeId>8fcb2027-debd-4b29-b68c-478c036ba317</NodeId>
+      <xpos>-307</xpos>
+      <ypos>-299</ypos>
+      <filePath>C:/Users/ACSE/Desktop/0000.json</filePath>
+    </GUIProperties>
+    <Properties ProcessType="OPERATOR_NODE">
+      <TigonOperator>Tigon::Operators::UserDefinedInit</TigonOperator>
+      <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
+      <OptimizationSetSize>0</OptimizationSetSize>
+    </Properties>
+  </ProcessNode>
+  <ProcessNode ClassName="Visualisation::QvizParallelCoordinatesNode">
+    <GUIProperties>
+      <NodeId>96dae6e6-cd32-40a6-8120-2a95b6bddbfa</NodeId>
+      <xpos>-182</xpos>
+      <ypos>-297</ypos>
+    </GUIProperties>
+    <Properties/>
+  </ProcessNode>
+  <ProcessNode ClassName="Visualisation::QVizScatterPlotNode">
+    <GUIProperties>
+      <NodeId>1d677a5c-7e2a-4d13-b023-5bfd858cd2c5</NodeId>
+      <xpos>-71</xpos>
+      <ypos>-297</ypos>
+    </GUIProperties>
+    <Properties/>
+  </ProcessNode>
+  <ProcessNode ClassName="Visualisation::QVizMScatterPlotNode">
+    <GUIProperties>
+      <NodeId>020f59de-1113-4838-a43b-965688f42f66</NodeId>
+      <xpos>61</xpos>
+      <ypos>-297</ypos>
+    </GUIProperties>
+    <Properties/>
+  </ProcessNode>
+  <ProcessNode ClassName="QTigon::MasterEndNode">
+    <GUIProperties>
+      <NodeId>6d99c7db-ddb3-4c95-936a-a2eef42ee0ee</NodeId>
+      <xpos>159</xpos>
+      <ypos>-297</ypos>
+      <isUseBudget>false</isUseBudget>
+      <isUseIteration>true</isUseIteration>
+      <iterPausePoints></iterPausePoints>
+      <budgetPausePoints></budgetPausePoints>
+      <iterPausePointType>Count</iterPausePointType>
+      <budgetPausePointType>Count</budgetPausePointType>
+      <isPauseByIteration>false</isPauseByIteration>
+      <isPauseByBudget>false</isPauseByBudget>
+      <logEvaluations>false</logEvaluations>
+      <logPopulations>true</logPopulations>
+      <keepPopulationsHistory>false</keepPopulationsHistory>
+      <populationsLogPath>C:/Users/ACSE/Desktop/1111.json</populationsLogPath>
+      <evaluationsLogPath></evaluationsLogPath>
+    </GUIProperties>
+    <Properties ProcessType="OPERATOR_NODE">
+      <TigonOperator>Tigon::Operators::ITermination</TigonOperator>
+      <maxIter>1</maxIter>
+      <budget>0</budget>
+    </Properties>
+  </ProcessNode>
+  <Link>
+    <FromNode>eb7ba640-a22b-4c0b-b139-f4198f1aab52</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>2796bf80-a324-4e90-8461-9d2421f951a5</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>96dae6e6-cd32-40a6-8120-2a95b6bddbfa</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>1d677a5c-7e2a-4d13-b023-5bfd858cd2c5</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>1d677a5c-7e2a-4d13-b023-5bfd858cd2c5</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>020f59de-1113-4838-a43b-965688f42f66</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>020f59de-1113-4838-a43b-965688f42f66</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>6d99c7db-ddb3-4c95-936a-a2eef42ee0ee</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>2796bf80-a324-4e90-8461-9d2421f951a5</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>8fcb2027-debd-4b29-b68c-478c036ba317</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>8fcb2027-debd-4b29-b68c-478c036ba317</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>96dae6e6-cd32-40a6-8120-2a95b6bddbfa</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+</LigerData>

@@ -1,0 +1,2 @@
+QTC_LIB_NAME = Json
+QTC_LIB_DEPENDS +=

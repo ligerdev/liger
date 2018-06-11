@@ -1,0 +1,692 @@
+{
+    "Single Population": [
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.83629587654834814
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50274075187640244
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49876941559643989
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50036357026161238
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50023952593104892
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.25432361656322877
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.96712870362366221
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.9375,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.65526408537234815
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49930613049345701
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50011459253057922
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50043854806407684
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.502615129099518
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.51543434567627233
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.85693785479217466
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.73581897443997346
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49929585177588098
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.5041036825160996
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50036543641545861
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50024906167951577
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.403173740331217
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.9151426110915778
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.5,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.59265362333521521
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50486681578509274
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49893641203366645
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50009079464751072
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.47033427209347162
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.59762197966374153
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.8029063144441454
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.75,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.70288304230316945
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49937483257169918
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49927485219598805
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50104229521063215
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49688596238129717
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.44995604614553225
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.89306380356639248
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.75,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.78517783414377296
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49936432962952654
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49919189729756791
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50081534387467197
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.5011060376433496
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.33107528878372994
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.94360746266063644
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.5,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.84660040907490886
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.53310357267651332
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49851866648510801
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50093668549833315
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50112952476864103
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.23889707350149597
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.97217785762541753
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.75,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.6750705741081664
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49957445982763932
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50011459253057922
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50043854806407684
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.502615129099518
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.48852804552992385
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.87255647362443856
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.83629587654834814
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50274075187640244
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49876941559643989
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50080841244513208
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50023952593104892
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.25432374915294953
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.96712920782899892
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.74000973423313332
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49929585177588098
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50405398918896815
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50036543641545861
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50024906167951577
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.39714065906862267
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.91777641594506409
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.5,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.59265362333521521
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50486681578509274
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49893641203366645
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50009079464751072
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.47030437199913033
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.5976230394300921
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.80290773824233841
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.79115452328995162
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50274075187640244
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50505711079680882
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50039705678114199
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49617983137575267
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.32221655414283257
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.94671652007898732
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.7345157124043209
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49929805942309646
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50397270110548165
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50097154097387331
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49710133693979824
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.40504961343980356
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.91432272953088467
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.5,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.84660040907490886
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.52461804109356758
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49934374474427184
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50104307639032308
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50130638028174579
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.23877992284206626
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.97170111977578844
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.75,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.68391745280934935
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49937483257169918
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49844977393682421
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50093590431864221
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49670910686819236
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.47635912313223616
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.87926730058512514
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        },
+        {
+            "Constraints Evaluated": true,
+            "Cost": 0.5,
+            "Decision Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.59265362333521521
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49995055986493436
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.49893641203366645
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.50107027367058687
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.47033427209347162
+                }
+            ],
+            "Objective Vec": [
+                {
+                    "type": "Real Type",
+                    "value": 0.59760851773482859
+                },
+                {
+                    "type": "Real Type",
+                    "value": 0.80288822831596296
+                }
+            ],
+            "Objectives Evaluated": true,
+            "Scalarised": false,
+            "Solution Evaluated": true,
+            "Weight Vec": [
+                0.5,
+                0.5
+            ]
+        }
+    ]
+}

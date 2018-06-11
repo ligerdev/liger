@@ -1,0 +1,1 @@
+nullPointerRedundantCheck:tests/auto/test_tigon/test_problemgenerator/test_probgenerator/tst_problemgenerator.cpp

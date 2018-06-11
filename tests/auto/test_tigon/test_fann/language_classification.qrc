@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/language_classification">
+        <file alias="english_test_1.txt">data/english_test_1.txt</file>
+        <file alias="english_test_2.txt">data/english_test_2.txt</file>
+        <file alias="english_training_1.txt">data/english_training_1.txt</file>
+        <file alias="english_training_2.txt">data/english_training_2.txt</file>
+        <file alias="english_training_3.txt">data/english_training_3.txt</file>
+        <file alias="french_test_2.txt">data/french_test_2.txt</file>
+        <file alias="french_test_1.txt">data/french_test_1.txt</file>
+        <file alias="french_training_1.txt">data/french_training_1.txt</file>
+        <file alias="french_training_2.txt">data/french_training_2.txt</file>
+        <file alias="french_training_3.txt">data/french_training_3.txt</file>
+        <file alias="portuguese_test_1.txt">data/portuguese_test_1.txt</file>
+        <file alias="portuguese_test_2.txt">data/portuguese_test_2.txt</file>
+        <file alias="portuguese_training_1.txt">data/portuguese_training_1.txt</file>
+        <file alias="portuguese_training_2.txt">data/portuguese_training_2.txt</file>
+        <file alias="portuguese_training_3.txt">data/portuguese_training_3.txt</file>
+    </qresource>
+</RCC>

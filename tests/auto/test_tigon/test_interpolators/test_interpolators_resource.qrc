@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/test_tigon/test_interpolators">
+        <file>RAW5_input.txt</file>
+        <file>RAW5_output.txt</file>
+    </qresource>
+</RCC>

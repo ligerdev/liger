@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/qtigon">
+        <file>images/master_end_node.svg</file>
+        <file>images/master_start_node.svg</file>
+        <file>images/default_qalgonode.svg</file>
+        <file>images/default_qopnode.svg</file>
+        <file>images/default_qprobnode.svg</file>
+        <file>images/qopprobgeneratornode.svg</file>
+        <file>images/qalgonsgaiinode.svg</file>
+        <file>images/qalgonsgaiipsanode.svg</file>
+        <file>images/qoprandominitnode.svg</file>
+        <file>images/qalgomoeadnode.svg</file>
+        <file>images/qopweightvectorinitnode.svg</file>
+        <file>images/qopvalidationnode.svg</file>
+        <file>images/qoplhsinitnode.svg</file>
+        <file>images/qopevaluatornode.svg</file>
+        <file>images/qopuserdefinedinitnode.svg</file>
+        <file>images/qopbatchevaluatornode.svg</file>
+        <file>images/qalgoparegonode.svg</file>
+        <file>images/qalgosmsemoanode.svg</file>
+    </qresource>
+</RCC>

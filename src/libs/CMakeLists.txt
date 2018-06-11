@@ -1,0 +1,6 @@
+add_subdirectory (botan)
+add_subdirectory (eigen)
+add_subdirectory (fann)
+add_subdirectory (json)
+add_subdirectory (tinyxml2)
+add_subdirectory (tigon)

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/matlabtemplate">
+        <file>template/t_matlabtemplate</file>
+    </qresource>
+</RCC>

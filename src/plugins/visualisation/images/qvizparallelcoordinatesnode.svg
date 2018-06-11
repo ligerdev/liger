@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Creator: CorelDRAW X5 -->
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="128px" height="128px" style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+viewBox="0 0 128 128"
+ xmlns:xlink="http://www.w3.org/1999/xlink">
+ <defs>
+  <style type="text/css">
+   <![CDATA[
+    .str0 {stroke:#2B2A29;stroke-width:2.36223}
+    .str1 {stroke:#009846;stroke-width:2.36223}
+    .str2 {stroke:#393185;stroke-width:2.36223}
+    .str4 {stroke:#E31E24;stroke-width:2.36223}
+    .str3 {stroke:#FFED00;stroke-width:2.36223}
+    .fil0 {fill:none}
+   ]]>
+  </style>
+ </defs>
+ <g id="Layer_x0020_1">
+  <metadata id="CorelCorpID_0Corel-Layer"/>
+  <line class="fil0 str0" x1="64" y1="10" x2="64" y2= "118" />
+  <line class="fil0 str0" x1="5" y1="10" x2="5" y2= "118" />
+  <line class="fil0 str0" x1="122" y1="10" x2="122" y2= "118" />
+  <polyline class="fil0 str0" points="5,101 64,23 122,52 "/>
+  <polyline class="fil0 str1" points="5,84 64,41 122,99 "/>
+  <polyline class="fil0 str2" points="5,68 64,54 122,73 "/>
+  <polyline class="fil0 str3" points="5,60 64,30 122,88 "/>
+  <polyline class="fil0 str4" points="5,115 64,15 122,106 "/>
+ </g>
+</svg>

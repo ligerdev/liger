@@ -1,0 +1,13 @@
+<plugin name=\"Designer\" version=\"$$LIGER_VERSION\" compatVersion=\"$$LIGER_COMPAT_VERSION\">
+    <vendor>The University of Sheffield</vendor>
+    <copyright>(C) 2018 The University of Sheffield</copyright>
+    <license>
+
+GNU Lesser General Public License Usage
+
+    </license>
+    <category>Liger</category>
+    <description>Liger Designer.</description>
+    <url>http://www.sourceforge.net/ligeropt</url>
+    $$dependencyList
+</plugin>

@@ -1,0 +1,5 @@
+QTC_LIB_NAME = Tigon
+QTC_LIB_DEPENDS += botan
+QTC_LIB_DEPENDS += fann
+QTC_LIB_DEPENDS += json
+QTC_LIB_DEPENDS += tinyxml2

@@ -1,0 +1,15 @@
+<plugin name=\"Visualisation\" version=\"$$LIGER_VERSION\" compatVersion=\"$$LIGER_VERSION\">
+    <vendor>The University of Sheffield</vendor>
+    <copyright>(C) 2012 The University of Sheffield</copyright>
+    <license>GNU Lesser General Public License Usage
+
+This plugin may be used under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation.  Please review the following information to ensure the GNU Lesser General Public License version 2.1 requirements will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.</license>
+    <category>Liger</category>
+    <description>Visualisation plugin provides plotting functionality in Liger.</description>
+    <url>http://ligeropt.sourceforge.net</url>
+    <dependencyList>
+        <dependency name=\"Core\" version=\"$$LIGER_VERSION\"/>
+        <dependency name=\"Designer\" version=\"$$LIGER_VERSION\"/>
+    </dependencyList>
+</plugin>
+

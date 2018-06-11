@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Written on Thu Feb 8 10:50:51 2018 by Qt Creator 4.5.0-->
+<externaltool id="ligerWinDeploy">
+    <description>Generates an installer for Liger for Windows systems</description>
+    <displayname>Deploy Liger Windows</displayname>
+    <category>Installers</category>
+    <order>1</order>
+    <executable output="showinpane" error="showinpane" modifiesdocument="no">
+        <path>%{CurrentProject:Path}/dev/WindowsBuild/buildLigerReleaseForInstaller.bat</path>
+        <arguments>%{CurrentProject:Path} %{CurrentProject:BuildPath} %{CurrentProject:QT_HOST_BINS} %{Env:%BOOST_LIB}</arguments>
+        <environment>APPNAME%3DLiger;APPURL%3Dhttp%3A%2F%2Fligeropt.sourceforge.net%2F;BOOST_INCLUDE%3D;BOOST_LIB%3D;BOOST_PYTHON_LIB%3D;COMPILER_DIR%3DC%3A%5CProgram%20Files%20%28x86%29%5CMicrosoft%20Visual%20Studio%5C2017%5CCommunity%5CVC%5CTools%5CMSVC%5C14.12.25827%5Cbin%5CHostx64%5Cx64;EXEC_NAME%3Dliger.exe;INNO_SETUP_DIR%3DC%3A%5CProgram%20Files%20%28x86%29%5CInno%20Setup%205;LIGER_VERSION%3D0.6.0;PUBLISHER%3DThe%20University%20of%20Sheffield;PYTHON_DLL%3DC%3A%5CWindows%5CSystem32%5Cpython27.dll;VCBATCHDIR%3DC%3A%5CProgram%20Files%20%28x86%29%5CMicrosoft%20Visual%20Studio%5C2017%5CCommunity%5CVC%5CAuxiliary%5CBuild</environment>
+    </executable>
+</externaltool>

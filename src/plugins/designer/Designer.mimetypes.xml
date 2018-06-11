@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+    <mime-type type="application/liger">
+        <sub-class-of type="application/xml"/>
+        <comment>Liger file</comment>
+        <glob pattern="*.lgr"/>
+     </mime-type>
+</mime-info>

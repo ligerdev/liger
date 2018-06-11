@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+
+<head>
+    <script src="qrc:///visualisation/lib/d3.v3/d3.min.js"></script>
+    <script src="qrc:///visualisation/lib/jquery/jquery-2.2.2.min.js"></script>
+    <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+    <style>
+        body {
+            margin: auto auto auto auto;
+            height: 100%;
+            width: calc();
+            overflow: hidden;
+            font-size: 12px;
+        }
+
+        .mscatter {
+            float: center;
+        }
+
+        svg {
+            font: 10px sans-serif;
+            padding: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .axis,
+        .frame {
+            shape-rendering: crispEdges;
+        }
+
+        .axis line {
+            stroke: #ddd;
+        }
+
+        .axis path {
+            display: none;
+        }
+
+        .frame {
+            fill: none;
+            stroke: #aaa;
+        }
+
+        circle {
+            fill-opacity: .7;
+        }
+
+        circle.hidden {
+            fill: #ccc !important;
+        }
+
+        .mscatter .extent {
+            fill: #000;
+            fill-opacity: .125;
+            stroke: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mscatter_plot" class="mscatter"></div>
+    <script>
+        new QWebChannel(qt.webChannelTransport,
+            function(channel) {
+                var dataModel = channel.objects.dataModel;
+                window["dataModel"] = dataModel;
+                receiveData();
+                receiveNames();
+                receiveSelections();
+                drawPlot();
+                dataModel.dataChanged.connect(updateDataReceived);
+                dataModel.namesChanged.connect(updateNamesReceived);
+                dataModel.selectedIndicesChanged.connect(updateSelectionsReceived);
+            }
+        );
+
+        var clearPlot = function() {
+            var svgSelection = d3.select("svg");
+            if (!svgSelection.empty()) {
+                svgSelection.remove();
+            }
+        }
+
+        var receiveData = function() {
+            // extract data to plot
+            var dataJson = dataModel.dataJson;
+            var rows = dataModel.dataRows;
+            var cols = dataModel.dataCols;
+            window["dataJson"] = dataJson;
+            window["rows"] = rows;
+            window["cols"] = cols;
+        }
+
+        var receiveNames = function() {
+            var allNames = dataModel.allNames;
+            window["allNames"] = allNames;
+        }
+
+        var receiveSelections = function() {
+            var selNames = new Array();
+            var selectedIndices = dataModel.selectedIndices;
+            for (i = 0; i < selectedIndices.length; i++) {
+                selNames[i] = allNames[selectedIndices[i]];
+            }
+            window["selNames"] = selNames;
+            window["selectedIndices"] = selectedIndices;
+        }
+
+        var updatePlot = function() {
+            clearPlot();
+            drawPlot();
+        }
+
+        var updateDataReceived = function() {
+            receiveData();
+            updatePlot();
+        }
+
+        var updateNamesReceived = function() {
+            receiveNames();
+            updatePlot();
+        }
+
+        var updateSelectionsReceived = function() {
+            receiveSelections();
+            updatePlot();
+        }
+
+        var drawPlot = function() {
+            var point_radius = 1.5;
+            window["point_radius"] = point_radius;
+
+            // Restrueture data
+            var data = new Array();
+            for (i = 0; i < rows; i++) {
+                data[i] = new Array();
+                for (j = 0; j < selectedIndices.length; j++) {
+                    (data[i])[selNames[j]] = (dataJson[i])[selNames[j]];
+                }
+            }
+            window["data"] = data;
+
+            var colorgen = d3.scale.category20();
+            var width = $(window).width();
+            var height = $(window).height();
+            var size;
+            var xsize;
+            var ysize;
+            var padding = 10;
+
+            var nvariables = selectedIndices.length;
+            size = Math.min(width, height) / nvariables - 19.5; // Min(width/cols - 40;
+            var custspace = Math.max(-4 * nvariables + 30, 4);
+            xsize = width / nvariables - custspace; // - padding/2;
+            ysize = height / nvariables - custspace; //- padding/2;
+
+            window["xsize"] = xsize;
+            window["ysize"] = ysize;
+            window["padding"] = padding;
+
+            var x = d3.scale.linear()
+                .range([padding / 2, xsize - padding / 2]);
+            var y = d3.scale.linear()
+                .range([ysize - padding / 2, padding / 2]);
+            window["x"] = x;
+            window["y"] = y;
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("bottom")
+                .ticks(5);
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .ticks(5);
+
+            var color = d3.scale.category10();
+            window["color"] = color;
+
+            var domainByName = {};
+            var n = selNames.length;
+            selNames.forEach(function(name) {
+                domainByName[name] = d3.extent(data, function(d) {
+                    return d[name];
+                });
+            });
+            window["domainByName"] = domainByName;
+
+            xAxis.tickSize(ysize * n);
+            yAxis.tickSize(-xsize * n);
+
+            var brush = d3.svg.brush()
+                .x(x)
+                .y(y)
+                .on("brushstart", brushstart)
+                .on("brush", brushmove)
+                .on("brushend", brushend);
+            window["brush"] = brush;
+
+            d3.select("#mscatter_plot")
+                .attr("width", xsize * n + 2 * padding)
+                .attr("height", ysize * n + 2 * padding);
+
+            var svg = d3.select("#mscatter_plot").append("svg")
+                .attr("width", xsize * n + 2 * padding)
+                .attr("height", ysize * n + 2 * padding)
+                .append("g")
+                .attr("transform", "translate(" + padding + "," + padding / 2 + ")");
+
+            svg.selectAll(".x.axis")
+                .data(selNames)
+                .enter().append("g")
+                .attr("class", "x axis")
+                .attr("transform", function(d, i) {
+                    return "translate(" + (n - i - 1) * xsize + ",0)";
+                })
+                .each(function(d) {
+                    x.domain(domainByName[d]);
+                    d3.select(this).call(xAxis);
+                });
+
+            svg.selectAll(".y.axis")
+                .data(selNames)
+                .enter().append("g")
+                .attr("class", "y axis")
+                .attr("transform", function(d, i) {
+                    return "translate(0," + i * ysize + ")";
+                })
+                .each(function(d) {
+                    y.domain(domainByName[d]);
+                    d3.select(this).call(yAxis);
+                });
+            window["svg"] = svg;
+
+            var cell = svg.selectAll(".cell")
+                .data(cross(selNames, selNames))
+                .enter().append("g")
+                .attr("class", "cell")
+                .attr("transform", function(d) {
+                    return "translate(" + (n - d.i - 1) * xsize + "," + d.j * ysize + ")";
+                })
+                .each(plot);
+
+            // Titles for the diagonal.
+            cell.filter(function(d) {
+                    return d.i === d.j;
+                }).append("text")
+                .attr("x", padding)
+                .attr("y", padding)
+                .attr("dy", ".71em")
+                .text(function(d) {
+                    return d.x;
+                });
+            window["cell"] = cell;
+
+            d3.select(self.frameElement).style("height", ysize * n + padding + 20 + "px");
+        }
+
+        function plot(p) {
+            var cell = d3.select(this);
+
+            x.domain(domainByName[p.x]);
+            y.domain(domainByName[p.y]);
+
+            cell.append("rect")
+                .attr("class", "frame")
+                .attr("x", padding / 2)
+                .attr("y", padding / 2)
+                .attr("width", xsize - padding)
+                .attr("height", ysize - padding);
+
+            cell.selectAll("circle")
+                .data(data)
+                .enter().append("circle")
+                .attr("cx", function(d) {
+                    return x(d[p.x]);
+                })
+                .attr("cy", function(d) {
+                    return y(d[p.y]);
+                })
+                .attr("r", point_radius)
+                .style("fill", function(d) {
+                    return color(d.species);
+                });
+
+            cell.call(brush);
+        }
+
+        // Clear the previously-active brush, if any.
+        var brushCell;
+
+        function brushstart(p) {
+            if (brushCell !== p) {
+                cell.call(brush.clear());
+                x.domain(domainByName[p.x]);
+                y.domain(domainByName[p.y]);
+                brushCell = p;
+            }
+        }
+
+        // Highlight the selected circles.
+        function brushmove(p) {
+            var e = brush.extent();
+            svg.selectAll("circle").classed("hidden", function(d) {
+                return e[0][0] > d[p.x] || d[p.x] > e[1][0] || e[0][1] > d[p.y] || d[p.y] > e[1][1];
+            });
+            selectedPoints(p);
+        }
+
+        // If the brush is empty, select all circles.
+        function brushend() {
+            if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
+            dataModel.setBrushedIndices(selected_points_index);
+        }
+
+        function selectedPoints(p) {
+            var selected_points_index = new Array();
+            var e = brush.extent();
+            var itr = 0;
+            var spts = svg.selectAll("circle").filter(function(d, i) {
+                if (i < rows && e[0][0] < d[p.x] && d[p.x] < e[1][0] && e[0][1] < d[p.y] && d[p.y] < e[1][1]) {
+                    selected_points_index[itr] = i;
+                    itr = itr + 1;
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            window["selected_points_index"] = selected_points_index;
+        }
+
+        function cross(a, b) {
+            var c = [],
+                n = a.length,
+                m = b.length,
+                i, j;
+            for (i = -1; ++i < n;)
+                for (j = -1; ++j < m;) c.push({
+                    x: a[i],
+                    i: i,
+                    y: b[j],
+                    j: j
+                });
+            return c;
+        }
+
+        var resizeTimer;
+        $(window).resize(function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(updatePlot(), 50);
+        });
+    </script>
+</body>
+
+</html>

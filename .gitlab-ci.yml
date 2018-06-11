@@ -1,0 +1,104 @@
+stages:
+  - check
+  - build
+  - test
+  - deploy
+
+cppcheck:
+  stage: check
+  script:
+    - cppcheck -j 4 --enable=warning --suppressions-list=.cppcheck-suppressions.txt --xml --xml-version=2 src/libs/tigon tests 2>cppcheck.xml
+    - cat cppcheck.xml
+    - python dev/CI/cppchecker.py cppcheck.xml
+
+unittest-build:
+  stage: build
+  script:
+    - mkdir build 
+    - cd build
+    - export BOOST_INCLUDE=/usr/local/include/boost
+    - export BOOST_LIB=/usr/local/lib
+    - export BOOST_PYTHON_LIB=/usr/local/lib
+    - qmake ../liger.pro -r -spec linux-g++
+    - make -s -j 4
+  except:
+    - develop
+  artifacts:
+    paths:
+      - build/bin
+      - build/lib
+      - build/share
+      - build/tests/bin
+    expire_in: 60 mins
+
+unittest-run:
+  stage: test
+  script:
+    - cd build/tests/bin
+    - chmod +x run_all_unit_tests_linux.sh
+    - ./run_all_unit_tests_linux.sh
+    - python failure_reporter.py .
+  except:
+    - develop  
+  dependencies:
+    - unittest-build
+
+# Build with coverage analysis enabled. Only for develop branch   
+unittest-build-cov:
+  stage: build
+  script:
+    - mkdir build 
+    - cd build
+    - export BOOST_INCLUDE=/usr/local/include/boost
+    - export BOOST_LIB=/usr/local/lib
+    - export BOOST_PYTHON_LIB=/usr/local/lib
+    - qmake "CONFIG+=debug coverage" ../liger.pro -r -spec linux-g++
+    - make -s -j 4
+    - rm src/libs/tigon/.obj/debug-shared/*.o
+    - rm src/libs/tigon/.obj/debug-shared/Tigon.gch/c
+    - rm src/libs/tigon/.obj/debug-shared/Tigon.gch/c++
+  only:
+    - develop
+  artifacts:
+    paths:
+      - build/bin
+      - build/lib
+      - build/share
+      - build/tests/bin
+      - build/src/libs/tigon/.obj
+    expire_in: 60 mins
+
+# Run test with coverage analysis enabled. Only for develop branch   
+unittest-run-cov:
+  stage: test
+  script:
+    - cd build/tests/bin
+    - chmod +x run_all_unit_tests_linux.sh
+    - ./run_all_unit_tests_linux.sh
+    - python failure_reporter.py .
+    - cd ../../
+    - lcov --capture --directory src/libs/tigon/.obj/debug-shared --output-file tigon_coverage.info > /dev/null
+    - lcov --remove tigon_coverage.info "/usr/include/*" "/usr/lib/*" "boost*" "*/eigen/*" "*/json*" "botan.h" "fann_cpp.h" "tinyxml2.h" "*/WFG/wfg_toolkit/*" -o coverage.info
+    - genhtml coverage.info --quiet --output-directory coverage-report
+  only:
+    - develop  
+  artifacts:
+    paths:
+      - build/coverage-report
+    expire_in: 60 mins
+  dependencies:
+    - unittest-build-cov
+
+# Report coverage analysis. Only for develop branch   
+pages:
+  stage: deploy
+  dependencies:
+    - unittest-run-cov
+  script:
+    - mv build/coverage-report/ public/
+  only:
+    - develop
+  artifacts:
+    paths:
+      - public
+    expire_in: 2 days

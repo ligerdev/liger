@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/pythontemplate">
+        <file>template/t_pythontemplate</file>
+    </qresource>
+</RCC>
