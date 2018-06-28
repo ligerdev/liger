@@ -50,6 +50,8 @@ private slots:
 
 private:
     void loadDataFromFile(const QString& file);
+    void selectDefaultPopulation();
+
     Ui::PopulationViewer *ui;
     QVector<QVector<qreal> > m_data;
     QJsonObject m_json;

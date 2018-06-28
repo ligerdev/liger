@@ -13,32 +13,37 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#ifndef ZDT1_H
-#define ZDT1_H
+#ifndef CORRELATIONMATRIX_H
+#define CORRELATIONMATRIX_H
 
-#include <tigon/Representation/Functions/IFunction.h>
 #include <tigon/tigon_global.h>
+#include <tigon/tigonconstants.h>
 
 namespace Tigon {
-namespace Representation {
 
-class LIGER_TIGON_EXPORT ZDT1 : public IFunction
+class LIGER_TIGON_EXPORT CorrelationMatrix
 {
-    DECLARE_CLASS(Tigon::Representation::ZDT1)
 public:
-    ZDT1();
-    ZDT1(const ZDT1& func);
-    ~ZDT1();
+    CorrelationMatrix();
+    CorrelationMatrix(const TVector<TVector<double>>& x);
+    CorrelationMatrix(const TMatrixReal& x);
+    ~CorrelationMatrix();
 
-    void evaluate(const TVector<IElementSPtr> &inputs,
-                  const TVector<IElementSPtr> &outputs);
+    void insertData(const TVector<TVector<double>>& x);
+    void insertData(const TMatrixReal& x);
+
+    TMatrixReal correlationMatrix() const;
+    TMatrixReal inputData() const;
+
+    int nSamples() const;
 
 private:
-    void defineInputPrpts();
-    void defineOutputPrpts();
+    void calculateCorrelationMatrix();
+
+    TMatrixReal m_corrMatrix;
+    TMatrixReal m_x;
 };
 
-} // namespace Representation
 } // namespace Tigon
 
-#endif // ZDT1_H
+#endif // CORRELATIONMATRIX_H

@@ -1,105 +1,114 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2014 The University of Sheffield (www.sheffield.ac.uk)
-** Copyright (C) 2012-2014 Ioannis Giagkiozis
-**
-** Contact: http://ligeropt.sourceforge.net
+** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
-** Liger is free software: you can redistribute it and/or modify
-** it under the terms of the GNU Lesser General Public License as published by
-** the Free Software Foundation, either version 3 of the License, or
-** (at your option) any later version
+** GNU Lesser General Public License Usage
+** This file may be used under the terms of the GNU Lesser General
+** Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
-** Liger is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-** GNU Lesser General Public License for more details.
-**
-** You should have received a copy of the GNU Lesser General Public License
-** along with Liger.  If not, see <http://www.gnu.org/licenses/>.
-**
-** This is a modified version of ZDT1.cpp from jMetalCpp version 1.0.1
-** Filename: ZDT1.cpp
-** Path:     jMetalCpp/problems/
-** Date:     12/03/2013
-** Original Version Author/s:  Antonio J. Nebro, Juan J. Durillo
 ****************************************************************************/
-#include <metal/problems/ZDT1.h>
+#include <tigon/Representation/Functions/ZDT/ZDT1.h>
+#include <tigon/Representation/Elements/IElement.h>
+#include <tigon/Utils/IElementUtils.h>
+#include <tigon/Representation/Functions/ZDT/ZDTProblems.h>
+#include <tigon/tigonengineregistry.h>
+#include <tigon/ExceptionHandling/TException.h>
+REGISTER_IFUNCTION_FACTORY(ZDT1)
 
-ZDT1::ZDT1(QString solutionType, int numberOfVariables) {
-    m_numberOfVariables   = numberOfVariables;
-    m_numberOfObjectives  = 2;
-    m_numberOfConstraints = 0;
-    m_problemName         = "ZDT1";
+namespace Tigon {
+namespace Representation {
 
-    m_lowerLimit = new double[m_numberOfVariables];
-    if (m_lowerLimit == 0) {
-        throw MetalException("Error in ZDT1::ZDT1(QString, int) : Out of memory.");
-    }
-
-    m_upperLimit = new double[m_numberOfVariables];
-    if (m_upperLimit == 0) {
-        throw MetalException("Error in ZDT1::ZDT1(QString, int) : Out of memory.");
-    }
-
-    for (int i = 0; i < m_numberOfVariables; i++) {
-        m_lowerLimit[i] = 0.0;
-        m_upperLimit[i] = 1.0;
-    }
-
-    if (solutionType.compare("BinaryReal") == 0)
-        m_solutionType = new BinaryRealSolutionType(this);
-    else if (solutionType.compare("Real") == 0) {
-        m_solutionType = new RealSolutionType(this);
-    }
-    else if (solutionType.compare("ArrayReal") == 0)
-        m_solutionType = new ArrayRealSolutionType(this);
-    else {
-        throw MetalException("Error in ZDT1::ZDT1(QString, int) : Unknown SolutionType.");
-    }
-    m_fx = new double[m_numberOfObjectives];
+ZDT1::ZDT1()
+{
+    TP_defineNInputs(2);
+    TP_defineNOutputs(2);
+    TString name("ZDT1");
+    TString description("ZDT1 benchmark problem. A two objectives problem that "
+                        "are to be minimised.\n"
+                        "The problem scalable in terms of the number of "
+                        "variables, which is given by n, and all variables lie "
+                        "in the range [0,1].\n "
+                        "The Pareto front corresponds to 0<=x1<=1 and xi=0 for "
+                        "i=2,..,n.\n, and its shape in objective space is "
+                        "convex.");
+    createFunctionProperties(name, description, FunctionType::Internal);
+    defineParallelisable();
+    defineIsNumoutputsModifiable(false);
 }
 
-ZDT1::~ZDT1() {
-    delete [] m_lowerLimit;
-    delete [] m_upperLimit;
-    delete m_solutionType;
-    delete [] m_fx;
+ZDT1::ZDT1(const ZDT1& func)
+{
+    TP_defineNInputs(func.TP_nInputs());
+    TP_defineNOutputs(2);
+    createFunctionProperties(func.name(), func.description(), func.type());
+    defineParallelisable();
+    defineIsNumoutputsModifiable(false);
 }
 
-/**
- * Evaluates a solution
- * @param solution The solution to evaluate
- */
-void ZDT1::evaluate(Solution *solution) {
-    XReal * x = new XReal(solution);
+ZDT1::~ZDT1()
+{
 
-    m_fx[0] = x->getValue(0);
-    double g = evalG(x);
-    double h = evalH(m_fx[0], g);
-    m_fx[1] = h * g;
-
-    solution->setObjective(0,m_fx[0]);
-    solution->setObjective(1,m_fx[1]);
-
-    delete x;
 }
 
-double ZDT1::evalG(XReal * x) {
-    double g = 0.0;
-    for (int i = 1; i < x->getNumberOfDecisionVariables(); i++)
-        g += x->getValue(i);
+void ZDT1::evaluate(const TVector<IElementSPtr> &inputs,
+                     const TVector<IElementSPtr> &outputs)
+{
+    if((inputs.size() == TP_nInputs()) && (outputs.size() == 2) &&
+            (TP_nInputs() > 1)) {
+        TVector<double> iReal = IElementVecToRealVec(inputs);
+        TVector<double> oReal = ZDT::ZDT1(iReal);
 
-    double c = 9.0/(m_numberOfVariables - 1);
-    g = c * g ;
-    g = g + 1.0;
-    return g;
+        for(int i=0; i<outputs.size(); i++) {
+            outputs[i]->defineValue(oReal[i]);
+        }
+    } else {
+        throw TException(className(), IncorrectProblemFormatException);
+    }
 }
 
-double ZDT1::evalH(double f, double g) {
-    double h = 0.0;
-    h = 1.0 - sqrt(f/g);
-    return h;
+void ZDT1::defineInputPrpts()
+{
+    TStringList          varNames;
+    TStringList          varDescriptions;
+    TVector<ElementType> typeVec;
+    TStringList          varUnits;
+    TVector<IElement>    lowerBounds(TP_nInputs(), IElement(RealType, 0.0));
+    TVector<IElement>    upperBounds(TP_nInputs(), IElement(RealType, 1.0));
+
+    for(int i = 0; i < TP_nInputs(); i++) {
+        varNames.push_back("x_" + std::to_string(i+1));
+        typeVec.push_back(RealType);
+        varUnits.push_back("");
+        varDescriptions.push_back("Decision variable n." + std::to_string(i+1));
+    }
+
+    createInputProperties(varNames, varDescriptions, typeVec, varUnits,
+                          lowerBounds, upperBounds);
 }
+
+void ZDT1::defineOutputPrpts()
+{
+    TStringList          varNames;
+    TStringList          varDescriptions;
+    TVector<ElementType> typeVec;
+    TStringList          varUnits;
+    TVector<OptimizationType> optTypes;
+
+    for(int i = 0; i < 2; i++) {
+        varNames.push_back("f_" + std::to_string(i+1));
+        varDescriptions.push_back("Objective function n." + std::to_string(i+1));
+        typeVec.push_back(RealType);
+        varUnits.push_back("");
+        optTypes.push_back(Minimization);
+    }
+    createOutputProperties(varNames, varDescriptions, typeVec, varUnits, optTypes);
+}
+
+} // namespace Representation
+} // namespace Tigon

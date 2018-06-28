@@ -119,9 +119,14 @@ SOURCES += \
     Representation/Functions/CTP/CTP5.cpp \
     Representation/Functions/CTP/CTP6.cpp \
     Representation/Functions/CTP/CTP7.cpp \
+    Representation/Functions/ZDT/ZDTProblems.cpp \
+    Representation/Functions/ZDT/ZDT1.cpp \
+    Representation/Functions/ZDT/ZDT2.cpp \
     Representation/Functions/DTLZ/DTLZProblems.cpp \
     Representation/Functions/DTLZ/DTLZ1.cpp \
     Representation/Functions/DTLZ/DTLZ2.cpp \
+    Representation/Functions/DTLZ/DTLZ5_2.cpp \
+    Representation/Functions/DTLZ/DTLZ5_3.cpp \
     Representation/Functions/KrigingSurrogate.cpp \
     Representation/Functions/SingleObjective/Alpine2.cpp \
     Representation/Functions/ExpectedImprovement.cpp \
@@ -235,6 +240,8 @@ SOURCES += \
     Operators/Filtrations/SMSEMOAReduce.cpp \
     Operators/Fitness/NonDominanceRankingParametric.cpp \
     Representation/Functions/TF1.cpp \
+    Utils/CorrelationMatrix.cpp \
+    Utils/ObjectiveReduction.cpp
 
 HEADERS += \
     Core/TSharedPointer.h \
@@ -343,9 +350,14 @@ HEADERS += \
     Representation/Functions/CTP/CTP5.h \
     Representation/Functions/CTP/CTP6.h \
     Representation/Functions/CTP/CTP7.h \
+    Representation/Functions/ZDT/ZDTProblems.h\
+    Representation/Functions/ZDT/ZDT1.h \
+    Representation/Functions/ZDT/ZDT2.h \
     Representation/Functions/DTLZ/DTLZProblems.h \
     Representation/Functions/DTLZ/DTLZ1.h \
     Representation/Functions/DTLZ/DTLZ2.h \
+    Representation/Functions/DTLZ/DTLZ5_2.h \
+    Representation/Functions/DTLZ/DTLZ5_3.h \
     Representation/Functions/ExampleFunction.h  \
     Representation/Functions/KrigingSurrogate.h \
     Representation/Functions/SingleObjective/Alpine2.h \
@@ -449,6 +461,8 @@ HEADERS += \
     Operators/Filtrations/SMSEMOAReduce.h \
     Operators/Fitness/NonDominanceRankingParametric.h \
     Representation/Functions/TF1.h \
+    Utils/CorrelationMatrix.h \
+    Utils/ObjectiveReduction.h
 
 # Python support
 contains(HAVE_PYTHON, yes) {

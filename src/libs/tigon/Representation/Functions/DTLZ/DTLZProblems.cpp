@@ -15,15 +15,11 @@
 ****************************************************************************/
 
 #include <tigon/Representation/Functions/DTLZ/DTLZProblems.h>
-
-
-
 #include <boost/math/constants/constants.hpp>
 
-//namespace Tigon {
-//namespace Operators {
 using namespace boost::math::constants;
 using namespace Tigon;
+
 namespace DTLZ {
 
 TVector<double> DTLZ1Modified(const TVector<double> &x, int M)
@@ -53,13 +49,14 @@ TVector<double> DTLZ1Modified(const TVector<double> &x, int M)
     return y;
 }
 
-TVector<double > DTLZ1(const TVector<double >& x, int M)
+TVector<double> DTLZ1(const TVector<double>& x, int M)
 {
     int n = x.size();
     int k = n - M + 1;
     double g = 0.0;
     for (int i = n - k; i < n; i++) {
-        g += (x[i] - 0.5)*(x[i] - 0.5) - std::cos(20.0 * pi<double>() * (x[i] - 0.5));
+        g += std::pow((x[i] - 0.5), 2.0) -
+                std::cos(20.0 * pi<double>() * (x[i] - 0.5));
     }
     g = 100.0 * ((double)k + g);
 
@@ -78,7 +75,7 @@ TVector<double > DTLZ1(const TVector<double >& x, int M)
     return y;
 }
 
-TVector<double > DTLZ2(const TVector<double >& x, int M)
+TVector<double> DTLZ2(const TVector<double>& x, int M)
 {
     int i,j;
     int n = x.size();
@@ -86,7 +83,7 @@ TVector<double > DTLZ2(const TVector<double >& x, int M)
     double g = 0.0;
     double coss, sine;
     for (int i = n - k; i < n; i++) {
-        g += (x[i] - 0.5)*(x[i] - 0.5);
+        g += std::pow((x[i] - 0.5), 2.0);
     }
 
     TVector<double> y(M, 0.0);
@@ -103,6 +100,47 @@ TVector<double > DTLZ2(const TVector<double >& x, int M)
     return y;
 }
 
+TVector<double> DTLZ5_I(const TVector<double>& x, int I, int N)
+{
+    int M = (N + I - 1)/2;    // number of objectives
+    int ncon = (N - I + 1)/2; // number of constraints
+    int n = x.size();
+    int k = n - M + 1;
+
+    double g = 0.0;
+    for (int i = n - k; i < n; i++) {
+        g += std::pow((x[i] - 0.5), 2.0);
+    }
+
+    TVector<double> theta(M-1);
+    for(int i=0; i<(I-1); i++) {
+        theta[i] = (pi<double>()*x[i])/2.0;
+    }
+    for(int i=I-1; i<(M-1); i++) {
+        theta[i] = (pi<double>()*(1.0+2.0*g*x[i]))/(4.0*(1.0+g));
+    }
+
+    TVector<double> y(M + ncon);
+
+    for(int i=0; i<M; i++) {
+        double sine = (i==0) ? 1.0 : std::sin(theta[M-1-i]);
+        double coss = 1.0;
+        for(int j=0; j<(M-1-i); j++) {
+            coss *= std::cos(theta[j]);
+        }
+        y[i] = (1.0+g)*coss * sine;
+    }
+
+    double ind_fsquare = 0.0;
+    for(int j=0; j<=I-2; j++) {
+        ind_fsquare += std::pow(y[M-j-1], 2.0);
+    }
+    for(int i=0; i<ncon; i++) {
+        int p = (i==0) ? M-I : M-I+1-i;
+        y[i+M] = -1.0*(ind_fsquare - 1.0 + std::pow(2,p) * y[i] * y[i]);
+    }
+
+    return y;
+}
+
 }  // namespace DTLZ
-//}  // namespace Tigon
-//}  // namespace Operators

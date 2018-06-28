@@ -163,9 +163,6 @@ void QOpUserDefinedInitNode::updateDVec(const QVector<QVector<qreal> > &dVecData
 void QOpUserDefinedInitNode::updateFromJson(const QJsonObject &json)
 {
     Q_UNUSED(json);
-    //UserDefinedInit* thisOp = static_cast<UserDefinedInit*>(data());
-    //thisOp->defineSetFromJson(json);
-    //m_dialog->upadtePropertyDisplayData();
 }
 
 void QOpUserDefinedInitNode::updateFilePath(QString filePath)

@@ -42,9 +42,12 @@ PopulationViewer::~PopulationViewer()
 
 void PopulationViewer::reset()
 {
+    ui->filePathLineEdit->clear();
     ui->dataTableWidget->clear();
     ui->dataTableWidget->setColumnCount(0);
     ui->dataTableWidget->setRowCount(0);
+
+    emit updateFilePath(ui->filePathLineEdit->text());
 }
 
 void PopulationViewer::save()
@@ -65,6 +68,7 @@ void PopulationViewer::on_loadPushButton_clicked()
                                                 QString("Json (*.json);;"
                                                         "Text (*.txt);;"));
     loadDataFromFile(file);
+    emit updateFilePath(ui->filePathLineEdit->text());
 }
 
 QVector<QVector<qreal> > PopulationViewer::data() const
@@ -85,6 +89,11 @@ void PopulationViewer::setFilePath(QString file)
 void PopulationViewer::on_clearPushButton_clicked()
 {
     reset();
+}
+
+void PopulationViewer::selectDefaultPopulation()
+{
+
 }
 
 void PopulationViewer::loadDataFromFile(const QString& file)
@@ -197,7 +206,7 @@ void PopulationViewer::loadDataFromFile(const QString& file)
         qDebug() << "suffix is json";
         QString str = ifile.readAll();
         ifile.close();
-        qDebug() << "JSON loaded: " << str;
+        //qDebug() << "JSON loaded: " << str;
         QJsonDocument jsonDoc = QJsonDocument::fromJson(str.toUtf8());
         if(jsonDoc.isNull()) {
             return;
@@ -208,18 +217,18 @@ void PopulationViewer::loadDataFromFile(const QString& file)
             QJsonObject jsonObj = jsonDoc.object();
             if(jsonObj.contains("Populations")) {
                 m_json = jsonObj;
-                qDebug() << "JSON is a Populations log: " << m_json;
+                //qDebug() << "JSON is a Populations log: " << m_json;
             } else if(jsonObj.contains("Evaluations")) {
                 m_json = jsonObj;
-                qDebug() << "JSON is an Evaluations log: " << m_json;
+                //qDebug() << "JSON is an Evaluations log: " << m_json;
             } else if(jsonObj.contains("Single Population")) {
                 m_json = jsonObj;
-                qDebug() << "JSON is a single population: " << m_json;
+                //qDebug() << "JSON is a single population: " << m_json;
             } else if(jsonObj.contains("Decision Vec")){
                 m_json = jsonObj;
-                qDebug() << "JSON is a single evaluation: " << m_json;
+                //qDebug() << "JSON is a single evaluation: " << m_json;
             } else {
-                qDebug() << "ERROR - Unidentified JSON object: " << jsonObj;
+                //qDebug() << "ERROR - Unidentified JSON object: " << jsonObj;
             }
         } else {
             return;

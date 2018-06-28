@@ -46,7 +46,8 @@ SOURCES +=  \
     core/matrixscatterplotwidget.cpp \
     core/parallelcoordinatesplotwidget.cpp \
     core/scatterplotwidget.cpp \
-    core/visualisationwidget.cpp
+    core/visualisationwidget.cpp \
+    iterationinteruptor.cpp
 
 HEADERS +=  \
     visualisationplugin.h  \
@@ -65,7 +66,8 @@ HEADERS +=  \
     core/parallelcoordinatesplotwidget.h \
     core/scatterplotwidget.h \
     core/matrixscatterplotwidget.h \
-    core/visualisationwidget.h
+    core/visualisationwidget.h \
+    iterationinteruptor.h
 
 RESOURCES += \
     visualisation.qrc

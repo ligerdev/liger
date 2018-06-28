@@ -16,7 +16,8 @@ SUBDIRS = \
     test_pluginsystem \
     test_simplexlattice \
     test_smsemoa \
-    test_fann
+    test_fann \
+    test_statistics
 
 # Include matlab plugin
 include(../../../matlabcheck.pri)
@@ -26,4 +27,3 @@ contains(DEFINES, MATLAB_API) {
 } else {
   message("Does NOT include MATLAB plugin test")
 }
-\

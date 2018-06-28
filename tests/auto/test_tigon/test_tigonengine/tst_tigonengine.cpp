@@ -248,10 +248,8 @@ void tst_tigonengine::test_TigonFunctionFactory()
     }
 
     TStringList allInternalTestFunctions;
-    allInternalTestFunctions << "DTLZ1" << "DTLZ2"
-                             << "CODeM1" << "CODeM2" << "CODeM3" << "CODeM4"
-                             << "CODeM5" << "CODeM6"
-                             << "CTP1" << "CTP2" << "CTP3" << "CTP4" << "CTP5" << "CTP6";
+    allInternalTestFunctions << "DTLZ1" << "DTLZ2" << "CTP1" << "CTP2"
+                             << "CTP3" << "CTP4" << "CTP5" << "CTP6";
 
     foreach(const TString& str, allInternalTestFunctions) {
         name = TString("Tigon::Representation::" + str);

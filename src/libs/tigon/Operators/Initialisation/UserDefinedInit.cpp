@@ -15,8 +15,6 @@
 ****************************************************************************/
 #include <tigon/Operators/Initialisation/UserDefinedInit.h>
 #include <tigon/ExceptionHandling/TException.h>
-#include <tigon/Utils/TigonIOUtils.h>
-#include <tigon/Utils/JsonUtils.h>
 #include <tigon/tigonengineregistry.h>
 
 #include <json/json.h>
@@ -44,6 +42,11 @@ UserDefinedInit::~UserDefinedInit()
 void UserDefinedInit::defineSetFromJson(const TString &jsonStr)
 {
     m_jsonString = jsonStr;
+    if(!m_jsonString.empty()){
+        getJsonObjectFromJsonString();
+        defineTotalIterations();
+        defineSelectedIteration(m_totalIterations);
+    }
 }
 
 void UserDefinedInit::evaluateNode()
@@ -62,8 +65,8 @@ TString UserDefinedInit::initialSetFilePath() const
 void UserDefinedInit::defineInitialSetFromFile(const TString &file)
 {
     TString content = readAll(file);
+    m_filePath = file;
     if(!content.empty()) {
-        m_filePath = file;
         defineSetFromJson(content);
     }
     return;
@@ -86,42 +89,121 @@ void UserDefinedInit::appendInitialSet()
 
     // Copy from Json string
     if(!m_jsonString.empty()) {
-        JsonDocument jdoc = JsonDocument::fromJson(m_jsonString);
-        JsonObject json = jdoc.object();
         JsonArray jarray;
 
-        if(json.contains(Log::LSinglePop)) {
-            /// json object holds a single population array
-            jarray = json[Log::LSinglePop].toArray();
-        } else if(json.contains(Log::LPops)) {
-            /// json object has a population log
-            JsonArray popLogArr = json[Log::LPops].toArray();
-            if(!(popLogArr.empty())) {
-                // Only use the last population entry
-                jarray = popLogArr.last().toObject()[Log::LSolutions].toArray();
-            }
-        } else if(json.contains(Log::LEvals)) {
-            /// json object has an evaluation log
-            jarray = json[Log::LEvals].toArray();
-        } else if(json.contains(Log::LDVec)) {
-            /// json object is a single solution
-            jarray.append(json);
+        if(m_jsonObj.contains(Log::LSinglePop)) {
+            jarray = getSinglePopArray();
+        } else if(m_jsonObj.contains(Log::LPops)) {
+            jarray = getSelectedIterationPopArray();
+        } else if(m_jsonObj.contains(Log::LEvals)) {
+            jarray = getEvaluationsArray();
+        } else if(m_jsonObj.contains(Log::LDVec)) {
+            jarray = getSingleSolutionArray();
         } else {
             /// qDebug() << "Invalid format for initial set";
         }
-
-        while(!jarray.empty()) {
-            JsonObject jObj = jarray.takeAt(0).toObject();
-            IMappingSPtr imap = createMapping();
-            bool jsonOK = fromJSonObj(imap, jObj);
-            if(!jsonOK) {
-                throw TException(this->className(), "Solution could not be added from JSON");
-            }
-            this->updateIdealNadirVec(imap);
-        }
+        getSolutionsFromArray(jarray);
         m_jsonString.clear();
     }
 
+}
+
+void UserDefinedInit::getJsonObjectFromJsonString()
+{
+    JsonDocument jdoc = JsonDocument::fromJson(m_jsonString);
+    m_jsonObj = jdoc.object();
+}
+
+JsonArray UserDefinedInit::getSinglePopArray()
+{
+    JsonArray jarray;
+
+    jarray = m_jsonObj[Log::LSinglePop].toArray();
+    return jarray;
+}
+
+JsonArray UserDefinedInit::getSelectedIterationPopArray()
+{
+    JsonArray jarray;
+
+    JsonArray logsArray = m_jsonObj[Log::LPops].toArray();
+    if(!(logsArray.empty())){
+        jarray = logsArray.at(m_selectedIteration-1).toObject()[Log::LSolutions].toArray();
+    }
+    return jarray;
+}
+
+JsonArray UserDefinedInit::getEvaluationsArray()
+{
+    JsonArray jarray;
+
+    jarray = m_jsonObj[Log::LEvals].toArray();
+    return jarray;
+}
+
+JsonArray UserDefinedInit::getSingleSolutionArray()
+{
+    JsonArray jarray;
+
+    jarray.append(m_jsonObj);
+    return jarray;
+}
+
+void UserDefinedInit::getSolutionsFromArray(JsonArray jsonArray)
+{
+    while(!jsonArray.empty()) {
+        JsonObject jObj = jsonArray.takeAt(0).toObject();
+        IMappingSPtr imap = createMapping();
+        bool jsonOK = fromJSonObj(imap, jObj);
+        if(!jsonOK) {
+            throw TException(this->className(), "Solution could not be added from JSON");
+        }
+        this->updateIdealNadirVec(imap);
+    }
+}
+
+int UserDefinedInit::totalIterations()
+{
+    return m_totalIterations;
+}
+
+void UserDefinedInit::defineTotalIterations()
+{    
+    m_totalIterations = 0;
+    if(!m_jsonString.empty()) {
+        if(m_jsonObj.contains(Log::LPops)){
+            JsonArray popLogArr = m_jsonObj[Log::LPops].toArray();
+            m_totalIterations = popLogArr.size();
+        } else if(m_jsonObj.contains(Log::LSinglePop)){
+            m_totalIterations = 1;
+        }
+    }
+}
+
+void UserDefinedInit::defineTotalIterations(const int &unusedIterationNumber)
+{
+    defineTotalIterations();
+}
+
+
+int UserDefinedInit::selectedIteration()
+{
+    return m_selectedIteration;
+}
+
+void UserDefinedInit::defineSelectedIteration(const int &iterationNumber)
+{
+    if(iterationNumber > totalIterations()){
+        m_selectedIteration = m_totalIterations;
+    } else if (iterationNumber < 0){
+        m_selectedIteration = 1;
+    } else {
+        m_selectedIteration = iterationNumber;
+    }
+
+    if(m_totalIterations == 0){
+        m_selectedIteration = 0;
+    }
 }
 
 void UserDefinedInit::initialise()
@@ -138,6 +220,8 @@ void UserDefinedInit::initialise()
 
     TP_defineSetSize(0);
     m_filePath = "";
+    m_selectedIteration = 0;
+    m_totalIterations = 0;
 }
 
 } // namespace Operators

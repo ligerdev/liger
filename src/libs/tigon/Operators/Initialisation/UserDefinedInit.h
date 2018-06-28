@@ -17,6 +17,8 @@
 #define USERDEFINEDINIT_H
 #include <tigon/tigon_global.h>
 #include <tigon/Operators/Initialisation/IInitialisation.h>
+#include <tigon/Utils/TigonIOUtils.h>
+#include <tigon/Utils/JsonUtils.h>
 
 namespace Tigon {
 namespace Operators {
@@ -45,6 +47,12 @@ public:
     TString initialSetFilePath() const;
     void defineInitialSetFromFile(const TString& file);
 
+    int totalIterations();
+    void defineTotalIterations();
+    void defineTotalIterations(const int& unusedIterationNumber);
+    int selectedIteration();
+    void defineSelectedIteration(const int& iterationNumber);
+
     // Information about the node
     TString     name();
     TString     description();
@@ -54,10 +62,19 @@ protected:
 
 private:
     void initialise();
+    JsonArray getSinglePopArray();
+    JsonArray getSelectedIterationPopArray();
+    JsonArray getEvaluationsArray();
+    JsonArray getSingleSolutionArray();
+    void getJsonObjectFromJsonString();
+
+    void getSolutionsFromArray(JsonArray jsonArray);
+
     TString      m_filePath;
     TString      m_jsonString;
     int          m_selectedIteration;
     int          m_totalIterations;
+    JsonObject   m_jsonObj;
 };
 
 } // namespace Operators

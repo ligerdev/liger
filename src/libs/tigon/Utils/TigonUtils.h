@@ -89,15 +89,21 @@ inline bool isInInterval(double val, double lb, double ub)
 
 // Sort a TVector and return the sorted indices in a separate TVector
 template <typename T>
-TVector<int> indSort(const TVector<T>& v)
+TVector<int> indSort(const TVector<T>& v, bool isAscendingOrder=true)
 {
     // initialize original index locations
     TVector<int> idx(v.size());
     std::iota(idx.begin(), idx.end(), 0);
 
     // sort indexes based on comparing values in v
-    std::sort(idx.begin(), idx.end(),
-         [&v](int i1, int i2) {return v[i1] < v[i2];});
+    if(isAscendingOrder) {
+        std::sort(idx.begin(), idx.end(),
+             [&v](int i1, int i2) {return v[i1] < v[i2];});
+    }
+    else {
+        std::sort(idx.begin(), idx.end(),
+             [&v](int i1, int i2) {return v[i1] > v[i2];});
+    }
 
     return idx;
 }

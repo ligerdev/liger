@@ -326,16 +326,12 @@ const int   DefaultNeighbourhoodSize(5);
 const int   DefaultMaxNumberReplacements(2);
 const double DefaultReplacementProbability(0.1);
 
-// sParEGO
+// ParEGO
 const double   UseDefaultNeighbourhoodRadius(-1.0);
 const double   KDEBandwithRatio(0.1);
 const double   PerturbationRadiusByNeighbourhoodRadius(0.5);
 const double   DefaultNeighbourhoodRadius(0.1);
-const double   DefaultsParEGOInitPerturbationRatio(0.5);
 const TString  SampleSizes("Sample sizes");  //multipack key
-
-// InterwovenSystemHandler
-const int DefaultNumberPointsForKDE(100);
 
 enum ConfidenceInSampleType {
     UnchangedDistribution,

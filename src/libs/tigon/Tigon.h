@@ -75,6 +75,8 @@
 #include <tigon/Representation/Functions/DTLZ/DTLZProblems.h>
 #include <tigon/Representation/Functions/DTLZ/DTLZ1.h>
 #include <tigon/Representation/Functions/DTLZ/DTLZ2.h>
+#include <tigon/Representation/Functions/DTLZ/DTLZ5_2.h>
+#include <tigon/Representation/Functions/DTLZ/DTLZ5_3.h>
 #include <tigon/Representation/Functions/KrigingSurrogate.h>
 #include <tigon/Representation/Functions/ExpectedImprovement.h>
 #include <tigon/Representation/Functions/SingleObjective/Alpine2.h>
@@ -264,6 +266,9 @@
 #include <tigon/Utils/KernelDensityEstimation.h>
 #include <tigon/Utils/IElementUtils.h>
 #include <tigon/Utils/JsonUtils.h>
+#include <tigon/Utils/CorrelationMatrix.h>
+#include <tigon/Utils/ObjectiveReduction.h>
+
 
 // Exception
 #include <tigon/ExceptionHandling/TException.h>

@@ -27,13 +27,11 @@ class LIGER_TIGON_EXPORT Validation : public IEvaluator
     HANDLE_READ_PROPERTIES_BEGIN(IEvaluator)
     READ(NEvaluations, TP_nEvaluations)
     READ(OperateOnFinal, TP_operateOnFinal)
-    READ(DefineEvaluated, TP_defineEvaluated)
     HANDLE_READ_PROPERTIES_END
 
     HANDLE_WRITE_PROPERTIES_BEGIN(IEvaluator)
     WRITE(NEvaluations, int, TP_defineNEvaluations)
     WRITE(OperateOnFinal, bool, TP_defineOperateOnFinal)
-    WRITE(DefineEvaluated, bool, TP_defineDefineEvaluated)
     HANDLE_WRITE_PROPERTIES_END
 
     DECLARE_CLASS(Tigon::Operators::Validation)
@@ -46,12 +44,8 @@ public:
     // Properties
     void TP_defineNEvaluations(int    n);
     int  TP_nEvaluations()         const;
-
     void TP_defineOperateOnFinal(bool o);
     bool TP_operateOnFinal()       const;
-
-    void TP_defineDefineEvaluated(bool o);
-    bool TP_defineEvaluated()       const;
 
     void evaluateNode();
 
@@ -59,13 +53,10 @@ public:
     TString     name();
     TString     description();
 
-protected:
-    void  initialise();
-
 private:
+    void  initialise();
     int   m_nEvaluations;
     bool  m_operateOnFinal;
-    bool  m_defineEvaluated;
 };
 
 } // namespace Operators

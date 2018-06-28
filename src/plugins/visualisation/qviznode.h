@@ -22,6 +22,8 @@
 #include <tigon/tigon_global.h>
 #include <tigon/tigonconstants.h>
 
+#include <visualisation/iterationinteruptor.h>
+
 #include <QVector>
 
 QT_BEGIN_NAMESPACE
@@ -65,24 +67,24 @@ public:
     void setupInteractions(IProcessNode *node);
     void dataUpdatedByEngine();
 
+    void setupInSyncCheckbox(QString checkboxStyle);
+    void setupRecordGoalsCheckbox(QString checkboxStyle);
+    void setupShowPrefsCheckbox(QString checkboxStyle);
+    void setupNonPertientCheckbox(QString checkboxStyle);
+    void setupInfeasibleCheckbox(QString checkboxStyle);
+    void setupDominatedCheckbox(QString checkboxStyle);
+
 signals:
     void requestToUpdateDisplayedSolutions(const QMap<QString, QVector<double>> & dataMap);
     void requestToReset();
 
 protected slots:
     void refreshPlotRequested();
-
-    /*!
-     * \brief This slot is triggered when requestToUpdateDisplayedSolutions signal
-     * is received.
-     * \param dataMap
-     */
     void autoBrushPlot(const QMap<QString, QVector<double>> & dataMap);
     virtual void updateRobustness(const QStringList& indicators,
                                   const QVector<qreal>& parameters);
 
 private slots:
-    bool isRefreshable();
     void refreshPlot();
     void receivedBrushedBounds(int index, qreal lb, qreal ub);
     void updateGoal(int index, qreal lb, qreal ub);
@@ -90,15 +92,15 @@ private slots:
     void saveAllSolutions();
     void selectSetsToDisplay(const QString & setName);
     void selectSetsComboPopup();
+    void selectIterComboPopup();
+
     // activated by pushbuttons
     void filterBrushedSolutions();
     void applyFilters();
-    void filterNonDominated();
-    void filterFeasible();
-    void filterPertinent();
 
     void resetBrushedButton();
-    void updateTrackingInterval(const QString& interval);
+    void updateTimedTrackingInterval(const QString& interval);
+    void updateIterationTrackingInterval(const QString& interval);
     void resetWidget();
     void inSyncCheckboxUpdate(bool insync);
     void recordGoals(bool toggled);
@@ -111,12 +113,23 @@ protected:
     virtual void customiseWidget(VisualisationWidget* widget) = 0;
 
 private:
-    void setWidget(VisualisationWidget* widget);
+    void setupWidget(VisualisationWidget* widget);
+    void setupTimedTracking();
+    void setupIterationTracking();
+    void setupIterationSelection();
+    void setupSetSelection();
+    void setupInSync(QString checkboxStyle);
+    void setupSaveAlllSolutionsFileOption();
+    void setupSaveBrushedSolutionsFileOption();
+    void setupZoomToBrushedButton();
+
+    void initializeWidgetData();
+    void initializeWidgetDisplay();
     QString getSaveFileName(const QString &title = QString("Save Solutions"));
     bool saveToFile(const QString &file,
                     Tigon::Representation::ISet* solset);
     void setDataMaps();
-    void setSelectedIndices();
+    void resetSelectedVariablesToDisplay();
     void setData();
     void extractNamesAndCategories();
     void extractGoalsAndThresholds();
@@ -126,15 +139,25 @@ private:
 
     void displaySet(Tigon::Representation::ISet* displayedSet);
 
-    ///\brief if there is no unique set to select, selectedSet is set(0)
-    void setSelectedSet(Tigon::Representation::ISet* selectedSet);
-    void setFilteredSet(Tigon::Representation::ISet* filteredSet);
     void updateFilteredSetFromBrushing();
     void setSelectSetsList();
+    void setAvailableIterationList();
     void resetButtons();
+
+    void selectIterationSet(int iterationNumber);
+    void filterNonDominated();
+    void filterFeasible();
+    void filterPertinent();
+    void setSelectedSet(Tigon::Representation::ISet* selectedSet);
+    void setFilteredSet(Tigon::Representation::ISet* filteredSet);
 
     void syncBrushing();
     void syncNetworkBrushing();
+
+    bool isRefreshable();
+    bool isInitialized();
+    bool areVariablesToDisplaySelected();
+    bool isInSync();
 
     QVector<qreal> getBoxplotEntry(Tigon::Representation::IElementSPtr elm,
                                    Tigon::OptimizationType type);
@@ -147,17 +170,23 @@ private:
     Tigon::Representation::ISet* m_selectedSet;
     Tigon::Representation::ISet* m_filteredSet;
     Tigon::Representation::ISet* m_displayedSet;
+
     QComboBox*   m_selectSetsCombo;
     QStringList  m_selectSetsOptions;
     QPushButton* m_toggleBrushedButton;
     QCheckBox*   m_toggleDominatedButton;
-    QCheckBox*   m_toggleFeasibleButton;
-    QCheckBox*   m_togglePertinentButton;
+    QCheckBox*   m_toggleInFeasibleButton;
+    QCheckBox*   m_toggleNonPertinentButton;
     QCheckBox*   m_toggleDispPreferencesButton;
     bool         m_isInSync;
     bool         m_recordGoals;
     QTimer*      m_timer;
+    IterationInteruptor* m_iterationInteruptor;
+
     bool         m_refreshRequested;
+    int          m_selectedIteration;
+
+    QComboBox* m_iterationOptions;
 };
 }
 #endif // QVIZNODE_H

@@ -13,8 +13,8 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#ifndef ZDT1_H
-#define ZDT1_H
+#ifndef DTLZ5_2_H
+#define DTLZ5_2_H
 
 #include <tigon/Representation/Functions/IFunction.h>
 #include <tigon/tigon_global.h>
@@ -22,13 +22,13 @@
 namespace Tigon {
 namespace Representation {
 
-class LIGER_TIGON_EXPORT ZDT1 : public IFunction
+class LIGER_TIGON_EXPORT DTLZ5_2 : public IFunction
 {
-    DECLARE_CLASS(Tigon::Representation::ZDT1)
+    DECLARE_CLASS(Tigon::Representation::DTLZ5_2)
 public:
-    ZDT1();
-    ZDT1(const ZDT1& func);
-    ~ZDT1();
+    DTLZ5_2();
+    DTLZ5_2(const DTLZ5_2& func);
+    ~DTLZ5_2();
 
     void evaluate(const TVector<IElementSPtr> &inputs,
                   const TVector<IElementSPtr> &outputs);
@@ -41,4 +41,4 @@ private:
 } // namespace Representation
 } // namespace Tigon
 
-#endif // ZDT1_H
+#endif // DTLZ5_2_H

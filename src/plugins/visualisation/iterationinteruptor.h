@@ -13,32 +13,37 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#ifndef ZDT1_H
-#define ZDT1_H
+#ifndef ITERATIONINTERUPTOR_H
+#define ITERATIONINTERUPTOR_H
 
-#include <tigon/Representation/Functions/IFunction.h>
-#include <tigon/tigon_global.h>
+#include <visualisation/visualisation_global.h>
+#include <visualisation/visualisationconstants.h>
 
-namespace Tigon {
-namespace Representation {
+#include <QObject>
 
-class LIGER_TIGON_EXPORT ZDT1 : public IFunction
+namespace Visualisation {
+class VISUALISATION_EXPORT IterationInteruptor : public QObject
 {
-    DECLARE_CLASS(Tigon::Representation::ZDT1)
-public:
-    ZDT1();
-    ZDT1(const ZDT1& func);
-    ~ZDT1();
+    Q_OBJECT
 
-    void evaluate(const TVector<IElementSPtr> &inputs,
-                  const TVector<IElementSPtr> &outputs);
+public:
+    IterationInteruptor();
+    IterationInteruptor(int iterationToInterupt);
+    ~IterationInteruptor();
+
+    void setInteruptionIteration(int iterationToInterupt);
+    void updateIteration(int currentIteration);
+
+signals:
+    void iterationReached();
 
 private:
-    void defineInputPrpts();
-    void defineOutputPrpts();
+    bool isIterationToInteruptReached();
+
+    int m_iterationToInterupt;
+    int m_iterationToResetCounter;
+    int m_lastIterationReceived;
 };
+}
 
-} // namespace Representation
-} // namespace Tigon
-
-#endif // ZDT1_H
+#endif // ITERATIONINTERUPTOR_H

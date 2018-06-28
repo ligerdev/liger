@@ -19,10 +19,15 @@
 #include <tigon/tigon_global.h>
 namespace DTLZ {
 
-Tigon::TVector<double > LIGER_TIGON_EXPORT DTLZ1Modified(const Tigon::TVector<double >& x, int M);
+Tigon::TVector<double> LIGER_TIGON_EXPORT DTLZ1Modified(
+        const Tigon::TVector<double >& x, int M);
 
-Tigon::TVector<double > LIGER_TIGON_EXPORT DTLZ1(const Tigon::TVector<double >& x, int M);
-Tigon::TVector<double > LIGER_TIGON_EXPORT DTLZ2(const Tigon::TVector<double >& x, int M);
+Tigon::TVector<double> LIGER_TIGON_EXPORT DTLZ1(
+        const Tigon::TVector<double >& x, int M);
+Tigon::TVector<double> LIGER_TIGON_EXPORT DTLZ2(
+        const Tigon::TVector<double >& x, int M);
+Tigon::TVector<double> LIGER_TIGON_EXPORT DTLZ5_I(
+        const Tigon::TVector<double>& x, int I, int N);
 
 // TODO: implement these
 //Tigon::TVector<double > DTLZ3(const Tigon::TVector<double >& x, int M);
