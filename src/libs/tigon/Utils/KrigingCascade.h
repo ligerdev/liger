@@ -17,7 +17,10 @@
 #define KRIGINGCASCADE_H
 #include <tigon/tigon_global.h>
 #include <tigon/tigonconstants.h>
+DISABLE_WARNINGS
 #include <eigen/Eigen>
+ENABLE_WARNINGS
+
 
 namespace Tigon {
 class Kriging;

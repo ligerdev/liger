@@ -18,7 +18,9 @@
 #include <tigon/tigonconstants.h>
 #include <tigon/ExceptionHandling/TException.h>
 
+DISABLE_WARNINGS
 #include <eigen/Core>
+ENABLE_WARNINGS
 
 using namespace Eigen;
 

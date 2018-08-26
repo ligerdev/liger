@@ -543,7 +543,6 @@ void QVizNode::selectIterationSet(int iterationNumber)
             while(!jarray.empty()){
                 JsonObject jObj = jarray.takeAt(0).toObject();
                 IMappingSPtr imap = IMappingSPtr(new IMapping(m_ipset->problem()));
-                bool jsonOK = fromJSonObj(imap, jObj);
                 tempSet->append(imap);
             }
             setSelectedSet(tempSet);

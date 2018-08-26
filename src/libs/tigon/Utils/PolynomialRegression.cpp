@@ -15,7 +15,10 @@
 ****************************************************************************/
 #include <tigon/Utils/PolynomialRegression.h>
 #include <tigon/tigonconstants.h>
+
+DISABLE_WARNINGS
 #include <eigen/Core>
+ENABLE_WARNINGS
 
 using namespace Eigen;
 

@@ -29,6 +29,8 @@ unix {
     #QMAKE_CXXFLAGS += -Werror
     QMAKE_CXXFLAGS_DEBUG   += -O0
     QMAKE_CXXFLAGS_RELEASE += -O3
+    # Disable certain warnings for now
+    QMAKE_CXXFLAGS += -Wno-sign-compare -Wno-int-in-bool-context -Wno-ignored-attributes
 }
 
 PRECOMPILED_HEADER = $$PWD/tigon_pch.h

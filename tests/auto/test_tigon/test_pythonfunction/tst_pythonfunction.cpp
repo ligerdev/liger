@@ -29,8 +29,8 @@ class tst_pythonfunction : public QObject
 public:
 
 private slots:
-    void initTestCase();
 #ifdef PYTHON_API
+    void initTestCase();
     void constructors();
     void definePath();
     void evaluate();
@@ -43,18 +43,14 @@ private slots:
 #endif
 };
 
+#ifdef PYTHON_API
 TString TestBinPath;
 
 void tst_pythonfunction::initTestCase()
 {
-#ifdef PYTHON_API
     TestBinPath = QCoreApplication::applicationDirPath().toStdString();
-#else
-    QEXPECT_FAIL("", "Python not found", Abort);
-#endif
 }
 
-#ifdef PYTHON_API
 void tst_pythonfunction::constructors()
 {
     PythonFunction pyfunc;

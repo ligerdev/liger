@@ -24,7 +24,9 @@
 #include <tigon/Utils/TigonUtils.h>
 #include <tigon/ExceptionHandling/TException.h>
 
+DISABLE_WARNINGS
 #include <eigen/Eigenvalues>
+ENABLE_WARNINGS
 
 using Tigon::Representation::ISet;
 using Tigon::Representation::IMappingSPtr;

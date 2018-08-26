@@ -21,10 +21,12 @@
 
 #include <tigon/Tigon.h>
 
+DISABLE_WARNINGS
 #include <eigen/Core>
-#include <boost/math/special_functions/factorials.hpp>
 #include <eigen/bench/BenchTimer.h>
+ENABLE_WARNINGS
 
+#include <boost/math/special_functions/factorials.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/lexical_cast.hpp>

@@ -17,8 +17,10 @@
 #define KRIGING_H
 #include <tigon/tigon_global.h>
 #include <tigon/tigonconstants.h>
-#include <eigen/Eigen>
 #include <tigon/Utils/KrigingVariogram.h>
+DISABLE_WARNINGS
+#include <eigen/Eigen>
+ENABLE_WARNINGS
 
 namespace Tigon {
 class KrigingVariogram;

@@ -29,9 +29,42 @@
 #  define TIGON_FUNCTION_EXPORT extern "C" BOOST_SYMBOL_EXPORT
 #endif
 
+/// Macro used to to disable the warnings from external library.
+#if defined _MSC_VER
+#define DISABLE_WARNINGS __pragma(warning(push)) \
+    __pragma(warning(disable: 4503)) \
+    __pragma(warning(disable: 4702)) \
+    __pragma(warning(disable: 4996)) \
+    __pragma(warning(disable: 4100)) \
+    __pragma(warning(disable: 4127)) \
+    __pragma(warning(disable: 4244)) \
+    __pragma(warning(disable: 4267)) \
+    __pragma(warning(disable: 4512)) \
+    __pragma(warning(disable: 4510)) \
+    __pragma(warning(disable: 4610))
+#define ENABLE_WARNINGS __pragma(warning(pop))
+#elif defined __GNUC__
+#define DISABLE_WARNINGS                                                       \
+    _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wall\"") \
+    _Pragma("GCC diagnostic ignored \"-Wextra\"")                              \
+    _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")                   \
+    _Pragma("GCC diagnostic ignored \"-Wignored-qualifiers\"")                 \
+    _Pragma("GCC diagnostic ignored \"-Wunused-local-typedefs\"")              \
+    _Pragma("GCC diagnostic ignored \"-Wignored-attributes\"")                 \
+    _Pragma("GCC diagnostic ignored \"-Wint-in-bool-context\"")                \
+    _Pragma("GCC diagnostic ignored \"-Wattributes\"")                         \
+    _Pragma("GCC diagnostic ignored \"-Wmisleading-indentation\"")
+#define ENABLE_WARNINGS _Pragma("GCC diagnostic push")
+#else
+#define DISABLE_WARNINGS
+#define ENABLE_WARNINGS
+#endif
+
 /// Type Defs
 #include <complex>
+DISABLE_WARNINGS
 #include <eigen/Eigen>
+ENABLE_WARNINGS
 #include <tigon/Core/TVector.h>
 #include <tigon/Core/TString.h>
 #include <tigon/Core/TMap.h>
