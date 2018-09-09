@@ -2,9 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 ;#define MyAppName "Liger"
-;#define MyAppVersion "0.6.0"
+;#define MyAppVersion "1.1.0"
 ;#define MyAppPublisher "The University of Sheffield"
-;#define MyAppURL "http://ligeropt.sourceforge.net/"
+;#define MyAppURL "https://github.com/ligerdev/liger"
 ;#define MyAppExeName "liger.exe"
 
 ;#define ProjectDir "C:\Users\steve\Documents\SmartGit_Repos\liger"
@@ -50,7 +50,7 @@ Source: "{#BuildDir}\bin\liger.exe"; DestDir: "{app}\bin"; Flags: ignoreversion
 Source: "{#BuildDir}\bin\*"; DestDir: "{app}\bin"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#BuildDir}\lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#BuildDir}\share\*"; DestDir: "{app}\share"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "{#BuildDir}\bin\vcredist_x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "{#BuildDir}\bin\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -60,7 +60,7 @@ Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tas
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tasks: quicklaunchicon
 
 [Run]
-Filename: "{tmp}\vcredist_x64.exe"; Check: VCRedistNeedsInstall; Flags: postinstall nowait skipifsilent
+Filename: "{tmp}\vc_redist.x64.exe"; Check: VCRedistNeedsInstall; Flags: postinstall nowait skipifsilent
 
 [Registry]
 Root: HKCR; Subkey: ".lgr"; ValueType: string; ValueName: ""; ValueData: "LigerWorkflowFile"; Flags: uninsdeletevalue
