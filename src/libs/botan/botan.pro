@@ -11,6 +11,8 @@ HEADERS += $$PWD/botan.h \
     botan_global.h
 
 CONFIG -= qt
+CONFIG += warn_off
+
 equals(USE_SYSTEM_BOTAN, 1) {
     DEFINES += USE_SYSTEM_BOTAN
     CONFIG += link_pkgconfig

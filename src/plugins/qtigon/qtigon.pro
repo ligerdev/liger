@@ -11,7 +11,7 @@ include(../../libs/boost.pri)
 include(../../ligerplugin.pri)
 
 linux-* {
-
+    QMAKE_CXXFLAGS += -Wno-sign-compare
 }
 
 macx {
@@ -19,7 +19,7 @@ macx {
 }
 
 win32 {
-
+    QMAKE_CXXFLAGS += -wd4267
 }
 
 SOURCES += \ 

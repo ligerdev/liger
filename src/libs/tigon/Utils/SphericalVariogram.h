@@ -3,7 +3,11 @@
 #include <tigon/tigon_global.h>
 #include <tigon/tigonconstants.h>
 #include <tigon/Utils/KrigingVariogram.h>
+
+DISABLE_WARNINGS
 #include <eigen/Dense>
+ENABLE_WARNINGS
+
 #include <boost/numeric/conversion/bounds.hpp>
 #include <boost/limits.hpp>
 

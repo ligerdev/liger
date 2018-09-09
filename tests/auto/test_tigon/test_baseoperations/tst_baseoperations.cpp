@@ -21,10 +21,12 @@
 #include <iomanip>
 
 #include <tigon/Tigon.h>
-#include <eigen/bench/BenchTimer.h>
-
 #include <tigon/Core/TString.h>
 #include <tigon/Core/TObject.h>
+
+DISABLE_WARNINGS
+#include <eigen/bench/BenchTimer.h>
+ENABLE_WARNINGS
 
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>

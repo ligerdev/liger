@@ -18,8 +18,10 @@
 #include <tigon/tigon_global.h>
 
 #define FANN_NO_DLL
+DISABLE_WARNINGS
 #include <fann/doublefann.h>
 #include <fann/fann_cpp.h>
+ENABLE_WARNINGS
 
 namespace Tigon {
 namespace Representation {

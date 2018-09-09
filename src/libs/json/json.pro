@@ -7,6 +7,7 @@ dll {
 }
 
 CONFIG -= qt
+CONFIG += warn_off
 
 HEADERS += \
     json.h \

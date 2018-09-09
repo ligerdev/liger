@@ -15,7 +15,10 @@
 ****************************************************************************/
 #include <tigon/Utils/RBFInterpolator.h>
 #include <tigon/Utils/RBFBasis.h>
+
+DISABLE_WARNINGS
 #include <eigen/Eigen>
+ENABLE_WARNINGS
 
 namespace Tigon {
 

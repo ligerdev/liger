@@ -5,6 +5,7 @@ dll {
 }
 
 CONFIG -= qt
+CONFIG += warn_off
 
 HEADERS += \
     tinyxml2.h

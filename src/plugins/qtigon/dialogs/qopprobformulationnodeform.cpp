@@ -474,13 +474,11 @@ void QOpProbFormulationNodeForm::variableToParameter(const InputPrivateData &old
     TVector<bool> isExternal;
     TVector<ElementProperties> pPrpts = problem->pPrpts();
     counter = 0;
-    int idx = -1;
     for(int i=0; i<pPrpts.size(); i++) {
         if(pPrpts[i].ID() == id) {
             // Transfered from variable
             parameterVector.push_back(IElementSPtr(new IElement(data.value)));
             isExternal.push_back(data.isExternal());
-            idx = parameterVector.size() - 1;
         } else {
             // Parameter still parameter
             parameterVector.push_back(m_prob->parameterVector()[counter]);

@@ -31,11 +31,9 @@ double scalarisingSpace(const TVector<TVector<double > >& objectiveSet,
 
     TVector<double> normObj;
     TVector<double> cost(n);
-    double minCost = 0;
     double ret = 0;
     // Loop through all directions
     for(int nDir=0; nDir<refSet.size(); nDir++) {
-        minCost = Tigon::Highest;
         for (int i=0; i<n; i++) {
             // Normalise objective vectors according to ideal and anti-ideal vectors
             normObj = normaliseToUnitBox(objectiveSet[i], ideal, antiIdeal);
@@ -90,11 +88,9 @@ double scalarisingSpaceRobust(const TVector<TVector<double> >& objectiveSet,
 
     TVector<double> cost_real(n);
     TVector<double> cost_inferred(n);
-    double minCost = 0;
     double ret = 0;
     // Loop through all directions
     for(int nDir=0; nDir<refSet.size(); nDir++) {
-        minCost = Tigon::Highest;
         for (int i=0; i<n; i++) {
             cost_real[i] = weightedChebyshev(refSet[nDir], normObj[i]);
         }
@@ -166,11 +162,9 @@ double scalarisingSpaceRobust(const TVector<TVector<double> >& objectiveSet,
 
     TVector<double> cost_real(n);
     TVector<double> cost_inferred(n);
-    double minCost = 0;
     double ret = 0;
     // Loop through all directions
     for(int nDir=0; nDir<refSet.size(); nDir++) {
-        minCost = Tigon::Highest;
         for (int i=0; i<n; i++) {
             cost_real[i] = weightedChebyshev(refSet[nDir], normObj[i]);
         }
@@ -220,11 +214,9 @@ double scalarisingSpaceRandom(const TVector<TVector<TVector<double> > >& objecti
     int nSampSize = objectiveSet[0][0].size();
     double cost_real = 0;
     TVector<double> cost_inferred(n);
-    double minCost = 0;
     double ret = 0;
     // Loop through all directions
     for(int nDir=0; nDir<refSet.size(); nDir++) {
-        minCost = Tigon::Highest;
         // Loop through all solutions
         SampledDistribution samp;
         for (int i=0; i<n; i++) {            

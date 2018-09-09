@@ -17,7 +17,10 @@
 #include <QDir>
 #include <iostream>
 #include <tigon/Tigon.h>
+
+DISABLE_WARNINGS
 #include <eigen/bench/BenchTimer.h>
+ENABLE_WARNINGS
 
 using namespace Tigon;
 using namespace Tigon::Representation;
