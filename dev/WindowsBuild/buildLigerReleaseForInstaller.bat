@@ -17,11 +17,11 @@ REM SET BOOST_PYTHON_LIB=C:\Boost\lib\vc141
 
 REM SET PYTHON_DLL=C:\Windows\System32\python27.dll
 REM SET VCBATCHDIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build
-REM SET COMPILER_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.12.25827\bin\Hostx64\x64
+REM SET COMPILER_DIR=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.15.26726\bin\Hostx64\x64
 REM Inputs For Inno Setup Builder
 REM SET INNO_SETUP_DIR=C:\Program Files (x86)\Inno Setup 5
 REM SET EXEC_NAME=liger.exe
-REM SET APPURL=http://ligeropt.sourceforge.net/
+REM SET APPURL=https://github.com/ligerdev/liger
 REM SET PUBLISHER=The University of Sheffield
 REM SET APPNAME=Liger
 REM =======================================================================
@@ -45,7 +45,7 @@ CD /D %BUILDDIR%
 qmake.exe "CONFIG+=NO_TESTS" "%LIGERSRC%\liger.pro" -r -spec win32-msvc
 CALL "%VCBATCHDIR%\vcvarsall.bat" amd64
 CD /D %BUILDDIR%
-jom.exe -j12
+jom.exe -j8
 
 RD  /S /Q "%BUILDDIR%\src"
 RD  /S /Q "%BUILDDIR%\tests"
