@@ -1131,6 +1131,7 @@ void tst_tigonutilities::test_preferability()
 {
     /// solution a is preferred to b:
     /// solutions a and b do not meet the goal for the first objective
+    /// both solutions meet the goal for the second and third objective
     /// a dominates b with respect to the first objective
     TVector<double> a = {1.5,0.5,0.5};
     TVector<double> b = {2.0,0.5,0.5};
@@ -1163,7 +1164,7 @@ void tst_tigonutilities::test_preferability()
 
     /// solution a is equivalent to b:
     /// both solutions meet the goals
-    /// a does not dominate b (or vice-versa) with respect to any objective
+    /// a and b are non-dominated
     a = {0.5,0.5,0.4};
     b = {0.5,0.3,0.5};
     g = {1.0,1.0,1.0};
@@ -1175,12 +1176,38 @@ void tst_tigonutilities::test_preferability()
     /// solution a is equivalent to b:
     /// solution a does not meet the first objective goal, but solution b does
     /// solution b does not meet the second objective goal, but solution a does
+    /// a and b are non-dominated
     a = {1.1,0.9,0.9};
     b = {0.9,1.1,0.9};
     g = {1.0,1.0,1.0};
 
     res = preferability(a,b,g);
     TCOMPARE(res, incomparable);
+
+
+    /// solution a is preferred to b:
+    /// solution b does not meet the first objective goal, but solution a does
+    /// the goals for the second and third objectives have not been set
+    /// solution b is better than a in the second and third objective
+    a = {0.9,2.0,2.0};
+    b = {1.1,1.0,1.0};
+    g = {1.0, Tigon::Lowest, Tigon::Lowest};
+
+    res = preferability(a,b,g);
+    TCOMPARE(res, true);
+
+
+    /// solution a is preferred to b:
+    /// solution b does not meet the first and third objective goal,
+    ///  but solution a does
+    /// the goal for the second objective has not been set
+    /// solution b is better than a in the second objective
+    a = {0.9,2.0,1.0};
+    b = {1.1,1.0,2.0};
+    g = {1.0, Tigon::Lowest, 1.5};
+
+    res = preferability(a,b,g);
+    TCOMPARE(res, true);
 }
 
 void tst_tigonutilities::test_truncateIntoFeasibleDomain()
