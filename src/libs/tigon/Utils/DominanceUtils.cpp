@@ -696,16 +696,20 @@ tribool preferability(const TVector<double> &a,
     int bclass=0;
 
     for(int k=0; k<Nobj; k++) {
-        if(a[k]>g[k]) {
-            aclass=1;
-            break;
+        if(!areDoublesEqual(g[k],Tigon::Lowest)) { // only for set goals
+            if(a[k] > g[k]) {
+                aclass=1;
+                break;
+            }
         }
     }
 
     for(int k=0; k<Nobj; k++) {
-        if(b[k]>g[k]) {
-            bclass=1;
-            break;
+        if(!areDoublesEqual(g[k],Tigon::Lowest)) { // only for set goals
+            if(b[k] > g[k]) {
+                bclass=1;
+                break;
+            }
         }
     }
 
@@ -720,21 +724,23 @@ tribool preferability(const TVector<double> &a,
     AbetterB = AequalB = BbetterA = BequalA = 1;
 
     for(int k=0; k<Nobj; k++) {
-        if(a[k]>g[k]) {
-            if(weakDom) {
-                AbetterB *= (a[k] <= b[k]);
-            } else {
-                AbetterB *= (a[k] < b[k]);
+        if(!areDoublesEqual(g[k],Tigon::Lowest)) { // only for set goals
+            if(a[k] > g[k]) { // a does not meet the goal
+                if(weakDom) {
+                    AbetterB *= (a[k] <= b[k]);
+                } else {
+                    AbetterB *= (a[k] < b[k]);
+                }
+                AequalB  *= (a[k] == b[k]);
             }
-            AequalB  *= (a[k] == b[k]);
-        }
-        if(b[k]>g[k]) {
-            if(weakDom) {
-                BbetterA *= (b[k] <= a[k]);
-            } else {
-                BbetterA *= (b[k] < a[k]);
+            if(b[k] > g[k]) { // b does not meet the goal
+                if(weakDom) {
+                    BbetterA *= (b[k] <= a[k]);
+                } else {
+                    BbetterA *= (b[k] < a[k]);
+                }
+                BequalA  *= (b[k] == a[k]);
             }
-            BequalA  *= (b[k] == a[k]);
         }
     }
 
