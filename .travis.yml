@@ -1,12 +1,32 @@
 language: cpp
 
 sudo: required
-dist: trusty
 
 matrix:
   include:
+    - name: "MacOS build apple clang 10.0.0"
+      os: osx
+      osx_image: xcode10
+      env:
+        - COMPILER_SPEC=macx-clang
+        - TEST_SCRIPT=run_all_unit_tests.sh
+      install:
+        # Qt5.10.1 
+        - brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/8d4d48f0bb552b7b107119aeef59f141ce1f72c3/Formula/qt.rb
+        - export PATH="/usr/local/opt/qt/bin:$PATH"
+        
+        # Boost 1.67.0_1
+        - brew install boost
+        - export BOOST_INCLUDE="/usr/local/Cellar/boost/1.67.0_1/include"
+        - export BOOST_LIB="/usr/local/Cellar/boost/1.67.0_1/lib"
+
+        # python and modules
+        - brew install python3
+        - python -m pip install tabulate 
+
     - name: "Linux build g++7.3"
       os: linux
+      dist: trusty
       addons:
         apt:
           sources:
@@ -18,7 +38,10 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         - COMPILER_SPEC=linux-g++
-        - BOOST_VERSION=1_65_1
+        - BOOST_SRC=boost_1_65_1.tar.gz
+        - BOOST_URL=https://dl.bintray.com/boostorg/release/1.65.1/source
+        - BOOST_TOOLSET=gcc
+        - TEST_SCRIPT=run_all_unit_tests_linux.sh
       before_install:
         - eval "${MATRIX_EVAL}"
         - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20
@@ -31,21 +54,21 @@ matrix:
         - source /opt/qt59/bin/qt59-env.sh 
 
         # Boost
-        - wget https://dl.bintray.com/boostorg/release/1.65.1/source/boost_${BOOST_VERSION}.tar.gz
+        - wget ${BOOST_URL}/${BOOST_SRC}
         - mkdir boost
-        - tar --strip-components=1 -xf boost_${BOOST_VERSION}.tar.gz -C boost
-        - rm -f boost_${BOOST_VERSION}.tar.gz
+        - tar --strip-components=1 -xf ${BOOST_SRC} -C boost
+        - rm -f ${BOOST_SRC}
         - cd boost
         - ./bootstrap.sh
-        - ./b2 --with-filesystem --with-system link=shared threading=multi toolset=gcc stage
+        - ./b2 --with-filesystem --with-system link=shared threading=multi toolset=${BOOST_TOOLSET} stage
         - export BOOST_INCLUDE="${TRAVIS_BUILD_DIR}/boost"
         - export BOOST_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
-        - cd ${TRAVIS_BUILD_DIR}
-
-        # python and its modules
-        - sudo python -m pip install tabulate
+        
+        # python modules
+        - sudo python -m pip install tabulate 
 
 before_script:
+  - cd ${TRAVIS_BUILD_DIR}
   - mkdir build
   - cd build
   - qmake --version
@@ -56,7 +79,7 @@ before_script:
 script:
   - make -s
   - cd tests/bin
-  - chmod +x run_all_unit_tests_linux.sh
-  - ./run_all_unit_tests_linux.sh
+  - chmod +x ${TEST_SCRIPT}
+  - ./${TEST_SCRIPT}
   - python failure_reporter.py .
 

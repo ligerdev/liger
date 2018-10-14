@@ -43,9 +43,16 @@
     __pragma(warning(disable: 4510)) \
     __pragma(warning(disable: 4610))
 #define ENABLE_WARNINGS __pragma(warning(pop))
+#elif defined __clang__
+#define DISABLE_WARNINGS                          \
+    _Pragma("clang diagnostic push")              \
+    _Pragma("clang diagnostic ignored \"-Wall\"") \
+    _Pragma("clang diagnostic ignored \"-Wextra\"")
+#define ENABLE_WARNINGS _Pragma("clang diagnostic pop")
 #elif defined __GNUC__
 #define DISABLE_WARNINGS                                                       \
-    _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wall\"") \
+    _Pragma("GCC diagnostic push")                                             \
+    _Pragma("GCC diagnostic ignored \"-Wall\"")                                \
     _Pragma("GCC diagnostic ignored \"-Wextra\"")                              \
     _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"")                   \
     _Pragma("GCC diagnostic ignored \"-Wignored-qualifiers\"")                 \
@@ -54,7 +61,7 @@
     _Pragma("GCC diagnostic ignored \"-Wint-in-bool-context\"")                \
     _Pragma("GCC diagnostic ignored \"-Wattributes\"")                         \
     _Pragma("GCC diagnostic ignored \"-Wmisleading-indentation\"")
-#define ENABLE_WARNINGS _Pragma("GCC diagnostic push")
+#define ENABLE_WARNINGS _Pragma("GCC diagnostic pop")
 #else
 #define DISABLE_WARNINGS
 #define ENABLE_WARNINGS

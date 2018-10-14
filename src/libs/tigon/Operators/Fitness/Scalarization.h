@@ -47,7 +47,6 @@ private:
     TString   m_name;
     TString   m_description;
 
-    int       m_refSetSize;
     TVector<double>             m_weight;
     Tigon::ScalarisationType m_scalarisingFunc;
     double                       m_pNorm;
