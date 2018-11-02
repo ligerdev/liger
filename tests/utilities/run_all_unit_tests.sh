@@ -1,7 +1,7 @@
 rm test_*.log
 for FILE in `find . -name 'test_*' -type f`
 do
-    echo Start ${FILE}; ${FILE} > ${FILE}.log &
+    ${FILE} -silent -xunitxml -o ${FILE}.xml > ${FILE}.log &
 done
 
 while :
@@ -19,8 +19,7 @@ do
 done
 
 echo "Check results"
-for LOG in `find . -name 'test_*.log' -type f`
+for RES in `find . -name 'test_*.xml' -type f`
 do
-    echo ${LOG}
-    cat ${LOG} | tail -2 | head -1
+    cat ${RES} | head -2 | tail -1 | awk '{ print "<" $5 ": "  $3}'
 done

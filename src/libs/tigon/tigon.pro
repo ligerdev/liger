@@ -25,8 +25,14 @@ win32-msvc* {
     QMAKE_CXXFLAGS += -wd4251 -wd4267 -wd4275
 }
 
-unix {
-    #QMAKE_CXXFLAGS += -Werror
+macx-clang {
+    QMAKE_CXXFLAGS_DEBUG   += -O0
+    QMAKE_CXXFLAGS_RELEASE += -O3
+    # Disable certain warnings for now
+    QMAKE_CXXFLAGS += -Wno-sign-compare -Wno-ignored-attributes
+}
+
+linux-g++ {
     QMAKE_CXXFLAGS_DEBUG   += -O0
     QMAKE_CXXFLAGS_RELEASE += -O3
     # Disable certain warnings for now
