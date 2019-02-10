@@ -39,6 +39,7 @@ matrix:
             - g++-7
             - mesa-common-dev
             - libglu1-mesa-dev
+            - python3.5-dev
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         - COMPILER_SPEC=linux-g++
@@ -68,8 +69,13 @@ matrix:
         - export BOOST_INCLUDE="${TRAVIS_BUILD_DIR}/boost"
         - export BOOST_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
         
-        # python modules
+        # config python modules. Leave at the end as this will break apt-get
+        - sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.5 20
+        - sudo update-alternatives --install /usr/bin/python-config python-config /usr/bin/python3.5-config 20
+        - sudo curl https://bootstrap.pypa.io/ez_setup.py -o - | sudo python
+        - sudo easy_install pip
         - sudo python -m pip install tabulate 
+        - ls -la /usr/bin/ | grep python
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}
@@ -79,7 +85,7 @@ before_script:
   - python --version
   - echo BOOST_INCLUDE ${BOOST_INCLUDE}
   - echo BOOST_LIB ${BOOST_LIB}
-  - qmake "DISABLE_PYTHON=yes" ../liger.pro -r -spec ${COMPILER_SPEC} 
+  - qmake ../liger.pro -r -spec ${COMPILER_SPEC} 
 
 script:
   - make -s
@@ -87,4 +93,5 @@ script:
   - chmod +x ${TEST_SCRIPT}
   - ./${TEST_SCRIPT}
   - python failure_reporter.py .
+
 

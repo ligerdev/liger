@@ -26,14 +26,10 @@ REGISTER_IFUNCTION_FACTORY(PythonFunction)
 #include <boost/filesystem.hpp>
 using namespace boost::filesystem;
 
-#include <boost/python.hpp>
-/// \note Include the following header instead of directly include Python.h.
-/// By doing so Boost.Python temporarily undefines _DEBUG when Python.h is
-/// included from boost/python/detail/wrap_python.hpp, which prevents tigon to
-/// link with pythonXX_d.dll - unless BOOST_DEBUG_PYTHON is defined.
-/// If you want “python debugging”, then make sure BOOST_DEBUG_PYTHON is defined.
-#include <boost/python/detail/wrap_python.hpp>
-namespace py = boost::python;
+#include <pybind11/include/pybind11/pybind11.h>
+#include <pybind11/include/pybind11/eval.h>
+
+namespace py = pybind11;
 
 using namespace Json;
 
@@ -63,13 +59,13 @@ py::list IElementVecToPyList(const TVector<TVector<IElementSPtr>> &vec)
 void pyListToIElementSptrVec(const py::list & list,
                              const TVector<IElementSPtr> &vec)
 {
-    py::ssize_t n = boost::python::len(list);
+    py::ssize_t n = py::len(list);
     if(n != vec.size()) {
         return;
     }
 
     for(py::ssize_t i=0; i<n; i++) {
-        double val = py::extract<double>(list[i]);
+        double val = py::cast<double>(list[i]);
         vec[i]->defineValue(val);
     }
     return;
@@ -78,7 +74,7 @@ void pyListToIElementSptrVec(const py::list & list,
 void pyListToIElementSptrVec(const py::list & list,
                              const TVector<TVector<IElementSPtr>> &vec)
 {
-    py::ssize_t n = boost::python::len(list);
+    py::ssize_t n = py::len(list);
     if(n != vec.size()) {
         return;
     }
@@ -123,16 +119,16 @@ void PythonFunction::evaluate(const TVector<IElementSPtr> &inputs,
 
         try{
             ///[] Initialise python env
-            py::object main_module = py::import("__main__");
+            py::object main_module = py::module::import("__main__");
             py::object main_namespace = main_module.attr("__dict__");
 
             ///[] Add python file directory to path
-            py::exec("import sys", main_namespace);
+            py::eval<py::eval_statements>("import sys", main_namespace);
             TString cmd = TString("sys.path.append(\'" + m_directory + "\')");
-            py::exec(cmd.c_str(), main_namespace);
+            py::eval<py::eval_statements>(cmd.c_str(), main_namespace);
 
             ///[] Load python function
-            py::object pymodule  = py::import(m_funcName.c_str());
+            py::object pymodule  = py::module::import(m_funcName.c_str());
             py::object pyfunc    = pymodule.attr(m_funcName.c_str());
 
             ///[] Convert inputs to python list
@@ -143,7 +139,7 @@ void PythonFunction::evaluate(const TVector<IElementSPtr> &inputs,
 
             ///[] Assign the result to output sptr
             pyListToIElementSptrVec(static_cast<py::list>(result), outputs);
-        } catch(boost::python::error_already_set const &){
+        } catch(py::error_already_set const &){
             PyErr_Print();
         }
     }
@@ -167,7 +163,7 @@ void PythonFunction::batchEvaluate(const TVector<TVector<IElementSPtr> > &inputs
 
     try{
         ///[] Initialise python env
-        py::object main_module = py::import("__main__");
+        py::object main_module = py::module::import("__main__");
         py::object main_namespace = main_module.attr("__dict__");
 
         ///[] Add python file directory to path
@@ -176,7 +172,7 @@ void PythonFunction::batchEvaluate(const TVector<TVector<IElementSPtr> > &inputs
         py::exec(cmd.c_str(), main_namespace);
 
         ///[] Load python function
-        py::object pymodule  = py::import(m_funcName.c_str());
+        py::object pymodule  = py::module::import(m_funcName.c_str());
         py::object pyfunc    = pymodule.attr(m_funcName.c_str());
 
         ///[] Convert inputs to python list
@@ -187,7 +183,7 @@ void PythonFunction::batchEvaluate(const TVector<TVector<IElementSPtr> > &inputs
 
         ///[] Assign the result to output sptr
         pyListToIElementSptrVec(static_cast<py::list>(result), outputs);
-    } catch(boost::python::error_already_set const &){
+    } catch(py::error_already_set const &){
         PyErr_Print();
     }
 

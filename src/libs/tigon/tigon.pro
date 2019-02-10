@@ -498,16 +498,6 @@ HEADERS += \
 contains(HAVE_PYTHON, yes) {
   HEADERS += Representation/Functions/Python/PythonFunction.h
   SOURCES += Representation/Functions/Python/PythonFunction.cpp
-
-  win32 {
-      LIBS += -L$$(BOOST_PYTHON_LIB)
-  }
-  macx {
-      LIBS += $$(BOOST_PYTHON_LIB)/libboost_python-mt.dylib
-  }
-  linux-* {
-      LIBS += $$(BOOST_PYTHON_LIB)/libboost_python.so
-  }
 }
 
 # Boost
@@ -533,12 +523,10 @@ win32 {
 
     exists($$(BOOST_LIB)/boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*){
         BOOST_DLLs = $$(BOOST_LIB)/boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* \
-                     $$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* \
-                     $$(BOOST_LIB)/boost_python-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
+                     $$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
     } else : exists($$(BOOST_LIB)/boost_filesystem-vc???-mt-1_*) {
         BOOST_DLLs = $$(BOOST_LIB)/boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG1_* \
-                     $$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG1_* \
-                     $$(BOOST_LIB)/boost_python-vc???-mt-$$BOOST_DEBUG_FLAG1_*
+                     $$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG1_*
     } else {
         message("The Boost libraries were not found.$$escape_expand(\\n) \
                 $$escape_expand(\\t)Check that BOOST_INCLUDE, BOOST_LIB and BOOST_PYTHON_LIB are correctly set in the Project environemt variables.$$escape_expand(\\n) \

@@ -3,3 +3,4 @@ QTC_LIB_DEPENDS += botan
 QTC_LIB_DEPENDS += fann
 QTC_LIB_DEPENDS += json
 QTC_LIB_DEPENDS += tinyxml2
+QTC_LIB_DEPENDS += pybind11

@@ -12,6 +12,7 @@ SUBDIRS   = \
     fann  \
     json  \
     tinyxml2 \
+    pybind11 \
     tigon
 
 # Include matlab plugin

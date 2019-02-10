@@ -50,27 +50,14 @@ bootstrap.bat
 ```
 It will generate a file called project-config.jam. 
 
-To use the Python interface, add the following lines to the end of project-config.jam
-
-```
-using python 
-    : 2.7                           # Version
-    : C:\\Python27\\python.exe      # Python Path
-    : C:\\Python27\\include         # include path
-    : C:\\Python27\\libs            # lib path(s)
-    : <define>BOOST_ALL_NO_LIB=1
-    ;
-```
-
 Now type the following command to build necessary boost libraries 
 ```
-b2 -j4 --with-python --with-filesystem --with-system address-model=64 link=shared threading=multi toolset=msvc variant=release,debug install
+b2 -j4 --with-filesystem --with-system address-model=64 link=shared threading=multi toolset=msvc variant=release,debug install
 ```
 
 * Mac: suggest to use home brew
 ```
     brew install boost
-    brew install boost-python
 ```
 * Linux (Ubuntu): 
 ```
