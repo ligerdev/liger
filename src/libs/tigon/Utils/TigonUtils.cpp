@@ -134,7 +134,7 @@ TVector <int> randomPermutationSampling(int nSamps)
 
 bool isGoalDefined(IElementSPtr goal)
 {
-    return (*goal > goal->minValue());
+    return bool(*goal > goal->minValue());
 }
 
 bool areDoublesEqual(double a, double b)
@@ -146,7 +146,7 @@ bool areDoublesEqual(double a, double b)
 
 bool isThresholdDefined(IElementSPtr threshold)
 {
-    return *threshold < threshold->maxValue();
+    return bool(*threshold < threshold->maxValue());
 }
 
 std::ostream &operator<<(std::ostream &os, ISet * const pop)
