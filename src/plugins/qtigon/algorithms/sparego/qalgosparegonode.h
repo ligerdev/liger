@@ -15,22 +15,22 @@
 ****************************************************************************/
 #pragma once 
 
-#include <{% filter lower %}{{ Namespace }}{% endfilter %}/{% filter lower %}{{ Namespace }}{% endfilter %}_global.h>
-#include <{% filter lower %}{{ Namespace }}{% endfilter %}/{% filter lower %}{{ Namespace }}{% endfilter %}constants.h>
-#include <{% filter lower %}{{ Namespace }}{% endfilter %}/dialogs/qalgorithmdialog.h>
+#include <qtigon/qtigon_global.h>
+#include <qtigon/qtigonconstants.h>
+#include <qtigon/dialogs/qalgorithmdialog.h>
 #include <designer/iengine/iprocessnode.h>
 
 #include <QObject>
 
-namespace {{ Namespace }} {
+namespace QTigon {
 
-class {{ ClassName }} : public Designer::IProcessNode
+class QAlgosParEGONode : public Designer::IProcessNode
 {
     Q_OBJECT
 
 public:
-    {{ ClassName }}();
-    ~{{ ClassName }}();
+    QAlgosParEGONode();
+    ~QAlgosParEGONode();
     void updateProcessState(Designer::ProcessState state);
 
 protected:
@@ -42,4 +42,4 @@ private:
     QAlgorithmDialog* m_dialog;
 };
 
-} // namespace {{ Namespace }}
+} // namespace QTigon

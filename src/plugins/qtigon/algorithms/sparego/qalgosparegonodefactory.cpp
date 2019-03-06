@@ -13,48 +13,47 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#include <{% filter lower %}{{ Namespace }}{% endfilter %}/algorithms/{{ operator_type }}/{% filter lower %}{{ ClassName }}{% endfilter %}factory.h>
+#include <qtigon/algorithms/sparego/qalgosparegonodefactory.h>
 #include <designer/designeditorplugin.h>
 #include <designer/widgets/designertoolbox.h>
 
 #include <QFile>
 
-using namespace {{ Namespace }};
+using namespace QTigon;
 using namespace Designer;
 
-{{ ClassName }}Factory::{{ ClassName }}Factory()
+QAlgosParEGONodeFactory::QAlgosParEGONodeFactory()
     : m_selected(false)
 {
     Designer::DesignerToolBox* dtoolBox = Designer::Internal::DesignEditorPlugin::instance()->designerToolBox();
 
-    QFile img_file(QString(":/{% filter lower %}{{ Namespace }}{% endfilter %}/images/{% filter lower %}{{ ClassName }}{% endfilter %}.svg"));
+    QFile img_file(QString(":/qtigon/images/qalgosparegonode.svg"));
     if(img_file.exists()) {
-        m_toolBoxButton = dtoolBox->registerAlgorithm(this, QString("{{StringName}} algorithm node."),
-                          QString(":/{% filter lower %}{{ Namespace }}{% endfilter %}/images/{% filter lower %}{{ ClassName }}{% endfilter %}.svg"));
+        m_toolBoxButton = dtoolBox->registerAlgorithm(this, QString("sParEGO algorithm node."),
+                          QString(":/qtigon/images/qalgosparegonode.svg"));
     } else {
-        m_toolBoxButton = dtoolBox->registerAlgorithm(this, QString("{{StringName}} algorithm node."),
+        m_toolBoxButton = dtoolBox->registerAlgorithm(this, QString("sParEGO algorithm node."),
                           QString(":/qtigon/images/default_qalgonode.svg"));
     }    
 }
 
-void {{ ClassName }}Factory::processButtonTriggered() 
+void QAlgosParEGONodeFactory::processButtonTriggered()
 {
 
 }
 
-Designer::IProcessNode* {{ ClassName }}Factory::createProcessNode()
+Designer::IProcessNode* QAlgosParEGONodeFactory::createProcessNode()
 {
-    return new {{ ClassName }}();
+    return new QAlgosParEGONode();
 }
 
-bool {{ ClassName }}Factory::isSelected()
+bool QAlgosParEGONodeFactory::isSelected()
 {
     return m_toolBoxButton->isChecked();
 }
 
-void {{ ClassName }}Factory::unSelect()
+void QAlgosParEGONodeFactory::unSelect()
 {
     m_toolBoxButton->setChecked(false);
 }
-
 

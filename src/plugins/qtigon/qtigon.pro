@@ -71,7 +71,9 @@ SOURCES += \
     dialogs/linkingvariablegrouppropertiesdialog.cpp \
     dialogs/startnodedialog.cpp \
     operators/initialisations/qopsparegoinitnodefactory.cpp \
-    operators/initialisations/qopsparegoinitnode.cpp
+    operators/initialisations/qopsparegoinitnode.cpp \
+    algorithms/sparego/qalgosparegonode.cpp \
+    algorithms/sparego/qalgosparegonodefactory.cpp
 
 HEADERS += \ 
     qtigon_global.h \
@@ -125,7 +127,9 @@ HEADERS += \
     dialogs/linkingvariablegrouppropertiesdialog.h \
     dialogs/startnodedialog.h \
     operators/initialisations/qopsparegoinitnodefactory.h \
-    operators/initialisations/qopsparegoinitnode.h
+    operators/initialisations/qopsparegoinitnode.h \
+    algorithms/sparego/qalgosparegonode.h \
+    algorithms/sparego/qalgosparegonodefactory.h
 
 OTHER_FILES = QTigon.pluginspec.in
 

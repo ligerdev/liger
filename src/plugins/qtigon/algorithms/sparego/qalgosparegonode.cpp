@@ -13,9 +13,9 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#include <{% filter lower %}{{ Namespace }}{% endfilter %}/algorithms/{{ operator_type }}/{% filter lower %}{{ ClassName }}{% endfilter %}.h>
+#include <qtigon/algorithms/sparego/qalgosparegonode.h>
 #include <qtigon/qtigonutils.h>
-#include <tigon/Algorithms/{{ StringName }}.h>
+#include <tigon/Algorithms/sParEGO.h>
 #include <coreplugin/coreconstants.h>
 #include <coreplugin/messagemanager.h>
 #include <coreplugin/editormanager/editormanager.h>
@@ -30,11 +30,11 @@ using Tigon::TString;
 
 #include <QDebug>
 
-using namespace {{ Namespace }};
+using namespace QTigon;
 using namespace Designer;
 using namespace Tigon::Algorithms;
 
-{{ ClassName }}::{{ ClassName }}()
+QAlgosParEGONode::QAlgosParEGONode()
     : m_dialog(new QAlgorithmDialog)
 {
     m_text         = QString("C");
@@ -43,11 +43,11 @@ using namespace Tigon::Algorithms;
     m_backgroundColor = Qt::white;
     setNumberOfOutputs(1);
     setNumberOfInputs(1);
-    setData(new {{ StringName }});
+    setData(new sParEGO);
 
-    QFile img_file(":/{% filter lower %}{{ Namespace }}{% endfilter %}/images/{% filter lower %}{{ ClassName }}{% endfilter %}.svg");
+    QFile img_file(":/qtigon/images/qalgosparegonode.svg");
     if(img_file.exists()) {
-        setSvg(":/{% filter lower %}{{ Namespace }}{% endfilter %}/images/{% filter lower %}{{ ClassName }}{% endfilter %}.svg");
+        setSvg(":/qtigon/images/qalgosparegonode.svg");
     } else {
         setSvg(":/qtigon/images/default_qalgonode.svg");
     }
@@ -63,12 +63,12 @@ using namespace Tigon::Algorithms;
     connect(m_dialog, SIGNAL(algDataChanged()), this, SIGNAL(nodePropertiesChangedSignal()));
 }
 
-{{ ClassName }}::~{{ ClassName }}()
+QAlgosParEGONode::~QAlgosParEGONode()
 {
     delete m_dialog;
 }
 
-void {{ ClassName }}::updateProcessState(ProcessState state)
+void QAlgosParEGONode::updateProcessState(ProcessState state)
 {
     switch(state) {
     case Designer::ProcessState::NODE_RUNNING:
@@ -84,7 +84,7 @@ void {{ ClassName }}::updateProcessState(ProcessState state)
     IProcessNode::updateProcessState(state);
 }
 
-void {{ ClassName }}::readDataProperties(QXmlStreamReader &xmlReader)
+void QAlgosParEGONode::readDataProperties(QXmlStreamReader &xmlReader)
 {
     xmlReader.readNextStartElement(); //todo remove
     TObject* thisOp = static_cast<TObject*>(data());
@@ -96,7 +96,7 @@ void {{ ClassName }}::readDataProperties(QXmlStreamReader &xmlReader)
                 op = 0;
             } else if(xmlReader.name() == "Name") {
                 TString opName = xmlReader.readElementText().toStdString();
-                {{ StringName }}* alg = static_cast<{{ StringName }}*>(thisOp);
+                sParEGO* alg = static_cast<sParEGO*>(thisOp);
                 for(int i=0; i<alg->operators().size(); i++) {
                     if(alg->operators()[i]->className() == opName) {
                         op = alg->operators()[i];
@@ -109,7 +109,7 @@ void {{ ClassName }}::readDataProperties(QXmlStreamReader &xmlReader)
     }
 }
 
-void {{ ClassName }}::writeDataProperties(QXmlStreamWriter &xmlWriter)
+void QAlgosParEGONode::writeDataProperties(QXmlStreamWriter &xmlWriter)
 {
     xmlWriter.writeAttribute("ProcessType", "ALGORITHM_NODE");
     IAlgorithm* thisAlg = static_cast<IAlgorithm*>(data());
@@ -126,10 +126,10 @@ void {{ ClassName }}::writeDataProperties(QXmlStreamWriter &xmlWriter)
     }
 }
 
-void {{ ClassName }}::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+void QAlgosParEGONode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event)
-    {{ StringName }}* thisAlg = static_cast<{{ StringName }}*>(data());
+    sParEGO* thisAlg = static_cast<sParEGO*>(data());
     if(thisAlg) {
         m_dialog->setup(thisAlg);
         m_dialog->show();

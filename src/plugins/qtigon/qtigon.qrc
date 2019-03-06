@@ -19,5 +19,6 @@
         <file>images/qalgoparegonode.svg</file>
         <file>images/qalgosmsemoanode.svg</file>
         <file>images/qopsparegoinitnode.svg</file>
+        <file>images/qalgosparegonode.svg</file>
     </qresource>
 </RCC>

@@ -103,18 +103,6 @@ void SparegoValidation::evaluateNode()
     /// Create a normal distribution for every IElement
     /// (objectives, constraints, cost) based on neighbourhood information
 
-    // data used to estimate the std for solutions without neighbours
-    TVector<int> solutionsWithoutNeighboursIndex; // indices of solutions
-    TVector<TVector<double>> xKrigingCost; // doubleDecisionVec of each solution
-    TVector<double> yKrigingCost;          // std of each solution
-
-    TVector<TVector<TVector<double>>> xKrigingObj(objectiveVecSize());
-    TVector<TVector<double>> yKrigingObj(objectiveVecSize());
-
-    TVector<TVector<TVector<double>>> xKrigingCon(constraintVecSize());
-    TVector<TVector<double>> yKrigingCon(constraintVecSize());
-
-
     SampledDistribution samp;
     IDistribution* dist;
 
@@ -123,8 +111,8 @@ void SparegoValidation::evaluateNode()
 
         TVector<int> inds = m_neighbours[i];
         if(inds.empty()) {
-            // solutions without neighbours, get the index
-            solutionsWithoutNeighboursIndex << i;
+            // solutions without neighbours, not currently supported
+            return;
         }
         else {
             // solutions with neighbours
@@ -157,9 +145,6 @@ void SparegoValidation::evaluateNode()
                     double mean = samp.mean();
                     double std  = samp.std();
 
-                    xKrigingObj[j] << imap->doubleDecisionVec();
-                    yKrigingObj[j] << std;
-
                     dist = modifyDistParams(mean, std, m_sampleSizes[i]);
 
                     imap->objectiveVar(j)->defineDist(dist);
@@ -177,9 +162,6 @@ void SparegoValidation::evaluateNode()
                     }
                     double mean = samp.mean();
                     double std  = samp.std();
-
-                    xKrigingCon[j] << imap->doubleDecisionVec();
-                    yKrigingCon[j] << std;
 
                     dist = modifyDistParams(mean, std, m_sampleSizes[i]);
 
@@ -201,9 +183,6 @@ void SparegoValidation::evaluateNode()
             double mean = samp.mean();
             double std  = samp.std();
 
-            xKrigingCost << imap->doubleDecisionVec();
-            yKrigingCost << std;
-
             dist = modifyDistParams(mean, std, m_sampleSizes[i]);
 
             imap->cost()->defineDist(dist);
@@ -215,82 +194,6 @@ void SparegoValidation::evaluateNode()
             }
         }
     }
-
-    // if there is solutions without neighbours
-    if(!solutionsWithoutNeighboursIndex.empty()) {
-
-        // set of krigings for the objectives and constraints, respectively
-        TVector<KrigingSPtr> kObjStd(objectiveVecSize());
-        TVector<KrigingSPtr> kConStd(constraintVecSize());
-
-        // cost
-        KrigingSPtr kCostStd = KrigingSPtr(new Kriging(
-                       new PowerVariogram(xKrigingCost, yKrigingCost, 0.8)));
-
-        // for each objective
-        for(int j=0; j<objectiveVecSize(); j++) {
-            kObjStd[j] = KrigingSPtr(new Kriging(
-                   new PowerVariogram(xKrigingObj[j], yKrigingObj[j], 0.8)));
-        }
-
-        // for each constraint
-        for(int j=0; j<constraintVecSize(); j++) {
-            kConStd[j] = KrigingSPtr(new Kriging(
-                   new PowerVariogram(xKrigingCon[j], yKrigingCon[j], 0.8)));
-        }
-
-        // for each solution without a neighbour
-        for(auto solIndex : solutionsWithoutNeighboursIndex) {
-
-            // solution
-            IMappingSPtr imap = oSet->at(solIndex);
-
-            // solution decision variable
-            TVector<double> solDec = imap->doubleDecisionVec();
-
-            double solMean = imap->doubleCost();
-            double solStd = kCostStd->interpolate(solDec);
-            dist = new NormalDistribution(solMean,
-                                          std::max(solStd,Tigon::Epsilon));
-            imap->cost()->defineDist(dist);
-
-
-            // for each objective
-            for(int j=0; j<objectiveVecSize(); j++) {
-
-                double solObjMean = imap->doubleObjectiveVar(j);
-                double solObjStd  = kObjStd[j]->interpolate(solDec);
-
-                dist = new NormalDistribution(solObjMean,
-                                              std::max(solObjStd,Tigon::Epsilon));
-                imap->objectiveVar(j)->defineDist(dist);
-            }
-
-            // for each constraint
-            for(int j=0; j<constraintVecSize(); j++) {
-
-                double solConMean = imap->doubleConstraintVar(j);
-                double solConStd  = kConStd[j]->interpolate(solDec);
-
-                dist = new NormalDistribution(solConMean,
-                                              std::max(solConStd,Tigon::Epsilon));
-                imap->constraintVar(j)->defineDist(dist);
-            }
-        }
-
-        kCostStd.reset();
-
-        // for each objective
-        for(int j=0; j<objectiveVecSize(); j++) {
-            kObjStd[j].reset();
-        }
-
-        // for each constraint
-        for(int j=0; j<constraintVecSize(); j++) {
-            kConStd[j].reset();
-        }
-
-    }  // end of processing solutions without neighbours
 }
 
 double SparegoValidation::sampleSize(int idx) const
@@ -420,38 +323,8 @@ IDistribution* SparegoValidation::modifyDistParams(double nomMean,
         throw TException(this->className(), DomainException);
     }
 
-    // Create distributions for the mean and std
-    double dof = std::max(sampSize - 1.0, 1.0);
-    double uStd = nomStd / std::sqrt(sampSize);
-
-    NormalDistribution mean(nomMean, uStd);
-    ChiSquaredDistribution cs(dof);
-
     switch(m_confType)
     {
-    case ConfidenceIncrease:
-    {
-        // use the value of the repocrical defined percentile for the mean and std
-        double mu   = mean.percentile(1.0 - m_percentile);
-        double csPerc  = cs.percentile(m_percentile);
-        double sigma = nomStd * std::sqrt(dof/csPerc);
-
-        dist = new NormalDistribution(mu, sigma);
-        break;
-    }
-
-    case ConfidenceDecrease:
-    {
-        // use the value of the defined percentile for the mean and std
-        // the sample size
-        double mu   = mean.percentile(m_percentile);
-        double csPerc  = cs.percentile(1.0 - m_percentile);
-        double sigma = nomStd * std::sqrt(dof/csPerc);
-
-        dist = new NormalDistribution(mu, sigma);
-        break;
-    }
-
     case UnchangedDistribution:
     default:
     {

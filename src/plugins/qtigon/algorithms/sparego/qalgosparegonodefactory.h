@@ -15,25 +15,25 @@
 ****************************************************************************/
 #pragma once 
 
-#include <{% filter lower %}{{ Namespace }}{% endfilter %}/{% filter lower %}{{ Namespace }}{% endfilter %}_global.h>
-#include <{% filter lower %}{{ Namespace }}{% endfilter %}/algorithms/{{ operator_type }}/{% filter lower %}{{ ClassName }}{% endfilter %}.h>
+#include <qtigon/qtigon_global.h>
+#include <qtigon/algorithms/sparego/qalgosparegonode.h>
 
 #include <designer/iengine/iprocessnodefactory.h>
 
 #include <QToolButton>
 #include <QObject>
 
-namespace {{ Namespace }} {
+namespace QTigon {
 
-class {% filter upper %}{{ Namespace }}{% endfilter %}_EXPORT {{ ClassName }}Factory : public Designer::IProcessNodeFactory
+class QTIGON_EXPORT QAlgosParEGONodeFactory : public Designer::IProcessNodeFactory
 {
     Q_OBJECT
 
 public:
-    {{ ClassName }}Factory();
+    QAlgosParEGONodeFactory();
 
     Designer::IProcessNode* createProcessNode();
-    QString className() { return QString("{{ Namespace }}::{{ ClassName }}"); }
+    QString className() { return QString("QTigon::QAlgosParEGONode"); }
     bool isSelected();
 	void unSelect();
 
@@ -45,4 +45,4 @@ private:
     QToolButton* m_toolBoxButton;
 };
 
-} // namespace {{ Namespace }}
+} // namespace QTigon
