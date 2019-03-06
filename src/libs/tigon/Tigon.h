@@ -92,6 +92,13 @@
 #include <tigon/Representation/Functions/CTP/CTP6.h>
 #include <tigon/Representation/Functions/CTP/CTP7.h>
 #include <tigon/Representation/Functions/TF1.h>
+#include <tigon/Representation/Functions/CODeM/CODeMDistribution.h>
+#include <tigon/Representation/Functions/CODeM/UncertaintyKernel.h>
+#include <tigon/Representation/Functions/CODeM/CODeMOperators.h>
+#include <tigon/Representation/Functions/CODeM/CODeMProblems.h>
+#include <tigon/Representation/Functions/CODeM/GECCO2016.h>
+#include <tigon/Representation/Functions/CODeM/EMO2019P1.h>
+#include <tigon/Representation/Functions/CODeM/EMO2019P2.h>
 
 // Representation - Distributions
 #include <tigon/Representation/Distributions/IDistribution.h>
@@ -143,6 +150,7 @@
 #include <tigon/Operators/Evaluators/IEvaluator.h>
 #include <tigon/Operators/Evaluators/Evaluator.h>
 #include <tigon/Operators/Evaluators/Validation.h>
+#include <tigon/Operators/Evaluators/ValidationWithScalarisation.h>
 #include <tigon/Operators/Evaluators/BatchEvaluator.h>
 
 // Operators - Filtrations
@@ -206,6 +214,8 @@
 #include <tigon/Operators/Transformations/Denormalisation.h>
 
 // Operators - Algorithm specific
+#include <tigon/Operators/AlgorithmSpecific/Sparego/SparegoInit.h>
+#include <tigon/Operators/AlgorithmSpecific/Sparego/SparegoValidation.h>
 #include <tigon/Operators/AlgorithmSpecific/parego/DirectionFitnessFiltration.h>
 #include <tigon/Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.h>
 #include <tigon/Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.h>
@@ -223,6 +233,7 @@
 #include <tigon/Algorithms/NSGAIIPSA.h>
 #include <tigon/Algorithms/NSGAII.h>
 #include <tigon/Algorithms/ACROMUSE.h>
+#include <tigon/Algorithms/sParEGO.h>
 #include <tigon/Algorithms/ParEGO.h>
 #include <tigon/Algorithms/MOEAD.h>
 #include <tigon/Algorithms/SMSEMOA.h>

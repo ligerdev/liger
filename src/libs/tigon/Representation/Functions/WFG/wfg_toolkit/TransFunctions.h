@@ -85,6 +85,16 @@ double s_multi
   const double& C
 );
 
+//** The multi-modal squeezed shift transformation function. ****************
+double s_multi_tunable
+(const double& y,
+  const int A,
+  const double& B,
+  const double& C,
+  const int D,
+  const double& E
+ );
+
 //** The weighted sum reduction transformation function. ********************
 double r_sum
 (

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -21,9 +21,7 @@
 #include <designer/iengine/iprocessnode.h>
 
 #include <QObject>
-#include <QJsonArray>
 
-class PopulationViewer;
 class QOperatorDiag;
 
 namespace QTigon {
@@ -31,14 +29,10 @@ namespace QTigon {
 class QTIGON_EXPORT QOpUserDefinedInitNode : public Designer::IProcessNode
 {
     Q_OBJECT
-    Q_PROPERTY(QString filePath READ filePath WRITE setFilePath)
 
 public:
     QOpUserDefinedInitNode();
     ~QOpUserDefinedInitNode();
-
-    QString filePath() const;
-    void setFilePath(QString path);
     void updateProcessState(Designer::ProcessState state);
 
 protected:
@@ -46,15 +40,8 @@ protected:
 	void writeDataProperties(QXmlStreamWriter &xmlWriter);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-private slots:
-    void updateDVec(const QVector<QVector<qreal> >& dVecData);
-    void updateFromJson(const QJsonObject& json);
-    void updateFilePath(QString filePath);
-
 private: 
 	QOperatorDiag* m_dialog;
-    PopulationViewer* m_viwer;
-    QString m_filePath;
 };
 
 } // namespace QTigon

@@ -82,6 +82,13 @@ std::vector< double > WFG2_t3
 //** t1 from WFG4. **********************************************************
 std::vector< double > WFG4_t1( const std::vector< double >& y );
 
+//** t1 from WFG4Tunable. ***************************************************
+std::vector< double > WFG4Tunable_t1(const std::vector< double >& y,
+                                     const int    nPeaks,
+                                     const double ruggedness,
+                                     const int    squeeze,
+                                     const double polyOrder);
+
 //** t1 from WFG5. **********************************************************
 std::vector< double > WFG5_t1( const std::vector< double >& y );
 

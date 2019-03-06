@@ -4,6 +4,7 @@ SUBDIRS = \
     test_baseoperations \
     test_interpolators  \
     test_tigonutilities \
+    test_uncertainties \
     test_tigonengine \
     test_nsgaii \
     test_moead \
@@ -11,6 +12,7 @@ SUBDIRS = \
     test_log \
     test_ctp \
     test_parego \
+    test_sparego \
     test_convergence \
     test_pythonfunction \
     test_pluginsystem \
