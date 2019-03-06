@@ -272,6 +272,27 @@ vector< double > Transitions::WFG4_t1( const vector< double >& y )
   return t;
 }
 
+vector< double > Transitions::WFG4Tunable_t1( const vector< double >& y,
+                                              const int    nPeaks,
+                                              const double ruggedness,
+                                              const int    squeeze,
+                                              const double polyOrder)
+{
+  const int n = static_cast< int >( y.size() );
+
+  assert( vector_in_01( y ) );
+
+  vector< double > t;
+
+  for( int i = 0; i < n; i++ )
+  {
+    t.push_back( TransFunctions::s_multi_tunable(y[i], nPeaks, ruggedness, 0.35,
+                                                 squeeze, polyOrder ) );
+  }
+
+  return t;
+}
+
 vector< double > Transitions::WFG5_t1( const vector< double >& y )
 {
   const int n = static_cast< int >( y.size() );

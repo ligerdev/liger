@@ -249,7 +249,18 @@ SOURCES += \
     Operators/Fitness/NonDominanceRankingParametric.cpp \
     Representation/Functions/TF1.cpp \
     Utils/CorrelationMatrix.cpp \
-    Utils/ObjectiveReduction.cpp
+    Utils/ObjectiveReduction.cpp \
+    Algorithms/sParEGO.cpp \
+    Operators/AlgorithmSpecific/Sparego/SparegoInit.cpp \
+    Operators/AlgorithmSpecific/Sparego/SparegoValidation.cpp \
+    Operators/Evaluators/ValidationWithScalarisation.cpp \
+    Representation/Functions/CODeM/CODeMDistribution.cpp \
+    Representation/Functions/CODeM/CODeMOperators.cpp \
+    Representation/Functions/CODeM/CODeMProblems.cpp \
+    Representation/Functions/CODeM/EMO2019P1.cpp \
+    Representation/Functions/CODeM/EMO2019P2.cpp \
+    Representation/Functions/CODeM/GECCO2016.cpp \
+    Representation/Functions/CODeM/UncertaintyKernel.cpp
 
 HEADERS += \
     Core/TSharedPointer.h \
@@ -470,7 +481,18 @@ HEADERS += \
     Operators/Fitness/NonDominanceRankingParametric.h \
     Representation/Functions/TF1.h \
     Utils/CorrelationMatrix.h \
-    Utils/ObjectiveReduction.h
+    Utils/ObjectiveReduction.h \
+    Algorithms/sParEGO.h \
+    Operators/AlgorithmSpecific/Sparego/SparegoInit.h \
+    Operators/AlgorithmSpecific/Sparego/SparegoValidation.h \
+    Operators/Evaluators/ValidationWithScalarisation.h \
+    Representation/Functions/CODeM/CODeMDistribution.h \
+    Representation/Functions/CODeM/CODeMOperators.h \
+    Representation/Functions/CODeM/CODeMProblems.h \
+    Representation/Functions/CODeM/EMO2019P1.h \
+    Representation/Functions/CODeM/EMO2019P2.h \
+    Representation/Functions/CODeM/GECCO2016.h \
+    Representation/Functions/CODeM/UncertaintyKernel.h
 
 # Python support
 contains(HAVE_PYTHON, yes) {

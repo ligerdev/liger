@@ -333,6 +333,10 @@ const double   PerturbationRadiusByNeighbourhoodRadius(0.5);
 const double   DefaultNeighbourhoodRadius(0.1);
 const TString  SampleSizes("Sample sizes");  //multipack key
 
+// sParEGO
+const double   DefaultsParEGOInitPerturbationRatio(0.5);
+
+
 enum ConfidenceInSampleType {
     UnchangedDistribution,
     ConfidenceIncrease,
