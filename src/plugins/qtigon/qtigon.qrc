@@ -18,5 +18,6 @@
         <file>images/qopbatchevaluatornode.svg</file>
         <file>images/qalgoparegonode.svg</file>
         <file>images/qalgosmsemoanode.svg</file>
+        <file>images/qopsparegoinitnode.svg</file>
     </qresource>
 </RCC>

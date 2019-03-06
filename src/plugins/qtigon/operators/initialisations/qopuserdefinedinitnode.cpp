@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -14,9 +14,8 @@
 **
 ****************************************************************************/
 #include <qtigon/operators/initialisations/qopuserdefinedinitnode.h>
-#include <qtigon/qtigonutils.h>
-#include <qtigon/dialogs/populationviewer.h>
 #include <qtigon/dialogs/qoperatordiag.h>
+#include <qtigon/qtigonutils.h>
 
 #include <designer/iengine/iport.h>
 #include <designer/iengine/iportlink.h>
@@ -34,7 +33,6 @@ using Tigon::TObject;
 #include <QFile>
 #include <QColor>
 #include <QMessageBox>
-#include <QGroupBox>
 #include <QString>
 
 #include <QDebug>
@@ -68,28 +66,13 @@ QOpUserDefinedInitNode::QOpUserDefinedInitNode()
     setFlag(QGraphicsItem::ItemSendsScenePositionChanges, true);
 
     initializeNode();
-
     connect(m_dialog, SIGNAL(opDataChanged()),
-            this, SIGNAL(nodePropertiesChangedSignal()));
-    m_viwer = new PopulationViewer;
-    connect(m_viwer, &PopulationViewer::updateFromPoupluationViewer,
-            this, &QOpUserDefinedInitNode::updateDVec);
-    connect(m_viwer, &PopulationViewer::updateJsonFromPopViewr,
-            this, &QOpUserDefinedInitNode::updateFromJson);
-    connect(m_viwer, &PopulationViewer::updateFilePath,
-            this, &QOpUserDefinedInitNode::updateFilePath);
-
-    m_dialog->addToolWidget(m_viwer, "Load Initial Population");
+            this, SIGNAL(nodePropertiesChangedSignal()));       
 }
 
 QOpUserDefinedInitNode::~QOpUserDefinedInitNode()
 {
     delete m_dialog;
-}
-
-QString QOpUserDefinedInitNode::filePath() const
-{
-    return m_filePath;
 }
 
 void QOpUserDefinedInitNode::updateProcessState(ProcessState state)
@@ -105,11 +88,7 @@ void QOpUserDefinedInitNode::updateProcessState(ProcessState state)
         m_dialog->setInputDisabled(false);
         break;
     }
-}
-
-void QOpUserDefinedInitNode::setFilePath(QString path)
-{
-    m_filePath = path;
+    IProcessNode::updateProcessState(state);
 }
 
 void QOpUserDefinedInitNode::readDataProperties(QXmlStreamReader &xmlReader)
@@ -140,35 +119,8 @@ void QOpUserDefinedInitNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *eve
     Q_UNUSED(event)
     UserDefinedInit* thisOp = static_cast<UserDefinedInit*>(data());
     if(thisOp) {
-        m_viwer->setFilePath(m_filePath);
         m_dialog->setup(thisOp);
         m_dialog->show();
         m_dialog->raise();
     }
-}
-
-void QOpUserDefinedInitNode::updateDVec(const QVector<QVector<qreal> > &dVecData)
-{
-    using Tigon::TVector;
-    UserDefinedInit* thisOp = static_cast<UserDefinedInit*>(data());
-    TVector<TVector<qreal> > vecData;
-    vecData.resize(dVecData.size());
-    foreach (const QVector<qreal>& v, dVecData) {
-        vecData.push_back(v.toStdVector());
-    }
-    thisOp->defineInitialDVecs(vecData);
-    m_dialog->upadtePropertyDisplayData();
-}
-
-void QOpUserDefinedInitNode::updateFromJson(const QJsonObject &json)
-{
-    Q_UNUSED(json);
-}
-
-void QOpUserDefinedInitNode::updateFilePath(QString filePath)
-{
-    m_filePath = filePath;
-    UserDefinedInit* thisOp = static_cast<UserDefinedInit*>(data());
-    thisOp->defineInitialSetFromFile(m_filePath.toStdString());
-    m_dialog->upadtePropertyDisplayData();
 }

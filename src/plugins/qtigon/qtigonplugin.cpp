@@ -32,6 +32,7 @@
 #include <qtigon/algorithms/nsgaii/qalgonsgaiinodefactory.h>
 #include <qtigon/algorithms/parego/qalgoparegonodefactory.h>
 #include <qtigon/algorithms/moead/qalgomoeadnodefactory.h>
+#include <qtigon/operators/initialisations/qopsparegoinitnodefactory.h>
 #include <qtigon/operators/initialisations/qopuserdefinedinitnodefactory.h>
 #include <qtigon/algorithms/smsemoa/qalgosmsemoanodefactory.h>
 
@@ -94,6 +95,7 @@ bool QTigonPlugin::initialize(const QStringList &arguments, QString *errorString
     addAutoReleasedObject(new QOpEvaluatorNodeFactory);
     addAutoReleasedObject(new QOpBatchEvaluatorNodeFactory);
     addAutoReleasedObject(new QOpUserDefinedInitNodeFactory);
+    addAutoReleasedObject(new QOpSparegoInitNodeFactory);
 
     // Algorithms
     addAutoReleasedObject(new QAlgoNSGAIIPSANodeFactory);
