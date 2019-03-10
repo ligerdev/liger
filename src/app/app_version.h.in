@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -37,7 +37,7 @@ namespace Constants {
 
 const char * const IDE_VERSION_LONG      = IDE_VERSION_STR;
 const char * const IDE_AUTHOR            = \"The University of Sheffield\";
-const char * const IDE_YEAR              = \"2018\";
+const char * const IDE_YEAR              = \"2019\";
 
 #ifdef IDE_VERSION_DESCRIPTION
 const char * const IDE_VERSION_DESCRIPTION_STR = STRINGIFY(IDE_VERSION_DESCRIPTION);
