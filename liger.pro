@@ -5,6 +5,7 @@
 include(liger.pri)
 
 # Qt version check
+message("Qt version - $${QT_VERSION}")
 !minQtVersion(5, 6, 0) {
     message("Cannot build Liger with Qt version $${QT_VERSION}.")
     error("Use at least Qt 5.6.0.")
