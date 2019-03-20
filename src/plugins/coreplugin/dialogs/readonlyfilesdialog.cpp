@@ -38,6 +38,7 @@
 #include <utils/fileutils.h>
 #include <utils/hostosinfo.h>
 
+#include <QButtonGroup>
 #include <QDir>
 #include <QFileInfo>
 #include <QMap>
