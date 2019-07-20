@@ -4,30 +4,6 @@ sudo: required
 
 matrix:
   include:
-#    - name: "MacOS build apple clang 10.0.0"
-#      os: osx
-#      osx_image: xcode10
-#      env:
-#        - COMPILER_SPEC=macx-clang
-#        - TEST_SCRIPT=run_all_unit_tests.sh
-#      install:
-#        # Qt5.11.2 
-#        - brew install qt5
-#        - export PATH="/usr/local/opt/qt/bin:$PATH"
-#        
-#        # Boost 1.67.0_1
-#        - | 
-#          if brew ls --versions boost > /dev/null; then
-#            brew info boost
-#          else
-#            brew install boost
-#          fi
-#        - export BOOST_INCLUDE="/usr/local/Cellar/boost/1.67.0_1/include"
-#        - export BOOST_LIB="/usr/local/Cellar/boost/1.67.0_1/lib"
-#
-#        # python modules
-#        - python -m pip install tabulate 
-
     - name: "Linux build g++7.3"
       os: linux
       dist: trusty
