@@ -1,7 +1,6 @@
 # Liger
 
-[![build status](http://ligerdev.sheffield.ac.uk/liger-development-team/liger/badges/develop/build.svg)](http://ligerdev.sheffield.ac.uk/liger-development-team/liger/commits/master) 
-[![coverage report](http://ligerdev.sheffield.ac.uk/liger-development-team/liger/badges/develop/coverage.svg)](http://ligerdev.sheffield.ac.uk/liger-development-team/liger/commits/master)
+[![Build Status](https://travis-ci.com/ligerdev/liger.svg?branch=master)](https://travis-ci.com/ligerdev/liger)
 
 ## Introduction
 
