@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2019 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -13,8 +13,8 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#ifndef NONDOMINANCERANKING_H
-#define NONDOMINANCERANKING_H
+#ifndef MOGADOMINANCERANKING_H
+#define MOGADOMINANCERANKING_H
 #include <tigon/Operators/Fitness/IFitness.h>
 
 namespace Tigon {
@@ -27,7 +27,7 @@ class DominanceRelationFactory;
 namespace Tigon {
 namespace Operators {
 
-class LIGER_TIGON_EXPORT NonDominanceRanking : public IFitness
+class LIGER_TIGON_EXPORT MOGANonDominanceRanking : public IFitness
 {
     HANDLE_READ_PROPERTIES_BEGIN(IFitness)
     READ(IsConstrainedHandlingUsed, TP_isConstrainedHandlingUsed)
@@ -41,12 +41,12 @@ class LIGER_TIGON_EXPORT NonDominanceRanking : public IFitness
     WRITE(IsWeakDom, bool, TP_defineIsWeakDom)
     HANDLE_WRITE_PROPERTIES_END
 
-    DECLARE_CLASS(Tigon::Operators::NonDominanceRanking)
+    DECLARE_CLASS(Tigon::Operators::MOGANonDominanceRanking)
 
 public:
-    NonDominanceRanking();
-    NonDominanceRanking(Tigon::Representation::IPSet* ipset);
-    ~NonDominanceRanking();
+    MOGANonDominanceRanking();
+    MOGANonDominanceRanking(Tigon::Representation::IPSet* ipset);
+    ~MOGANonDominanceRanking();
 
     void evaluateNode();
 
@@ -85,4 +85,4 @@ private:
 } // namespace Operators
 } // namespace Tigon
 
-#endif // NONDOMINANCERANKING_H
+#endif // MOGADOMINANCERANKING_H

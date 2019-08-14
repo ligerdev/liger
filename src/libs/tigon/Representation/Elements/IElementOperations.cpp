@@ -15,6 +15,7 @@
 ****************************************************************************/
 #include <tigon/Representation/Elements/IElementOperations.h>
 #include <tigon/Representation/Elements/IElement.h>
+#include <tigon/Utils/TigonUtils.h>
 #include <tigon/ExceptionHandling/TException.h>
 
 namespace Tigon {
@@ -477,7 +478,8 @@ tribool operator== (const IElement& m, const IElement& c)
         case IntegerType:
         case OrdinalType:
         case NominalType:
-            ret = (m.value<double>() == c.value<double>());
+            //ret = (m.value<double>() == c.value<double>());
+            ret = areDoublesEqual(m.value<double>(), c.value<double>());
             break;
 
         default:
@@ -508,7 +510,8 @@ tribool operator!= (const IElement& m, const IElement& c)
         case IntegerType:
         case OrdinalType:
         case NominalType:
-            ret = (m.value<double>() != c.value<double>());
+            //ret = (m.value<double>() != c.value<double>());
+            ret = !areDoublesEqual(m.value<double>(), c.value<double>());
             break;
 
         default:

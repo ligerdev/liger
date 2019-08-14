@@ -7,10 +7,11 @@ algorithms = [
         #{'operator_type':'nsgaii',    'GUIText': 'NSGA-II'},
         #{'operator_type':'nsgaiipsa', 'GUIText': 'NSGAII-PSA'}, # need to manually fix svg
         #{'operator_type':'moead',     'GUIText': 'MOEA/D'},
-        {'operator_type':'sparego',   'GUIText': 'sParEGO'}
+        #{'operator_type':'sparego',   'GUIText': 'sParEGO'}
         #{'operator_type':'parego',    'GUIText': 'ParEGO'},
         #{'operator_type':'smsemoa',   'GUIText': 'SMSEMOA'},
         # {'operator_type':'pnsgaii',   'GUIText': 'pNSGA-II'}
+        {'operator_type':'moga',   'GUIText': 'MOGA'}
 ]
 
 #============================================

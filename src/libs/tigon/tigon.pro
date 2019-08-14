@@ -260,7 +260,20 @@ SOURCES += \
     Representation/Functions/CODeM/EMO2019P1.cpp \
     Representation/Functions/CODeM/EMO2019P2.cpp \
     Representation/Functions/CODeM/GECCO2016.cpp \
-    Representation/Functions/CODeM/UncertaintyKernel.cpp
+    Representation/Functions/CODeM/UncertaintyKernel.cpp \
+    Utils/Dominance/ConstrDomRelation.cpp \
+    Utils/Dominance/DominanceRelation.cpp \
+    Utils/Dominance/IOrderedRelation.cpp \
+    Utils/Dominance/Preferability.cpp \
+    Utils/Dominance/PreferabilityConstraintHandling.cpp \
+    Algorithms/MOGA.cpp \
+    Operators/Fitness/AverageFitness.cpp \
+    Operators/Fitness/MOGANonDominanceRanking.cpp \
+    Operators/Fitness/SharedFitness.cpp \
+    Operators/Filtrations/StochasticUniversalSampling.cpp \
+    Operators/Filtrations/RouletteWheelSelection.cpp \
+    Factories/DominanceRelationFactory.cpp \
+    Representation/Functions/MinEx.cpp
 
 HEADERS += \
     Core/TSharedPointer.h \
@@ -492,7 +505,20 @@ HEADERS += \
     Representation/Functions/CODeM/EMO2019P1.h \
     Representation/Functions/CODeM/EMO2019P2.h \
     Representation/Functions/CODeM/GECCO2016.h \
-    Representation/Functions/CODeM/UncertaintyKernel.h
+    Representation/Functions/CODeM/UncertaintyKernel.h \
+    Utils/Dominance/ConstrDomRelation.h \
+    Utils/Dominance/DominanceRelation.h \
+    Utils/Dominance/IOrderedRelation.h \
+    Utils/Dominance/Preferability.h \
+    Utils/Dominance/PreferabilityConstraintHandling.h \
+    Algorithms/MOGA.h \
+    Operators/Fitness/AverageFitness.h \
+    Operators/Fitness/MOGANonDominanceRanking.h \
+    Operators/Fitness/SharedFitness.h \
+    Operators/Filtrations/StochasticUniversalSampling.h \
+    Operators/Filtrations/RouletteWheelSelection.h \
+    Factories/DominanceRelationFactory.h \
+    Representation/Functions/MinEx.h
 
 # Python support
 contains(HAVE_PYTHON, yes) {
