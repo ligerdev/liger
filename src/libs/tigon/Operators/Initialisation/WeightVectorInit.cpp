@@ -18,6 +18,7 @@
 #include <tigon/Representation/Sets/ISet.h>
 #include <tigon/Representation/Mappings/IMapping.h>
 #include <tigon/Representation/Elements/IElement.h>
+#include <tigon/Representation/Elements/IElementOperations.h>
 #include <tigon/Utils/SimplexLattice.h>
 #include <tigon/Utils/IElementUtils.h>
 #include <tigon/Representation/Problems/Problem.h>
@@ -100,15 +101,16 @@ WeightVectorInit::~WeightVectorInit()
 
 void WeightVectorInit::evaluateNode()
 {    
-    bool isGoalVectorUsed = false; // specifies if goals are to be used or not
-    TVector<double> goalVector = IElementVecToRealVec(goalVec());
+    TVector<IElementSPtr> goals = goalVec();
+    TVector<IElementSPtr>::iterator iter =
+            std::find_if(goals.begin(),goals.end(),
+            [](IElementSPtr g){
+                tribool rs = *g==g->minValue();
+                return (rs.value == false);
+            });
 
-    for(auto g : goalVector) {
-        if(!areDoublesEqual(g,Tigon::Lowest)) {
-            isGoalVectorUsed=true;
-            break;
-        }
-    }
+    // indicates if goals have been specified
+    bool isGoalVectorUsed = iter != goals.end();
 
     if(isGoalVectorUsed) {
         if(m_normGoalVec.empty()) { // first time here

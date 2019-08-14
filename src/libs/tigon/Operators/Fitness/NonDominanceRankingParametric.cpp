@@ -16,6 +16,7 @@
 #include <tigon/Operators/Fitness/NonDominanceRankingParametric.h>
 #include <tigon/Representation/Mappings/IMapping.h>
 #include <tigon/Representation/Elements/IElement.h>
+#include <tigon/Representation/Elements/IElementOperations.h>
 #include <tigon/Representation/Sets/ISet.h>
 #include <tigon/Utils/DominanceUtils.h>
 #include <tigon/Utils/TigonUtils.h>
@@ -60,7 +61,8 @@ void NonDominanceRankingParametric::evaluateNode()
     TVector<IElementSPtr>::iterator iter =
         std::find_if(goals.begin(),goals.end(),
         [](IElementSPtr g){
-            return !areDoublesEqual(g->value(),Tigon::Lowest);
+            tribool rs = *g==g->minValue();
+            return (rs.value == false);
         });
 
     bool         isGoalVectorUsed = ((iter != goals.end()) &&

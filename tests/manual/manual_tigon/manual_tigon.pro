@@ -6,7 +6,8 @@ SUBDIRS += \
     manual_nsgaiipsa \
     manual_nsgaii \
     manual_parego \
-    manual_smsemoa
+    manual_smsemoa \
+    manual_moga
 
 # Include matlab plugin
 include(../../../matlabcheck.pri)

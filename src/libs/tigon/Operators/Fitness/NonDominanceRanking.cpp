@@ -94,7 +94,8 @@ void NonDominanceRanking::evaluateNode()
     TVector<IElementSPtr>::iterator iter =
         std::find_if(goals.begin(),goals.end(),
         [](IElementSPtr g){
-            return !areDoublesEqual(g->value(),Tigon::Lowest);
+            tribool rs = *g==g->minValue();
+            return (rs.value == false);
         });
 
     bool         isGoalVectorUsed = ((iter != goals.end()) &&
