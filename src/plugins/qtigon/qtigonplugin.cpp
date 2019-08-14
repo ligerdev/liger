@@ -33,6 +33,7 @@
 #include <qtigon/algorithms/parego/qalgoparegonodefactory.h>
 #include <qtigon/algorithms/sparego/qalgosparegonodefactory.h>
 #include <qtigon/algorithms/moead/qalgomoeadnodefactory.h>
+#include <qtigon/algorithms/moga/qalgomoganodefactory.h>
 #include <qtigon/operators/initialisations/qopsparegoinitnodefactory.h>
 #include <qtigon/operators/initialisations/qopuserdefinedinitnodefactory.h>
 #include <qtigon/algorithms/smsemoa/qalgosmsemoanodefactory.h>
@@ -105,6 +106,7 @@ bool QTigonPlugin::initialize(const QStringList &arguments, QString *errorString
     addAutoReleasedObject(new QAlgosParEGONodeFactory);
     addAutoReleasedObject(new QAlgoMOEADNodeFactory);
     addAutoReleasedObject(new QAlgoSMSEMOANodeFactory);
+    addAutoReleasedObject(new QAlgoMOGANodeFactory);
 
     ///[] Load Tigon plugins
     QDir cpath = QCoreApplication::applicationDirPath();
