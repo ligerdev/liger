@@ -173,6 +173,8 @@
 #include <tigon/Operators/Filtrations/TruncateSets.h>
 #include <tigon/Operators/Filtrations/TournamentFiltrationForDirection.h>
 #include <tigon/Operators/Filtrations/SMSEMOAReduce.h>
+#include <tigon/Operators/Filtrations/RouletteWheelSelection.h>
+#include <tigon/Operators/Filtrations/StochasticUniversalSampling.h>
 
 // Operators - Inititalisation
 #include <tigon/Operators/Initialisation/IInitialisation.h>
@@ -203,6 +205,9 @@
 #include <tigon/Operators/Fitness/UncertainConfidenceRobustness.h>
 #include <tigon/Operators/Fitness/NSGAIICrowding.h>
 #include <tigon/Operators/Fitness/ConstraintPenalty.h>
+#include <tigon/Operators/Fitness/AverageFitness.h>
+#include <tigon/Operators/Fitness/MOGANonDominanceRanking.h>
+#include <tigon/Operators/Fitness/SharedFitness.h>
 
 // Operators - Formulations
 #include <tigon/Operators/Formulations/IFormulation.h>
@@ -237,6 +242,7 @@
 #include <tigon/Algorithms/ParEGO.h>
 #include <tigon/Algorithms/MOEAD.h>
 #include <tigon/Algorithms/SMSEMOA.h>
+#include <tigon/Algorithms/MOGA.h>
 
 // Engine
 #include <tigon/Engine/OptimizationLinearFlow.h>

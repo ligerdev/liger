@@ -231,6 +231,14 @@ enum SelectionType {
     OrderedSelection
 };
 
+enum DominanceRelationType {
+    NormalDominanceRelation,
+    ConstraintHandlingDominanceRelation,
+    PreferabilityRelation,
+    PreferabilityConstraintHandlingRelation
+};
+
+
 /// IMapping constants
 const TVector<Tigon::ElementType> EmptyType;
 const TVector<TVector<bool> >     EmptyIOMap;
@@ -238,6 +246,7 @@ const TVector<TVector<bool> >     EmptyIOMap;
 /// Tags
 const TString TMainOptimizationSet("MAIN_OPTIMIZATION_SET");
 const TString TNonDominatedArchive("NON_DOMINATED_ARCHIVE");
+const TString TMatingPool("MATING_POOL");
 const TString TForEvaluation("FOR_EVALUATION");
 const TString TForFitness("FOR_FITNESS");
 const TString TForSelection("FOR_SELECTION");
@@ -335,6 +344,10 @@ const TString  SampleSizes("Sample sizes");  //multipack key
 
 // sParEGO
 const double   DefaultsParEGOInitPerturbationRatio(0.5);
+
+// MOGA
+const double   DefaultErrorSigmaEstimation(1e-6);
+const double   DefaultSharingFunctionAlpha(1.0);
 
 
 enum ConfidenceInSampleType {

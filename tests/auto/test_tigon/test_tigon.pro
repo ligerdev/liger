@@ -19,7 +19,8 @@ SUBDIRS = \
     test_simplexlattice \
     test_smsemoa \
     test_fann \
-    test_statistics
+    test_statistics \
+    test_moga
 
 # Include matlab plugin
 include(../../../matlabcheck.pri)

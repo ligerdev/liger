@@ -13,37 +13,38 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#include <tigon/Operators/Fitness/NonDominanceRanking.h>
+#include <tigon/Operators/Fitness/MOGANonDominanceRanking.h>
 #include <tigon/Representation/Mappings/IMapping.h>
+#include <tigon/Representation/Mappings/IMappingOperations.h>
 #include <tigon/Representation/Elements/IElement.h>
 #include <tigon/Representation/Elements/IElementOperations.h>
 #include <tigon/Representation/Sets/ISet.h>
-#include <tigon/Utils/DominanceUtils.h>
 #include <tigon/Utils/TigonUtils.h>
 #include <tigon/Utils/IElementUtils.h>
+#include <tigon/Utils/DominanceUtils.h>
 #include <tigon/Utils/Dominance/DominanceRelation.h>
 #include <tigon/Factories/DominanceRelationFactory.h>
 
 namespace Tigon {
 namespace Operators {
 
-NonDominanceRanking::NonDominanceRanking()
+MOGANonDominanceRanking::MOGANonDominanceRanking()
 {
     initialise();
 }
 
-NonDominanceRanking::NonDominanceRanking(Tigon::Representation::IPSet *ipset)
+MOGANonDominanceRanking::MOGANonDominanceRanking(Tigon::Representation::IPSet *ipset)
     : IFitness(ipset)
 {
     initialise();
 }
 
-NonDominanceRanking::~NonDominanceRanking()
+MOGANonDominanceRanking::~MOGANonDominanceRanking()
 {
-    delete m_domRelation;
+
 }
 
-void NonDominanceRanking::initialise()
+void MOGANonDominanceRanking::initialise()
 {
     clearOutputTags();
     clearAdditionalOutputTags();
@@ -70,13 +71,12 @@ void NonDominanceRanking::initialise()
                           "The default value is true.")
                 , typeid(bool).hash_code());
 
-
     TP_defineIsConstrainedHandlingUsed(true);
     TP_defineIsPreferabilityUsed(true);
     TP_defineIsWeakDom(true);
 
-    addOutputTag(Tigon::TForSelection);
     addOutputTag(Tigon::TFitness);
+    addOutputTag(Tigon::TForSelection);
     addInputTag(Tigon::TMainOptimizationSet);
 
     m_factory = &DominanceRelationFactory::instance();
@@ -85,7 +85,7 @@ void NonDominanceRanking::initialise()
     m_domRelation->defineWeakDom(TP_isWeakDom());
 }
 
-void NonDominanceRanking::evaluateNode()
+void MOGANonDominanceRanking::evaluateNode()
 {
     clearOutputSets();
     ISet* iSet = inputSet(0);
@@ -94,7 +94,8 @@ void NonDominanceRanking::evaluateNode()
     TVector<IElementSPtr>::iterator iter =
         std::find_if(goals.begin(),goals.end(),
         [](IElementSPtr g){
-            return !areDoublesEqual(g->value(),Tigon::Lowest);
+            tribool rs = *g==g->minValue();
+            return (rs.value == false);
         });
 
     bool         isGoalVectorUsed = ((iter != goals.end()) &&
@@ -148,15 +149,16 @@ void NonDominanceRanking::evaluateNode()
         defineRelationType(NormalDominanceRelation);
     }
 
+    // Determine the rank of each solution
 
     int N = iSet->size();
     TVector<int> domCount(N, 0);
-    TVector<TVector<int>> dominatedBy(N);
 
     // Compare all solutions
     tribool dom;
     for(int i=0; i<N-1; i++) {
         IMappingSPtr a = iSet->at(i);
+
         for(int j=i+1; j<N; j++) {
             IMappingSPtr b = iSet->at(j);
 
@@ -180,40 +182,35 @@ void NonDominanceRanking::evaluateNode()
             dom = m_domRelation->isBetterThan(a->doubleObjectiveVec(),
                                               b->doubleObjectiveVec());
 
-            if(dom == true) { // a dominates b
-                dominatedBy[i].push_back(j);
+            if(dom == true) {
                 domCount[j]++;
-            } else if(dom == false) { // b dominates a
-                dominatedBy[j].push_back(i);
+            } else if(dom == false) {
                 domCount[i]++;
             }
         }
     }
 
+    // Create a set for each rank of solutions
+    TVector<int> sortIdxDomCount = indSort(domCount);
+    TVector<IMappingSPtr> cRank;
+    int prevRank = domCount[sortIdxDomCount.at(0)];
+    int currentRank;
     TVector<ISet*> ranks;
-    TVector<TVector<int>> iRanks = sortRanksNonDomOriginal(domCount, dominatedBy);
+    for(auto i : sortIdxDomCount) {
 
-    // for each rank
-    int r = 0;
-    for(TVector<int> iRank : iRanks) {
-        TVector<IMappingSPtr> rank;
-        for(auto pos : iRank) {
-            rank.push_back(iSet->at(pos));
+        currentRank = domCount.at(i);
+
+        if(currentRank != prevRank) {
+            ranks.push_back(new ISet(cRank));
+            cRank.clear(); // new rank
+            prevRank = currentRank;
         }
 
-        // set the cost of all solution from the rank
-        for(IMappingSPtr sol : rank) {
-            /// \todo: the fitness value is set to the solution rank. This
-            /// overrides any other fitness score that the solution might have.
-            /// Although this works for Pareto-based MOEAs, it might need a
-            /// different approach if used by other type of MOEAs.
-            sol->defineCost(IElement(r));
-        }
-
-        ranks.push_back(new ISet(rank));
-
-        r++;
+        IMappingSPtr nextSol = iSet->at(i);
+        nextSol->defineCost(IElement(currentRank)); // set the rank
+        cRank.push_back(nextSol);
     }
+    ranks.push_back(new ISet(cRank));
 
     // Append the sets to the output set
     for(auto rank : ranks) {
@@ -226,7 +223,7 @@ void NonDominanceRanking::evaluateNode()
     clearPointerVector(ranks);
 }
 
-void NonDominanceRanking::defineRelationType(DominanceRelationType r)
+void MOGANonDominanceRanking::defineRelationType(DominanceRelationType r)
 {
     DominanceRelation* temp = m_factory->create(r);
     if(temp != nullptr) {
@@ -241,60 +238,55 @@ void NonDominanceRanking::defineRelationType(DominanceRelationType r)
     }
 }
 
-void NonDominanceRanking::TP_defineIsConstrainedHandlingUsed(bool b)
+void MOGANonDominanceRanking::TP_defineIsConstrainedHandlingUsed(bool b)
 {
     m_isConstrainedHandlingUsed = b;
 }
 
-bool NonDominanceRanking::TP_isConstrainedHandlingUsed() const
+bool MOGANonDominanceRanking::TP_isConstrainedHandlingUsed() const
 {
     return m_isConstrainedHandlingUsed;
 }
 
-void NonDominanceRanking::TP_defineIsPreferabilityUsed(bool b)
+void MOGANonDominanceRanking::TP_defineIsPreferabilityUsed(bool b)
 {
     m_isPreferabilityUsed = b;
 }
 
-bool NonDominanceRanking::TP_isPreferabilityUsed() const
+bool MOGANonDominanceRanking::TP_isPreferabilityUsed() const
 {
     return m_isPreferabilityUsed;
 }
 
-void NonDominanceRanking::TP_defineIsWeakDom(bool b)
+void MOGANonDominanceRanking::TP_defineIsWeakDom(bool b)
 {
     m_isWeakDom = b;
 }
 
-bool NonDominanceRanking::TP_isWeakDom() const
+bool MOGANonDominanceRanking::TP_isWeakDom() const
 {
     return m_isWeakDom;
 }
 
-TString NonDominanceRanking::name()
+TString MOGANonDominanceRanking::name()
 {
-    return TString("Non-dominance Ranking");
+    return TString("MOGA Non-dominance Ranking");
 }
 
-TString NonDominanceRanking::description()
+TString MOGANonDominanceRanking::description()
 {
-    return TString("Sort the input set into ranks of non-dominance, "
-                   "and adds the rank of each IMapping to its cost.\n"
-                   "The set of solutions with the lowest rank is known as "
-                   "the non-dominated set.\n"
-                   "If constraints are defined, the infeasible solutions "
-                   "have an higher rank than all the feasible solutions. "
-                   "Ranks betwen the infeasible solutions is determined by "
-                   "their infeasibility score.\n"
-                   "When a goal vector is specified, the preferability "
-                   "operator is used to rank the solutions.\n"
-                   "When constraints and a goal vector have been specified, "
-                   "the preferability operator is only applied to feasible "
-                   "solutions. This means that solutions are initially "
-                   "ranked based on their infeasibility, and only feasible "
-                   "solutions are ranked based on preferability.");
+    TString desc("Non-dominance ranking procedure used by the MOGA algorithm. "
+                 "The procedure counts the number of times a solution gets "
+                 "dominated by other solutions. The higher is the number of "
+                 "solutions that dominate a solution, the worse is the rank of "
+                 "the solution.\n Taken from Multiple Objective Genetic "
+                 "Algorithm (MOGA) from Fonseca, C. M., & Fleming, P. J. (1998). "
+                 "Multiobjective optimization and multiple constraint handling "
+                 "with evolutionary algorithms. I. A unified formulation. IEEE "
+                 "Transactions on Systems, Man, and Cybernetics, Part A: Systems "
+                 "and Humans, 28(1), 26-37.");
+    return desc;
 }
 
 } // namespace Operators
 } // namespace Tigon
-
