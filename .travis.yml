@@ -15,6 +15,7 @@ matrix:
             - g++-7
             - mesa-common-dev
             - libglu1-mesa-dev
+            - qt5-default
             - qt5-qmake
             - libqt5webengine5
             - libqt5webchannel5
