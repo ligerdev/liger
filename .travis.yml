@@ -23,6 +23,7 @@ matrix:
             - libqt5webenginewidgets5
             - libqt5webenginecore5
             - qtwebengine5-dev-tools
+            - libqt5widgets5
             - libqt5webchannel5
             - libqt5webchannel5-dev
             - libqt5svg5
