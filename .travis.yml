@@ -19,7 +19,10 @@ matrix:
             - qt5-qmake
             - qtbase5-dev
             - libqt5webengine5
+            - libqt5webengine-data
             - libqt5webenginewidgets5
+            - libqt5webenginecore5
+            - qtwebengine5-dev-tools
             - libqt5webchannel5
             - libqt5webchannel5-dev
             - libqt5svg5
