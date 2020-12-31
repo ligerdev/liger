@@ -26,11 +26,14 @@ DISABLE_WARNINGS
 #include <eigen/bench/BenchTimer.h>
 ENABLE_WARNINGS
 
-#include <boost/math/special_functions/factorials.hpp>
+// The Q_MOC_RUN prepocessor symbol tells the moc not to parse the following
+// headers, which seems to create problems to the moc.
+#ifndef Q_MOC_RUN
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#endif
 
 #include "multipolyregressiondata.h"
 

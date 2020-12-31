@@ -6,7 +6,7 @@ matrix:
   include:
     - name: "Linux build g++7.3"
       os: linux
-      dist: bionic
+      dist: trusty
       addons:
         apt:
           sources:
@@ -15,28 +15,6 @@ matrix:
             - g++-7
             - mesa-common-dev
             - libglu1-mesa-dev
-            - qt5-default
-            - qt5-qmake
-            - qtbase5-dev
-            - libqt5webengine5
-            - libqt5webengine-data
-            - libqt5webenginewidgets5
-            - libqt5webenginecore5
-            - qtwebengine5-dev
-            - qtwebengine5-private-dev
-            - qtwebengine5-dev-tools
-            - libqt5widgets5
-            - libqt5webchannel5
-            - libqt5webchannel5-dev
-            - libqt5svg5
-            - libqt5svg5-dev
-            - libqt5help5
-            - libqt5xmlpatterns5
-            - libqt5xmlpatterns5-dev
-            - qttools5-dev
-            - qttools5-dev-tools
-            - qtxmlpatterns5-dev-tools
-
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
         - COMPILER_SPEC=linux-g++
@@ -48,13 +26,12 @@ matrix:
         - eval "${MATRIX_EVAL}"
         - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20
         - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20
-          #- sudo add-apt-repository ppa:beineri/opt-qt596-trusty -y
-          #- sudo apt-get update -qq
+        - sudo add-apt-repository ppa:beineri/opt-qt596-trusty -y
+        - sudo apt-get update -qq
       install:
         # Qt
-        #- sudo apt-get install -qq qt5-qmake libqt5webengine5 libqt5webchannel5 libqt5svg5 
-        #- sudo apt-get install -qq qt59base qt59tools qt59webchannel qt59webengine qt59svg qt5-qmake
-        #- source /opt/qt59/bin/qt59-env.sh 
+        - sudo apt-get install -qq qt59base qt59tools qt59webchannel qt59webengine qt59svg
+        - source /opt/qt59/bin/qt59-env.sh 
 
         # Boost
         - wget ${BOOST_URL}/${BOOST_SRC}
@@ -76,7 +53,6 @@ before_script:
   - cd build
   - qmake --version
   - python --version
-  - export QT_SELECT=qt5
   - echo BOOST_INCLUDE ${BOOST_INCLUDE}
   - echo BOOST_LIB ${BOOST_LIB}
   - qmake "DISABLE_PYTHON=yes" ../liger.pro -r -spec ${COMPILER_SPEC} 
