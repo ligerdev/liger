@@ -31,6 +31,8 @@ matrix:
             - libqt5svg5
             - libqt5svg5-dev
             - libqt5help5
+            - libqt5xmlpatterns5
+            - libqt5xmlpatterns5-dev
             - qttools5-dev
             - qttools5-dev-tools
 
