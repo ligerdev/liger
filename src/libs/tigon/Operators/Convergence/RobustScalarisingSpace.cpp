@@ -14,13 +14,15 @@
 **
 ****************************************************************************/
 #include <tigon/Operators/Convergence/RobustScalarisingSpace.h>
+#include <tigon/Representation/Indicators/IRobustnessIndicator.h>
+#include <tigon/Factories/RobustnessIndicatorFactory.h>
 #include <tigon/Representation/Mappings/IMapping.h>
 #include <tigon/Representation/Sets/ISet.h>
 #include <tigon/Utils/TigonUtils.h>
 #include <tigon/Utils/ScalarisingSpaceUtils.h>
 #include <tigon/Utils/IElementUtils.h>
 #include <tigon/Utils/SimplexLattice.h>
-#include <cmath>
+#include <tigon/Representation/Distributions/SampledDistribution.h>
 
 namespace Tigon {
 namespace Operators {
@@ -46,13 +48,13 @@ void RobustScalarisingSpace::initialise()
     addProperty("neighbourhoodRadius"
                 , TString("Maximum Euclidean distance in normalised decision "
                           "space for two solutions to be considered as neighbours")
-                , getType(double));
+                , getTType(double));
 
     addProperty("ReferenceSetSize",
                 TString("The size of the reference set.\n"
                         "When a certain size is requested,\n"
                         "the actual size is equal or larger. Default is 1."),
-                getType(int));
+                getTType(int));
 
     TP_defineNeighbourhoodRadius(Tigon::DefaultNeighbourhoodRadius);
     TP_defineReferenceSetSizeRobustScalarisingSpace(1);

@@ -59,7 +59,7 @@ void WeightVectorInit::initialise()
                           " gives a total number of weight vectors that is equal"
                           " to or higher than the population size."
                           "Default is -1")
-                , getType(int));
+                , getTType(int));
 
 //    m_propertyNames.push_back("Regularisation approach that determines the association between weight vectors and solutions");
 //    m_propertyDescriptions.push_back("When weight vectors are created, or modified, they need to be associated with "

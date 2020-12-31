@@ -1,6 +1,6 @@
-﻿/****************************************************************************
+/****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -52,7 +52,9 @@ Problem::Problem()
     , m_nadirDefined             (false)
     , m_antiIdealDefined         (false)
     , m_boxConstraintsDefined    (false)
+    , m_setGoalVecDefined        (false)
     , m_goalVecDefined           (false)
+    , m_priorityVecDefined       (false)
     , m_thresholdVecDefined      (false)
 {
 
@@ -90,7 +92,9 @@ Problem::Problem(const Problem &prob)
     , m_nadirDefined             (prob.m_nadirDefined)
     , m_antiIdealDefined         (prob.m_antiIdealDefined)
     , m_boxConstraintsDefined    (prob.m_boxConstraintsDefined)
+    , m_setGoalVecDefined        (prob.m_setGoalVecDefined)
     , m_goalVecDefined           (prob.m_goalVecDefined)
+    , m_priorityVecDefined       (prob.m_priorityVecDefined)
     , m_thresholdVecDefined      (prob.m_thresholdVecDefined)
     , m_d2KrigingMap             (prob.m_d2KrigingMap)
     , m_pvecExternal             (prob.m_pvecExternal)
@@ -146,10 +150,19 @@ Problem::Problem(const Problem &prob)
         m_boxConstraints = prob.m_boxConstraints->clone();
     }
 
+    m_setGoalVec.clear();
+    for(size_t i=0; i<prob.m_setGoalVec.size(); i++) {
+        m_setGoalVec.push_back(prob.m_setGoalVec[i]);
+    }
+
     m_goalVec.clear();
     for(size_t i=0; i<prob.m_goalVec.size(); i++) {
         m_goalVec.push_back(prob.m_goalVec[i]->clone());
+    }
 
+    m_priorityVec.clear();
+    for(auto elem : prob.m_priorityVec) {
+        m_priorityVec.push_back(elem);
     }
 
     m_thresholdVec.clear();
@@ -207,7 +220,9 @@ Problem::~Problem()
     m_f2pMap.clear();
     m_f2cMap.clear();
     m_f2uMap.clear();
+    m_setGoalVec.clear();
     m_goalVec.clear();
+    m_priorityVec.clear();
     m_thresholdVec.clear();
 
     if(!m_fvec.empty()) {
@@ -441,9 +456,19 @@ TVector<OptimizationType> Problem::cVecOptTypes() const
     return getOptTypes(m_cvecPrpts);
 }
 
+TVector<bool> Problem::setGoalVector() const
+{
+    return m_setGoalVec;
+}
+
 TVector<IElementSPtr> Problem::goalVector() const
 {
     return m_goalVec;
+}
+
+TVector<int> Problem::priorityVector() const
+{
+    return m_priorityVec;
 }
 
 TVector<IElementSPtr> Problem::thresholdVector() const
@@ -514,11 +539,6 @@ TVector<UncertaintyMapping*> Problem::dVecUncertainties() const
 TVector<TVector<UncertaintyMapping*> > Problem::funcOutUncertainties() const
 {
     return m_fOutUncertainties;
-}
-
-TVector<bool> Problem::isExternalParameters() const
-{
-    return m_pvecExternal;
 }
 
 void Problem::defineProbProperties(ProblemProperties probprp)
@@ -795,6 +815,13 @@ void Problem::defineF2uMap(const TVector<TVector<int> > &map)
     m_definitionStatus = UnprocessedChanges;
 }
 
+void Problem::defineSetGoalVector(const TVector<bool> &setGoals)
+{
+    m_setGoalVec = setGoals;
+    m_setGoalVecDefined = true;
+    m_definitionStatus = UnprocessedChanges;
+}
+
 void Problem::defineGoalVector(const TVector<IElementSPtr> &goals)
 {
     m_goalVec = goals;
@@ -802,10 +829,31 @@ void Problem::defineGoalVector(const TVector<IElementSPtr> &goals)
     m_definitionStatus = UnprocessedChanges;
 }
 
+void Problem::redefineSetGoal(int idx, bool setGoal)
+{
+    if(isInRange(idx, m_setGoalVec.size())) {
+        m_setGoalVec[idx] = setGoal;
+    }
+}
+
 void Problem::redefineGoal(int idx, IElementSPtr goal)
 {
     if(isInRange(idx, m_goalVec.size())) {
         m_goalVec[idx]->defineValue(goal->value());
+    }
+}
+
+void Problem::definePriorityVector(const TVector<int> &priorities)
+{
+    m_priorityVec = priorities;
+    m_priorityVecDefined = true;
+    m_definitionStatus = UnprocessedChanges;
+}
+
+void Problem::redefinePriority(int idx, int priority)
+{
+    if(isInRange(idx, m_priorityVec.size())) {
+        m_priorityVec[idx] = priority;
     }
 }
 
@@ -1052,7 +1100,8 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
                     if(indexOf(params, inputs[j].ID()) == -1) {
                         params.push_back(inputs[j].ID());
                     }
-                } else { // the input is a decision variable
+                }
+                else { // the input is a decision variable
                     // check if the decision variable already exists
                     if(indexOf(dVars, inputs[j].ID()) == -1) {
                         dVars.push_back(inputs[j].ID());
@@ -1093,12 +1142,15 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
             // inputs
             TVector<ElementProperties> inputs  = m_fvec[i]->inputPrpts();
             for(int j=0; j<inputs.size(); j++) {
+                // decision variables
                 for(int k=0; k<dVars.size(); k++) {
                     if(dVars[k] == inputs[j].ID()) {
                         m_f2dMap[i][k] = j;
                     }
 
                 }
+
+                // parameters
                 for(int k=0; k<params.size(); k++) {
                     if(params[k] == inputs[j].ID()) {
                         m_f2pMap[i][k] = j;
@@ -1144,7 +1196,9 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         m_nadirDefined             = false;
         m_antiIdealDefined         = false;
         m_boxConstraintsDefined    = false;
+        m_setGoalVecDefined        = false;
         m_goalVecDefined           = false;
+        m_priorityVecDefined       = false;
         m_thresholdVecDefined      = false;
     }
 
@@ -1227,10 +1281,10 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
 
     // inputs
     if(nDVars == 0) {
-        if(nParams != 0) {
-            m_definitionStatus = IllDefinedDVecMaps;
-            return m_definitionStatus;
-        } else {
+        if (nParams==0) {
+
+            // Both nDVars and nParams are zero
+
             for(int i=0; i<nFuncs; i++) {
                 TVector<ElementProperties> fInPrprts = m_fvec[i]->inputPrpts();
                 BoxConstraintsDataSPtr fBox = m_fvec[i]->boxConstraints();
@@ -1244,7 +1298,8 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
                             } else if(m_f2dMap[i].size() > k) {
                                 m_f2dMap[i][k] = j;
                             } else {
-                                // ERROR - every input was supposed to appear already.
+                                // ERROR - every input was supposed to appear
+                                // already.
                             }
                             break;
                         }
@@ -1260,15 +1315,20 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
             nDVars = m_dvecPrpts.size();
             m_dvecPrptsDefined = true;
             m_pvecPrptsDefined = true;
+
+
+        } else {
+            m_definitionStatus = IllDefinedDVecMaps;
+            return m_definitionStatus;
         }
     }
 
     // outputs
     if(nOVars == 0) {
-        if(nConstrs != 0) {
-            m_definitionStatus = IllDefinedOVecMaps;
-            return m_definitionStatus;
-        } else {
+        if( (nConstrs==0) && (nUVars==0) ) {
+
+            // nOVars, nConstrs and nUVars are zero
+
             for(int i=0; i<nFuncs; i++) {
                 TVector<ElementProperties> fOutPrprts = m_fvec[i]->outputPrpts();
                 for(int j=0; j<fOutPrprts.size(); j++) {
@@ -1281,7 +1341,8 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
                             } else if(m_f2oMap[i].size() > k) {
                                 m_f2oMap[i][k] = j;
                             } else {
-                                // ERROR - every output was supposed to appear already.
+                                // ERROR - every output was supposed to appear
+                                // already.
                             }
                             break;
                         }
@@ -1298,6 +1359,10 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
             m_ovecPrptsDefined = true;
             m_cvecPrptsDefined = true;
             m_uvecPrptsDefined = true;
+
+        } else {
+            m_definitionStatus = IllDefinedOVecMaps;
+            return m_definitionStatus;
         }
     }
 
@@ -1309,14 +1374,19 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         int nInputs = m_fvec[i]->TP_nInputs();
         TVector<int> dMap = m_f2dMap[i];
         TVector<int> pMap = m_f2pMap[i];
-        //        TVector<bool> inputDefined(nInputs, false);
+
         for(int j=0; j<nInputs; j++) {
-            int nDVarsConnections = vectorCount(dMap, j);
-            int nParamConnections = vectorCount(pMap, j);
-            if(((nDVarsConnections==1) && (nParamConnections==0)) ||
-                    ((nDVarsConnections==0) && (nParamConnections==1))   ) {
+            // number of connections
+            int nDVarsCon = vectorCount(dMap, j);
+            int nParamCon = vectorCount(pMap, j);
+
+            // the order of checking which input to blame for wrong connections
+            // is decision variables and then the parameters
+
+            if( ((nDVarsCon==1) && (nParamCon==0)) ||
+                    ((nDVarsCon==0) && (nParamCon==1))   ) {
                 // input is properly connected
-            } else if(nParamConnections==0) {
+            } else if(nParamCon==0) {
                 m_definitionStatus = IllDefinedDVecMaps;
                 return m_definitionStatus;
             } else {
@@ -1480,7 +1550,8 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         m_uvecPrptsDefined = true;
     }
 
-    /// check size / construct boxConstraints according to dvecproperties
+    /// check size / construct boxConstraints for decision variables
+    /// according to dvecproperties
     if(m_boxConstraintsDefined) {
         if(m_boxConstraints->size() != nDVars) {
             m_definitionStatus = IllDefinedBoxConstraints;
@@ -1497,7 +1568,8 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
             m_boxConstraints->defineUpperBounds(ubs);
         }
     } else {
-        m_boxConstraints = BoxConstraintsDataSPtr(new BoxConstraintsData(m_dvecPrpts));
+        m_boxConstraints =
+                BoxConstraintsDataSPtr(new BoxConstraintsData(m_dvecPrpts));
 
         // assign limits from the functions
         for(int i=0; i<m_fvec.size(); i++) {
@@ -1573,6 +1645,21 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         m_nadirDefined = true;
     }
 
+    /// check size/construct setGoalvec according to ovecproperties
+    // setGoals are set to false by default
+    if(m_setGoalVecDefined) {
+        if(m_setGoalVec.size() != nOVars) {
+            m_definitionStatus = IllDefinedSetGoalVec;
+            return m_definitionStatus;
+        }
+    } else {
+        m_setGoalVec.clear();
+        for(int i=0; i<nOVars; i++) {
+            m_setGoalVec.push_back(false);
+        }
+        m_setGoalVecDefined = true;
+    }
+
     /// check size/construct goalvec according to ovecproperties
     // goals are set to minimum value by default (as low as possible)
     if(m_goalVecDefined) {
@@ -1590,6 +1677,21 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         }
         Tigon::resetToMin(m_goalVec);
         m_goalVecDefined = true;
+    }
+
+    /// check size/construct priorityvec according to ovecproperties
+    // priorities are set to minimum (1) value by default
+    if(m_priorityVecDefined) {
+        if(m_priorityVec.size() != nOVars) {
+            m_definitionStatus = IllDefinedPriorityVec;
+            return m_definitionStatus;
+        }
+    } else {
+        m_priorityVec.clear();
+        for(int i=0; i<nOVars; i++) {
+            m_priorityVec.push_back(1);
+        }
+        m_priorityVecDefined = true;
     }
 
     /// check size/construct threshold vec according to cvecproperties
@@ -1611,7 +1713,11 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         m_thresholdVecDefined = true;
     }
 
-    /// check size / construct uncertainty mappings vec according to dvecproperties
+    /// \todo check if it is necessary to define uncertainty mappings for
+    /// strategy variables
+
+    /// check size / construct uncertainty mappings vec
+    /// according to dvecproperties
     if(m_dvecUncertaintiesDefined) {
         if(m_dvecUncertainties.size() != nDVars) {
             m_definitionStatus = IllDefinedUncertaintyVec;
@@ -1756,6 +1862,11 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
 
     m_definitionStatus = FullyDefined;
     return m_definitionStatus;
+}
+
+TVector<bool> Problem::isExternalParameters() const
+{
+    return m_pvecExternal;
 }
 
 int Problem::numberExternalParameters() const

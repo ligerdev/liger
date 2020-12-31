@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -21,7 +21,18 @@
 namespace Tigon {
 namespace Representation {
 
-class LIGER_TIGON_EXPORT Preferability : public DominanceRelation
+/**
+ * @brief The Preferability class
+ * Note that this class uses virtual inheritance from DominanceRelation.
+ * This ensures that there will be only one instance of DominanceRelation in a
+ * diamond inheritance case. Currently the classes DominanceRelation, Preferability,
+ * ConstrDomRelation and PreferabilityConstraintHandling are organised in a
+ * diamond inheritance structure. When a pointer or reference to DominanceRelation
+ * is initialised with PreferabilityConstraintHandling, there will be only one
+ * instance of DominanceRelation, as opposed to two in case virtual inheritance
+ * wasn't used.
+ */
+class LIGER_TIGON_EXPORT Preferability : virtual public DominanceRelation
 {
 public:
     Preferability();
@@ -30,20 +41,31 @@ public:
     tribool isBetterThan(const TVector<double> &a, const TVector<double> &b) const;
 
     tribool preferability(const TVector<double> &a,
-                          const TVector<double> &b) const;
+                          const TVector<double> &b,
+                          const TVector<double> &g,
+                          const TVector<bool> &s) const;
+
+    tribool preferability(const TVector<double> &a,
+                          const TVector<double> &b,
+                          const TVector<double> &g,
+                          const TVector<bool> &s,
+                          const TVector<int> &p) const;
 
     // Parameters
-    void defineParameters(const TVector<TVector<double>>& c);
-
     void defineGoalVec(const TVector<double>& g);
     TVector<double> goalVec()              const;
 
     void defineSetGoals(const TVector<bool>& gSet);
     TVector<bool> setGoals()                 const;
 
+    void definePriorityVec(const TVector<int>& p);
+    TVector<int> priorityVec()              const;
+
 private:
     TVector<double> m_goalVec;
     TVector<bool>   m_setGoals;
+    TVector<int>    m_priorityVec;
+
 };
 
 } // namespace Representation

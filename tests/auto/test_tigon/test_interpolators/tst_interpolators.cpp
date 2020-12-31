@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -22,6 +22,7 @@
 
 #include <tigon/Tigon.h>
 #include <boost/math/constants/constants.hpp>
+#include <tigon/Random/RandomGenerator.h>
 
 using namespace std;
 using namespace Tigon;
@@ -75,11 +76,15 @@ private slots:
 
     void test_SphericalVariogram();
 
-    void test_Kriging_Fitting();
-    void test_Kriging_ErrorEstimates_1DExample();
-    void test_Kriging_ErrorEstimates_2DExample();
-    void test_Kriging_SimpleExample();
-    void test_KrigingAssignVariogram();
+    void test_DACE_Fitting();
+    void test_DACE_ErrorEstimates_1DExample();
+    void test_DACE_ErrorEstimates_2DExample();
+
+    void test_OrdinaryKriging_Fitting();
+    void test_OrdinaryKriging_ErrorEstimates_1DExample();
+    void test_OrdinaryKriging_ErrorEstimates_2DExample();
+    void test_OrdinaryKriging_SimpleExample();
+    void test_OrdinaryKrigingAssignVariogram();
 #ifdef TEST_KRIGING_CASCADE
     void test_KrigingCascade();
     void test_KrigingCascadeFromVariograms();
@@ -131,20 +136,21 @@ void tst_interpolators::test_initEps()
 }
 
 
-void inline vector1DToMatlabCommand(TString vecName, TVector<double> value)
+void inline vector1DToMatlabCommand(TString vecName, const TVector<double>& value)
 {
     cout << vecName << " = [";
-    for(int i=0; i<value.size(); i++) {
+    for(size_t i=0; i<value.size(); i++) {
         cout << value[i] << " ";
     }
     cout << "]\';" << endl;
 }
 
-void inline vector2DToMatlabCommand(TString vecName, TVector<TVector<double> > value)
+void inline vector2DToMatlabCommand(TString vecName,
+                                    const TVector<TVector<double>>& value)
 {
     cout << vecName << " = [";
-    for(int i = 0; i < value.size(); i++) {
-        for(int j=0; j<value[i].size(); j++) {
+    for(size_t i = 0; i<value.size(); i++) {
+        for(size_t j=0; j<value[i].size(); j++) {
             cout << value[i][j] << " ";
         }
         if(i < value.size()-1) {
@@ -12351,7 +12357,276 @@ void tst_interpolators::test_SphericalVariogram()
 }
 
 
-void tst_interpolators::test_Kriging_Fitting()
+
+void tst_interpolators::test_DACE_Fitting()
+{
+    TVector<TVector<double> > x;
+    TVector<double> y;
+    TVector<TVector<double> > xq;
+    TVector<double> yqref;
+    int n = 100;
+    int dimx = 3;
+    int nq = 10*n;
+
+    x.resize(n);
+    y.resize(n);
+    xq.resize(nq);
+    yqref.resize(nq);
+
+    TRAND.defineSeed(time(NULL));
+    for(int i = 0; i<n; i++) {
+        x[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            x[i][j] = 10.0*TRAND.randUni();
+        }
+        //double bias = 1e-04*qrand()/static_cast<double>(RAND_MAX);
+        double bias = 0.0;
+        y[i] = std::pow(x[i][0], 3) + std::pow(x[i][1] - x[i][2], 2)+bias;
+    }
+    std::cout << std::endl;
+    for(int i = 0; i < nq; i++) {
+        xq[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            xq[i][j] = 10.0*TRAND.randUni();
+        }
+        yqref[i] = std::pow(xq[i][0], 3) + std::pow(xq[i][1] - xq[i][2], 2);
+    }
+
+    DACE* kinterp = new DACE();
+    kinterp->defineEstimateErrors(false);
+    kinterp->defineStallIterations(5);
+    kinterp->defineInitialPopsizePerVariable(20);
+    kinterp->defineBudgetPerVariable(40);
+    kinterp->updateData(x, y);
+    double kerr  = 0.0;
+    for(int i = 0; i < nq; i++) {
+        kerr += std::pow(yqref[i] - kinterp->interpolate(xq[i]), 2);
+    }
+    cout << "Kriging error (MSE): " << kerr/nq << endl << endl;
+
+    delete kinterp;
+}
+
+double inline func1D(double x)
+{
+    return (x+1.0)*std::sin(std::pow(x, 2))+15; // shift it up by 30
+}
+
+void tst_interpolators::test_DACE_ErrorEstimates_1DExample()
+{
+    TVector<TVector<double> > x;
+    TVector<double> y;
+    TVector<TVector<double> > xq;
+    TVector<double> yq;
+    TVector<double> yqref;
+    // ref points for the function
+    TVector<TVector<double> > xx;
+    TVector<double> yy;
+    int dimx = 1;
+    double lbound = 2;
+    double ubound = 6;
+    int n1 = 20;
+    int n2 = 10;
+    int nq = 50;
+    int nref = 1000;
+
+    x.resize(n1+n2);
+    y.resize(n1+n2);
+    xq.resize(nq);
+    yq.resize(nq);
+    yqref.resize(nq);
+    xx.resize(nref);
+    yy.resize(nref);
+
+    // TODO - use Tigon random generator
+    TRAND.defineSeed(1);
+    for(int i = 0; i<n1; i++) {
+        x[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            double alpha = TRAND.randUni();
+            x[i][j] = lbound+0.7*(ubound-lbound)*alpha;
+        }
+        y[i] = func1D(x[i][0]);
+    }
+    for(int i = n1; i < n1+n2; i++) {
+        x[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            double alpha = TRAND.randUni();
+            x[i][j] = lbound+(0.7+0.3*alpha)*(ubound-lbound);
+        }
+        y[i] = func1D(x[i][0]);
+    }
+
+    for(int i = 0; i < nq; i++) {
+        xq[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            xq[i][j] = lbound+1.0*i/nq*(ubound-lbound);
+        }
+        yqref[i] = func1D(xq[i][0]);
+    }
+
+    for(int i = 0; i < nref; i++) {
+        xx[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            xx[i][j] = lbound+1.0*i/nref*(ubound-lbound);
+        }
+        yy[i] = func1D(xx[i][0]);
+    }
+
+    DACE* kinterp = new DACE();
+    kinterp->defineEstimateErrors(true);
+    kinterp->defineStallIterations(5);
+    kinterp->defineInitialPopsizePerVariable(20);
+    kinterp->defineBudgetPerVariable(40);
+    kinterp->updateData(x, y);
+
+    // Error checks
+    TVector<double> actualError;
+    TVector<double> predictionErrStd;
+    double mse  = 0.0;
+    for(int i = 0; i < nq; i++) {
+        yq[i] = kinterp->interpolate(xq[i]);
+        mse += std::pow(yqref[i] - yq[i], 2);
+        actualError.push_back(std::abs(yqref[i] - yq[i]));
+        predictionErrStd.push_back(kinterp->errorEstimate());
+    }
+    mse = mse/nq;
+    cout << "Kriging error (MSE): " << mse << endl << endl;
+#ifdef KRIGING_PLOT_IN_MATLAB
+    cout<< "%Matlab command for plotting =========== " << endl << endl;
+    cout << "close all; clear;" << endl;
+    vector2DToMatlabCommand("x1", mid(x, 0, n1));
+    vector2DToMatlabCommand("x2", mid(x,n1,n1+n2));
+    vector1DToMatlabCommand("y",  y);
+    vector2DToMatlabCommand("xq", xq);
+    vector1DToMatlabCommand("yq", yq);
+    vector2DToMatlabCommand("xx", xx);
+    vector1DToMatlabCommand("yy", yy);
+    vector1DToMatlabCommand("actualError", actualError);
+    vector1DToMatlabCommand("errorEstimate", predictionErrStd);
+    cout << "x = [x1; x2];"
+         << "figure; hold on; "
+         << "yyaxis left; "
+         << "plot(xx,yy, \'.\', \'Color\', [0.7 0.7 0.7]); "
+         << "plot(x,y, \'+\'); "
+         << "plot(xq, yq, 'd'); "
+         << "ylabel(\'Prediction\'); "
+         << "yyaxis right; "
+         << "plot(xq, errorEstimate,    \'Marker\', \'x\'); "
+         << "ylabel(\'Error\'); "
+         << "hold off; grid on; "
+         << "legend({\'Ref\' \'Sample\' \'Prediction\' \'errorEstimate\'});"
+         << endl;
+    cout << endl << "%=================================" << endl << endl;
+#endif
+    delete kinterp;
+}
+
+void tst_interpolators::test_DACE_ErrorEstimates_2DExample()
+{
+    TVector<TVector<double> > x;
+    TVector<double> y;
+    TVector<TVector<double> > xq;
+    TVector<double> yq;
+    TVector<double> yqref;
+    int dimx = 2;
+    int n1 = 20;
+    int n2 = 5;
+    int nq = 10;
+
+    x.resize(n1+n2);
+    y.resize(n1+n2);
+    xq.resize(nq);
+    yq.resize(nq);
+    yqref.resize(nq);
+
+    // TODO - use Tigon random generator
+    TRAND.defineSeed(1);
+    for(int i = 0; i<n1; i++) {
+        x[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            x[i][j] = 5.0*TRAND.randUni();
+        }
+        y[i] = std::pow(x[i][0], 2) + std::pow(x[i][0] - x[i][1]/2.0, 2);
+    }
+    for(int i = n1; i < n1+n2; i++) {
+        x[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            x[i][j] = 7.0 + 3.0*TRAND.randUni();
+        }
+        y[i] = std::pow(x[i][0], 2) + std::pow(x[i][0] - x[i][1]/2.0, 2);
+    }
+
+    for(int i = 0; i < nq; i++) {
+        xq[i].resize(dimx);
+        for(int j=0; j<dimx; j++) {
+            xq[i][j] =  10.0*TRAND.randUni();
+        }
+        yqref[i] = std::pow(xq[i][0], 2) + std::pow(xq[i][0] - xq[i][1]/2.0, 2);
+    }
+
+    DACE* kinterp = new DACE();
+    kinterp->defineEstimateErrors(true);
+    kinterp->defineStallIterations(5);
+    kinterp->defineInitialPopsizePerVariable(20);
+    kinterp->defineBudgetPerVariable(40);
+    kinterp->updateData(x, y);
+
+    // Error checks
+    TVector<double> actualError;
+    TVector<double> predictionErrStd;
+    double mse  = 0.0;
+    for(int i = 0; i < nq; i++) {
+        yq[i] = kinterp->interpolate(xq[i]);
+        mse += std::pow(yqref[i] - yq[i], 2);
+        cout << "\t(" << xq[i][0] << "," << xq[i][1]
+             << ") |-> " << yq[i]
+             << " (actual: " << yqref[i] << ")"
+             << "\terr: "   << std::abs(yqref[i] - yq[i])
+             << "\t kvariance est: "
+             << kinterp->errorEstimate()
+             << endl;
+        actualError.push_back(std::abs(yqref[i] - yq[i]));
+        predictionErrStd.push_back(kinterp->errorEstimate());
+    }
+    mse = mse/nq;
+    cout << "Kriging error (MSE): " << mse << endl << endl;
+
+ #ifdef KRIGING_PLOT_IN_MATLAB
+    // Matlab command for plotting
+    cout << "close all; clear;" << endl;
+    vector2DToMatlabCommand("x1", mid(x,0, n1));
+    vector2DToMatlabCommand("x2", mid(x,n1,n1+n2));
+    vector1DToMatlabCommand("y",  y);
+    vector2DToMatlabCommand("xq", xq);
+    vector1DToMatlabCommand("yq", yq);
+    vector1DToMatlabCommand("actualError", actualError);
+    vector1DToMatlabCommand("errorEstimate", predictionErrStd);
+    cout << "x = [x1; x2];"
+         << "figure; hold on; "
+         << "syms x1 x2; "
+         << "h = fsurf(x1^2 + (x1-x2/2)^2, [0 10 0 10]); "
+         << "h(1).FaceAlpha = 0.2; "
+         << "plot3(x(:,1),x(:,2), y, \'o\', \'MarkerFaceColor\',\'b\'); "
+         << "plot3(xq(:,1),xq(:,2), yq, \'ro\', \'MarkerFaceColor\',\'r\'); "
+         << "hold off; grid on; "
+         << "legend({\'Ref\' \'Sample\' \'Prediction\'});"
+         << endl
+         << "figure; hold on; "
+         << "syms x1 x2; "
+         << "h = fsurf(x1^2 + (x1-x2/2)^2, [0 10 0 10]); "
+         << "h(1).FaceAlpha = 0.2; "
+         << "scatter3(xq(:,1),xq(:,2), yq, 10^7.*errorEstimate); "
+         << "hold off; grid on; "
+         << "legend({\'Ref\' \'Prediction\'});"
+         << endl;
+    cout << endl << "%=================================" << endl << endl;
+#endif
+
+    delete kinterp;
+}
+
+void tst_interpolators::test_OrdinaryKriging_Fitting()
 {
     TVector<TVector<double> > x;
     TVector<double> y;
@@ -12386,7 +12661,7 @@ void tst_interpolators::test_Kriging_Fitting()
     }
 
     cout << " === Fixed eta 0.8 ====" << endl;
-    Kriging* kinterp = new Kriging();
+    OrdinaryKriging* kinterp = new OrdinaryKriging();
     kinterp->assignVariogram(new PowerVariogram(x, y, 0.8));
     cout << "Fixed  eta    : " << kinterp->variogram()->eta() << endl;
     cout << "beta          : " << kinterp->variogram()->beta()<< endl;
@@ -12398,7 +12673,7 @@ void tst_interpolators::test_Kriging_Fitting()
     cout << "Kriging error (MSE): " << kerr/nq << endl << endl;
 
     cout << " === Fixed eta 1.5 ====" << endl;
-    kinterp = new Kriging(new PowerVariogram(x, y, 1.5));
+    kinterp = new OrdinaryKriging(new PowerVariogram(x, y, 1.5));
     cout << "Fixed  eta    : " << kinterp->variogram()->eta() << endl;
     cout << "beta          : " << kinterp->variogram()->beta()<< endl;
     QCOMPARE(kinterp->variogram()->eta(), 1.5);
@@ -12409,7 +12684,7 @@ void tst_interpolators::test_Kriging_Fitting()
     cout << "Kriging error (MSE): " << kerr/nq << endl << endl;
 
     cout << " === Fitted eta ====" << endl;
-    kinterp = new Kriging(new PowerVariogram(x, y));
+    kinterp = new OrdinaryKriging(new PowerVariogram(x, y));
     cout << "Fitted    eta: " << kinterp->variogram()->eta() << endl;
     cout << "beta         : " << kinterp->variogram()->beta()<< endl;
     kerr  = 0.0;
@@ -12421,7 +12696,7 @@ void tst_interpolators::test_Kriging_Fitting()
     cout << " === eta from Regression ====" << endl;
     PowerVariogram* vg = new PowerVariogram(x, y);
     vg->fitVariogramLS(x, y);
-    kinterp = new Kriging(vg);
+    kinterp = new OrdinaryKriging(vg);
     cout << "eta from regression  : " << kinterp->variogram()->eta()  << endl;
     cout << "beta from regression : " << kinterp->variogram()->beta() << endl;
     kerr  = 0.0;
@@ -12431,12 +12706,7 @@ void tst_interpolators::test_Kriging_Fitting()
     cout << "Kriging error (MSE): " << kerr/nq << endl << endl;
 }
 
-double inline func1D(double x)
-{
-    return (x+1.0)*std::sin(std::pow(x, 2))+15; // shift it up by 30
-}
-
-void tst_interpolators::test_Kriging_ErrorEstimates_1DExample()
+void tst_interpolators::test_OrdinaryKriging_ErrorEstimates_1DExample()
 {
     TVector<TVector<double> > x;
     TVector<double> y;
@@ -12497,8 +12767,8 @@ void tst_interpolators::test_Kriging_ErrorEstimates_1DExample()
         yy[i] = func1D(xx[i][0]);
     }
 
-    Kriging* kinterp = new Kriging(new PowerVariogram(x, y, 1.9999));
-    kinterp->estimateErrors(true);
+    OrdinaryKriging* kinterp = new OrdinaryKriging(new PowerVariogram(x, y, 1.9999));
+    kinterp->defineEstimateErrors(true);
     cout << "eta    : " << kinterp->variogram()->eta() << endl;
     cout << "beta   : " << kinterp->variogram()->beta()<< endl;
 
@@ -12523,8 +12793,8 @@ void tst_interpolators::test_Kriging_ErrorEstimates_1DExample()
 #ifdef KRIGING_PLOT_IN_MATLAB
     cout<< "%Matlab command for plotting =========== " << endl << endl;
     cout << "close all; clear;" << endl;
-    vector2DToMatlabCommand("x1", x.mid(0, n1));
-    vector2DToMatlabCommand("x2", x.mid(n1,n1+n2));
+    vector2DToMatlabCommand("x1", mid(x,0, n1));
+    vector2DToMatlabCommand("x2", mid(x,n1,n1+n2));
     vector1DToMatlabCommand("y",  y);
     vector2DToMatlabCommand("xq", xq);
     vector1DToMatlabCommand("yq", yq);
@@ -12552,7 +12822,7 @@ void tst_interpolators::test_Kriging_ErrorEstimates_1DExample()
 #endif
 }
 
-void tst_interpolators::test_Kriging_ErrorEstimates_2DExample()
+void tst_interpolators::test_OrdinaryKriging_ErrorEstimates_2DExample()
 {
     TVector<TVector<double> > x;
     TVector<double> y;
@@ -12595,8 +12865,8 @@ void tst_interpolators::test_Kriging_ErrorEstimates_2DExample()
         yqref[i] = std::pow(xq[i][0], 2) + std::pow(xq[i][0] - xq[i][1]/2.0, 2);
     }
 
-    Kriging* kinterp = new Kriging(new PowerVariogram(x, y));
-    kinterp->estimateErrors(true);
+    OrdinaryKriging* kinterp = new OrdinaryKriging(new PowerVariogram(x, y));
+    kinterp->defineEstimateErrors(true);
     cout << "eta    : " << kinterp->variogram()->eta() << endl;
     cout << "beta   : " << kinterp->variogram()->beta()<< endl;
 
@@ -12629,8 +12899,8 @@ void tst_interpolators::test_Kriging_ErrorEstimates_2DExample()
  #ifdef KRIGING_PLOT_IN_MATLAB
     // Matlab command for plotting
     cout << "close all; clear;" << endl;
-    vector2DToMatlabCommand("x1", x.mid(0, n1));
-    vector2DToMatlabCommand("x2", x.mid(n1,n1+n2));
+    vector2DToMatlabCommand("x1", mid(x,0, n1));
+    vector2DToMatlabCommand("x2", mid(x,n1,n1+n2));
     vector1DToMatlabCommand("y",  y);
     vector2DToMatlabCommand("xq", xq);
     vector1DToMatlabCommand("yq", yq);
@@ -12647,7 +12917,7 @@ void tst_interpolators::test_Kriging_ErrorEstimates_2DExample()
 #endif
 }
 
-void tst_interpolators::test_Kriging_SimpleExample()
+void tst_interpolators::test_OrdinaryKriging_SimpleExample()
 {
     TVector<TVector<double> > x(7);
     TVector<double> y(7);
@@ -12669,13 +12939,13 @@ void tst_interpolators::test_Kriging_SimpleExample()
     xq[0] = 65;
     xq[1] = 137;
 
-    Kriging* kinterp = new Kriging(new PowerVariogram(x, y));
-    kinterp->estimateErrors(true);
+    OrdinaryKriging* kinterp = new OrdinaryKriging(new PowerVariogram(x, y));
+    kinterp->defineEstimateErrors(true);
     double yq = kinterp->interpolate(xq);
     qDebug() << yq;
 }
 
-void tst_interpolators::test_KrigingAssignVariogram()
+void tst_interpolators::test_OrdinaryKrigingAssignVariogram()
 {
     using namespace Tigon;
     TVector<TVector<double> > x;
@@ -12710,7 +12980,7 @@ void tst_interpolators::test_KrigingAssignVariogram()
         yqref[i] = std::pow(xq[i][0], 3) + std::pow(xq[i][1] - xq[i][2], 2);
     }
 
-    Kriging* kinterp = new Kriging();
+    OrdinaryKriging* kinterp = new OrdinaryKriging();
     kinterp->assignVariogram(new PowerVariogram(x, y, 0.8));
     cout << "Num of samples: " << kinterp->variogram()->inputData().size()
          << endl;

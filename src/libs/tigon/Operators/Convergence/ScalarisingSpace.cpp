@@ -46,7 +46,7 @@ void ScalarisingSpace::initialise()
                 TString("The size of the reference set.\n"
                         "When a certain size is requested,\n"
                         "the actual size is equal or larger. Default is 1."),
-                getType(int));
+                getTType(int));
 
     TP_defineReferenceSetSizeScalarisingSpace(1);
 }

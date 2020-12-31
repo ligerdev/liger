@@ -57,7 +57,7 @@ void IConvergence::initialise()
                 , TString("Disable the operator during the optimization "
                                   "process, and only operates after the "
                                   "termination criteria are satisfied.")
-                , getType(bool));
+                , getTType(bool));
     addInputTag(Tigon::TForConvergence);
     TP_defineOperateOnFinal(false);
 

@@ -34,15 +34,15 @@ MultiMemberTournamentForDirection::MultiMemberTournamentForDirection()
                 , TString("Number of new solution created by the "
                           "operator divided by the number of solutions "
                           "in the input set. Default is 0.5")
-                , getType(double));
+                , getTType(double));
     addProperty("OutputSetSize"
                 , TString("Number of solutions to select for each "
                           "sub-set. Default is 2.")
-                , getType(int));
+                , getTType(int));
     addProperty("TournamentSize"
                 , TString("Number of participants in each tournament.\n"
                           "Default is 2.")
-                , getType(int));
+                , getTType(int));
 
     m_name = TString("Multi-member tournament selection for direction");
     m_description = TString("Randomly chooses n solutions from the input set, "
@@ -68,15 +68,15 @@ MultiMemberTournamentForDirection(Tigon::Representation::IPSet* ipset)
                 , TString("Number of new solution created by the "
                           "operator divided by the number of solutions "
                           "in the input set. Default is 0.5")
-                , getType(double));
+                , getTType(double));
     addProperty("OutputSetSize"
                 , TString("Number of solutions to select for each "
                           "sub-set. Default is 2.")
-                , getType(int));
+                , getTType(int));
     addProperty("TournamentSize"
                 , TString("Number of participants in each tournament.\n"
                           "Default is 2.")
-                , getType(int));
+                , getTType(int));
 
     m_name = TString("Multi-member tournament selection for direction");
     m_description = TString("Randomly chooses n solutions from the input set, "

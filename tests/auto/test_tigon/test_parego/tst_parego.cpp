@@ -83,7 +83,6 @@ void tst_parego::test_SurrogateBasedOptimizer()
     int   popSize  = 100;
     int   budget   = popSize+nDirs*1;
     int   maxSurrogateSize = 50;
-    double nRaduis  = 0.2;
 
     PSetBase*                   base = new PSetBase();
     IFormulation*               prob = new IFormulation(base);
@@ -109,7 +108,6 @@ void tst_parego::test_SurrogateBasedOptimizer()
     scal->TP_defineWeightScopeApproach(Tigon::GlobalWeight);
     filt->TP_defineMaxSolutions(maxSurrogateSize);
     opt->TP_defineErrorMethod(Tigon::ErrDensityBased);
-    opt->TP_defineNeighbourhoodRadius(nRaduis);
 
     eval->evaluate();
     ISet* oSet = eval->outputSet(0);
@@ -135,7 +133,6 @@ void tst_parego::test_ParEGO_workflow()
     int   popSize  = 100;
     int   budget   = popSize+nDirs*1;
     int   maxSurrogateSize = 50;
-    double nRaduis  = 0.2;
 
     PSetBase*                   base = new PSetBase();
     IFormulation*               prob = new IFormulation(base);
@@ -162,7 +159,6 @@ void tst_parego::test_ParEGO_workflow()
     scal->TP_defineWeightScopeApproach(Tigon::GlobalWeight);
     filt->TP_defineMaxSolutions(maxSurrogateSize);
     opt->TP_defineErrorMethod(Tigon::ErrDensityBased);
-    opt->TP_defineNeighbourhoodRadius(nRaduis);
 
     while(opt->remainingBudget() > 0) {
         opt->evaluate();
@@ -204,7 +200,6 @@ void tst_parego::test_ParEGO()
     int   popSize  = 100;
     int   budget   = popSize+nDirs*1;
     int   maxSurrogateSize = 50;
-    double nRaduis  = 0.2;
 
     PSetBase*      base = new PSetBase();
     IFormulation*  prob = new IFormulation(base);
@@ -220,7 +215,6 @@ void tst_parego::test_ParEGO()
     init->TP_defineSetSize(popSize);
     alg->defineReferenceSetSize(nDirs);
     alg->TP_defineMaxSolutions(maxSurrogateSize);
-    alg->TP_defineNeighbourhoodRadius(nRaduis);
     alg->defineBudget(budget);
 
     while(alg->remainingBudget() > 0) {

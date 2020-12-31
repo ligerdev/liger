@@ -50,12 +50,12 @@ void FiltrationForDirection::initialise()
 
     addProperty("InputSetSize"
                 , TString("Number of solutions to select for each sub-set. Default is 2")
-                , getType(int));
+                , getTType(int));
     addProperty("OutputSetSize"
                 , TString("Maximum number of new solutions created by the direction operator "
                           "from each input set. "
                           "Default is 0")
-                , getType(int));
+                , getTType(int));
 
     addInputTag(Tigon::TForSelection);
     addOutputTag(Tigon::TForDirection);

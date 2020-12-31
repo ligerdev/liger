@@ -108,7 +108,7 @@ void RouletteWheelSelection::initialise()
                 , TString("Number of solutions in the output set.\n"
                           "Default is -1, meaning that the size of the output "
                           "set is set to be equal to the size of the input set.")
-                , getType(int));
+                , getTType(int));
 
     m_outputSetSize = -1;
 

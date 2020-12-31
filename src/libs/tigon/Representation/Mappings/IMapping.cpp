@@ -30,7 +30,7 @@
 #include <tigon/Utils/NormalisationUtils.h>
 #include <tigon/ExceptionHandling/TException.h>
 #include <tigon/Log/LogManager.h>
-#include <tigon/Utils/Kriging.h>
+#include <tigon/Utils/Kriging/OrdinaryKriging.h>
 #include <tigon/Utils/BatchSolveRegister.h>
 #include <tigon/Representation/Container/SampleVectors.h>
 #include <tigon/Representation/Container/TimeSeriesContainer.h>

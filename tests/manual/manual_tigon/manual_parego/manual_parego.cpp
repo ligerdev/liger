@@ -43,7 +43,6 @@ void bmk_ParEGO_DTLZ2()
     int   popSize  = 100;
     int   budget   = popSize+nDirs*10;
     int   maxSurrogateSize = 50;
-    double nRaduis  = 0.2;
 
     PSetBase*     base      = new PSetBase();
     IFormulation* prob      = new IFormulation(base);
@@ -61,7 +60,6 @@ void bmk_ParEGO_DTLZ2()
     alg->defineReferenceSetSize(nDirs);
     alg->defineScalarisingFunction(Tigon::WeightedChebyshevAugmented);
     alg->TP_defineMaxSolutions(maxSurrogateSize);
-    alg->TP_defineNeighbourhoodRadius(nRaduis);
 
     alg->defineBudget(budget);
 

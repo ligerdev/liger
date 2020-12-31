@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -16,27 +16,37 @@
 #ifndef DOMINANCERELATION_H
 #define DOMINANCERELATION_H
 
-#include <tigon/Utils/Dominance/IOrderedRelation.h>
+#include <tigon/tigon_global.h>
+#include <tigon/tigonconstants.h>
 
 namespace Tigon {
 namespace Representation {
 
-class LIGER_TIGON_EXPORT DominanceRelation : public IOrderedRelation
+class LIGER_TIGON_EXPORT DominanceRelation
 {
 public:
     DominanceRelation();
-    ~DominanceRelation();
+    virtual ~DominanceRelation();
 
-    tribool isBetterThan(const TVector<double> &a, const TVector<double> &b) const;
+    virtual tribool isBetterThan(const TVector<double> &a,
+                                 const TVector<double> &b) const;
 
     tribool dominates(const TVector<double> &a, const TVector<double> &b) const;
 
+    // Parameters
     void defineWeakDom(bool c);
     bool weakDom() const;
 
+    // Exposed methods from derived classes
+    virtual void defineGoalVec(const TVector<double>& g);
+    virtual void defineSetGoals(const TVector<bool>& gSet);
+    virtual void definePriorityVec(const TVector<int>& p);
+    virtual void defineThresholdVec(const TVector<double>& t);
+    virtual void defineConstraintVecA(const TVector<double>& ag);
+    virtual void defineConstraintVecB(const TVector<double>& bg);
+
 private:
     bool m_weakDom;
-
 };
 
 } // namespace Representation

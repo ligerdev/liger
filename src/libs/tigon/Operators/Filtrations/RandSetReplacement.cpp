@@ -53,12 +53,12 @@ void RandSetReplacement::initialise()
     addProperty("ReplacementProbability"
                 , TString("Specifies the probability associated with"
                           "each replacement operation. Default is 10%")
-                , getType(double));
+                , getTType(double));
 
     addProperty("ReplacementSetTags"
                 , TString("Specifies the Sets with a given tag that are to replace some input sets\n"
                           "The default is TMainOptimizationSet.")
-                , getType(TString));
+                , getTType(TString));
 
     defineReplacementProbability(Tigon::DefaultReplacementProbability);
     defineReplacementSetTags(TStringList({Tigon::TMainOptimizationSet}));

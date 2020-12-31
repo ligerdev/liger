@@ -96,11 +96,11 @@ void MultiMemberTournamentForPerturbation::initialise()
                 , TString("Number of new solution created by the "
                           "operator divided by the number of solutions "
                           "in the input set. Default is 0.5")
-                , getType(double));
+                , getTType(double));
 
     addProperty("TournamentSize"
                 , TString("Number of participants in each tournament. Default is 2.")
-                , getType(int));
+                , getTType(int));
 
     m_name = TString("Multi-member tournament selection for perturbation");
     m_description = TString("Randomly chooses n solutions from the input set, "

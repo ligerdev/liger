@@ -76,9 +76,9 @@ ENABLE_WARNINGS
 #include <tigon/Core/TString.h>
 #include <tigon/Core/TMap.h>
 
-typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> TMatrixReal;
-typedef Eigen::Matrix<double, Eigen::Dynamic,              1> TCVectorReal;
-typedef Eigen::Matrix<double,              1, Eigen::Dynamic> TRVectorReal;
+typedef Eigen::MatrixXd TMatrixReal;
+typedef Eigen::VectorXd TCVectorReal;
+typedef Eigen::RowVectorXd TRVectorReal;
 typedef std::complex<double> TComplex;
 typedef long long int64;
 typedef unsigned long long uint64;
@@ -96,11 +96,11 @@ BOOST_TRIBOOL_THIRD_STATE(incomparable)
 /// in all compilers, use the following.
 //template<typename T> using SPtr = TSharedPointer<T>;
 namespace Tigon {
-class Kriging;
+class IKriging;
 class PolynomialRegression;
 class MultiPolynomialRegression;
 
-typedef TSharedPointer<Kriging>  KrigingSPtr;
+typedef TSharedPointer<IKriging>  KrigingSPtr;
 typedef TSharedPointer<PolynomialRegression> PolyRegressionSPtr;
 typedef TSharedPointer<MultiPolynomialRegression> MPolyRegressionSPtr;
 

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -46,34 +46,12 @@ tribool PreferabilityConstraintHandling::isBetterThan(const TVector<double> &a,
 
     }
     else {
-        // Normal preferability with just goals
-        dom = preferability(a, b);
+        // Preferability with goals and priorities
+        dom = preferability(a, b, goalVec(), setGoals(), priorityVec());
     }
 
     return dom;
 }
-
-void PreferabilityConstraintHandling::defineParameters(
-        const TVector<TVector<double>> &c)
-{
-    if( (c.size()==2) || (c.size()==5) ) {
-        defineGoalVec(c[0]);
-
-        TVector<bool> p1;
-        for(auto p : c[1]) {
-            p1.push_back((bool)p);
-        }
-
-        defineSetGoals(p1);
-    }
-
-    if(c.size()==5) {
-        defineThresholdVec(c[2]);
-        defineConstraintVecA(c[3]);
-        defineConstraintVecB(c[4]);
-    }
-}
-
 
 tribool PreferabilityConstraintHandling::preferability_constraint(
         const TVector<double> &a, const TVector<double> &b) const
@@ -129,61 +107,13 @@ tribool PreferabilityConstraintHandling::preferability_constraint(
             }
             else {
 
-                // normal preferability
-                dom = preferability(a, b);
+                // normal preferability                
+                dom = preferability(a, b, goalVec(), setGoals(), priorityVec());
             }
         }
     }
 
     return dom;
-}
-
-double PreferabilityConstraintHandling::solutionConstraintViolation(
-        const TVector<double>& g) const
-{
-    double constrViolation = 0.0;
-    int C = g.size();
-    for(int i=0; i<C; i++) {
-        double diff = thresholdVec()[i] - g[i];
-        if(diff > 0.0) {
-            constrViolation += diff;
-        }
-    }
-
-    return constrViolation;
-}
-
-void PreferabilityConstraintHandling::defineThresholdVec(
-        const TVector<double> &t)
-{
-    m_thresholdVec = t;
-}
-
-TVector<double> PreferabilityConstraintHandling::thresholdVec() const
-{
-    return m_thresholdVec;
-}
-
-void PreferabilityConstraintHandling::defineConstraintVecA(
-        const TVector<double> &ag)
-{
-    m_constrainedVecA=ag;
-}
-
-TVector<double> PreferabilityConstraintHandling::constraintVecA() const
-{
-    return m_constrainedVecA;
-}
-
-void PreferabilityConstraintHandling::defineConstraintVecB(
-        const TVector<double> &bg)
-{
-    m_constrainedVecB=bg;
-}
-
-TVector<double> PreferabilityConstraintHandling::constraintVecB() const
-{
-    return m_constrainedVecB;
 }
 
 } // namespace Representation

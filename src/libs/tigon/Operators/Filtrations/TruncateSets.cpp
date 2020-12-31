@@ -46,7 +46,7 @@ void TruncateSets::initialise()
 
     addProperty("SetSize"
                 , TString("Specifies the size of the output set.")
-                , getType(int));
+                , getTType(int));
 
     addOutputTag(Tigon::TForResize);
 
