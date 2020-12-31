@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -89,7 +89,7 @@ void OptimizationLinearFlow::evaluate()
 
 void OptimizationLinearFlow::clearFlow()
 {
-    for(int i=0; i<m_nodes.size(); i++) {
+    for(size_t i=0; i<m_nodes.size(); i++) {
         if(m_nodes[i]) {
             delete m_nodes[i];
         }
@@ -125,7 +125,7 @@ int OptimizationLinearFlow::currentIteration() const
 
 int OptimizationLinearFlow::remainingIterations() const
 {
-    return m_nodes.back()->remainingIteratoins();
+    return m_nodes.back()->remainingIterations();
 }
 
 int OptimizationLinearFlow::maxIteration() const

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -763,9 +763,19 @@ TVector<IElementSPtr> IPSet::antiIdealVec() const
     return d->m_problem->antiIdealVector();
 }
 
+TVector<bool> IPSet::setGoalVec() const
+{
+    return d->m_problem->setGoalVector();
+}
+
 TVector<IElementSPtr> IPSet::goalVec() const
 {
     return d->m_problem->goalVector();
+}
+
+TVector<int> IPSet::priorityVec() const
+{
+    return d->m_problem->priorityVector();
 }
 
 TVector<IElementSPtr> IPSet::thresholdVec() const
@@ -880,7 +890,21 @@ bool IPSet::updateNadirVec(IMappingSPtr newIMap)
     return updated;
 }
 
-void IPSet::defineGoalVec(const TVector<IElementSPtr>&goals)
+void IPSet::defineSetGoalVec(const TVector<bool>& setGoals)
+{
+    d->m_problem->defineSetGoalVector(setGoals);
+}
+
+void IPSet::defineSetGoalVec(int idx, bool setGoal)
+{
+    if(isInRange(idx, objectiveVecSize())) {
+        TVector<bool> setGoals = d->m_problem->setGoalVector();
+        setGoals[idx] = setGoal;
+        d->m_problem->defineSetGoalVector(setGoals);
+    }
+}
+
+void IPSet::defineGoalVec(const TVector<IElementSPtr>& goals)
 {
     d->m_problem->defineGoalVector(goals);
 }
@@ -891,6 +915,18 @@ void IPSet::defineGoal(int idx, IElementSPtr goal)
         TVector<IElementSPtr> goals = d->m_problem->goalVector();
         goals[idx]->defineValue(goal->value());
         d->m_problem->defineGoalVector(goals);
+    }
+}
+
+void IPSet::definePriorityVec(const TVector<int> &priorities)
+{
+    d->m_problem->definePriorityVector(priorities);
+}
+
+void IPSet::definePriority(int idx, int priority)
+{
+    if(isInRange(idx, objectiveVecSize())) {
+        d->m_problem->redefinePriority(idx, priority);
     }
 }
 
@@ -982,7 +1018,7 @@ void IPSet::setCurrentIteration(int citer)
     d->m_currentIter = citer;
 }
 
-int IPSet::remainingIteratoins() const
+int IPSet::remainingIterations() const
 {
     return (d->m_maxIter) - (d->m_currentIter);
 }

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -159,7 +159,9 @@ public:
     TVector<IElementSPtr> idealVec()     const;
     TVector<IElementSPtr> nadirVec()     const;
     TVector<IElementSPtr> antiIdealVec() const;
+    TVector<bool>         setGoalVec()   const;
     TVector<IElementSPtr> goalVec()      const;
+    TVector<int>          priorityVec()  const;
     TVector<IElementSPtr> thresholdVec() const;
     TVector<double>       dirVec()       const;   
 
@@ -175,8 +177,12 @@ public:
     bool updateIdealVec(IMappingSPtr                 newIMap);
     bool updateAntiIdealVec(IMappingSPtr             newIMap);
     bool updateNadirVec(IMappingSPtr                 newIMap);
+    void defineSetGoalVec(const TVector<bool>&      setGoals);
+    void defineSetGoalVec(int idx, bool              setGoal);
     void defineGoalVec(const TVector<IElementSPtr>&    goals);
     void defineGoal(int idx,               IElementSPtr goal);
+    void definePriorityVec(const TVector<int>&    priorities);
+    void definePriority(int idx,               int priority);
     void defineThresholdVec(const TVector<IElementSPtr>& thresholds);
     void defineThreshold(int idx,   IElementSPtr threshold);
     void defineDirVec(const TVector<double>           &dir);   
@@ -191,7 +197,7 @@ public:
     int  currentIteration()       const;
     void incrementIteration();
     void setCurrentIteration(int citer);
-    int  remainingIteratoins()    const;
+    int  remainingIterations()    const;
     int  maxIteration()           const;
     void defineMaxIteration(int  nIter);
     int  remainingBudget()        const;
@@ -240,6 +246,7 @@ protected:
 
     void defineProblem(ProblemSPtr    prob);
     void appendFunction(IFunctionSPtr func);
+
     void updateProblem();
 
 private:

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -35,8 +35,8 @@ IFunction::IFunction()
     , m_isNumInputsModifiable(true)
     , m_isNumoutputsModifiable(true)
 {
-    addProperty("NumberOfInputs", "Number of Inputs", typeid(int).hash_code());
-    addProperty("NumberOfOutputs", "Number of Outputs", typeid(int).hash_code());
+    addProperty("NumberOfInputs", "Number of Inputs", getTType(int));
+    addProperty("NumberOfOutputs", "Number of Outputs", getTType(int));
 }
 
 IFunction::~IFunction()

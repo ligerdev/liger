@@ -1,6 +1,6 @@
 ﻿/****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -47,7 +47,7 @@ void SharedFitness::initialise()
                 , TString("Controls the linearity of the sharing function.\n"
                           "Defult is 1.0, meaning that the sharing function "
                           "linearly reduces from one to zero.")
-                , getType(double));
+                , getTType(double));
 
     clearOutputTags();
     clearAdditionalOutputTags();

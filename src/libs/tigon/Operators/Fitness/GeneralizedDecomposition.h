@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -27,7 +27,7 @@ class LIGER_TIGON_EXPORT GeneralizedDecomposition : public Scalarization
 public:
     GeneralizedDecomposition();
     GeneralizedDecomposition(Tigon::Representation::IPSet* ipset);
-    virtual ~GeneralizedDecomposition();
+    ~GeneralizedDecomposition();
 
     void evaluateNode();
 
@@ -35,12 +35,8 @@ public:
     TString     name();
     TString     description();
     
-    
-
 private:
     void initialise();
-    TString   m_name;
-    TString   m_description;
 };
 
 } // namespace Operators

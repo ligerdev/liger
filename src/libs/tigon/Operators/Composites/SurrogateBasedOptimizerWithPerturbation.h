@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -23,13 +23,27 @@ namespace Operators {
 class LIGER_TIGON_EXPORT SurrogateBasedOptimizerWithPerturbation
         : public SurrogateBasedOptimizer
 {
+    HANDLE_READ_PROPERTIES_BEGIN(IComposite)
+    READ(NeighbourhoodRadius, TP_neighbourhoodRadius)
+    HANDLE_READ_PROPERTIES_END
+
+    HANDLE_WRITE_PROPERTIES_BEGIN(IComposite)
+    WRITE(NeighbourhoodRadius, double, TP_defineNeighbourhoodRadius)
+    HANDLE_WRITE_PROPERTIES_END
+
+
+    DECLARE_CLASS(Tigon::Operators::SurrogateBasedOptimizerWithPerturbation)
 
 public:
     SurrogateBasedOptimizerWithPerturbation();
     SurrogateBasedOptimizerWithPerturbation(Representation::IPSet* ipset);
-    virtual ~SurrogateBasedOptimizerWithPerturbation();
+    ~SurrogateBasedOptimizerWithPerturbation();
 
     void evaluateNode();
+
+    // Properties
+    void  TP_defineNeighbourhoodRadius(double r);
+    double TP_neighbourhoodRadius()        const;
 
     // Information about the node.
     TString     name();
@@ -37,6 +51,8 @@ public:
 
 private:
     void initialise();
+
+    double m_neighbourhoodRadius;
 };
 
 } // namespace Operators

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -23,13 +23,6 @@
 #include <tigon/Utils/IElementUtils.h>
 #include <tigon/ExceptionHandling/TException.h>
 
-// STL includes
-#include <stdlib.h>
-#include <ctime>
-
-// Boost includes
-#include <boost/math/special_functions/factorials.hpp>
-
 namespace Tigon {
 namespace Operators {
 
@@ -38,7 +31,8 @@ GeneralizedDecomposition::GeneralizedDecomposition()
     initialise();
 }
 
-GeneralizedDecomposition::GeneralizedDecomposition(Tigon::Representation::IPSet* ipset)
+GeneralizedDecomposition::GeneralizedDecomposition(
+        Tigon::Representation::IPSet* ipset)
     : Scalarization(ipset)
 {
     initialise();
@@ -51,9 +45,7 @@ GeneralizedDecomposition::~GeneralizedDecomposition()
 
 void GeneralizedDecomposition::initialise()
 {
-    m_name = TString("Generalized Decomposition");
-    m_description = TString("Assigns every solution in the set a scalar value"
-                            " using Generalised Decomposition.");
+
 }
 
 void GeneralizedDecomposition::evaluateNode()
@@ -64,10 +56,14 @@ void GeneralizedDecomposition::evaluateNode()
     /// general method is required in case other scalarising functions are to
     /// be used in the future.
 
-    //int M=objectiveVecSize();
+    auto gfunc = [](double w)
+    {
+        return 1.0/(w+0.01);
+    };
+
     // define the optimal weighting vector
     TVector<double> weight;
-    switch(weightScopeApproach()) {
+    switch(TP_weightScopeApproach()) {
     case LocalWeight:
         // do nothing
         break;
@@ -75,51 +71,31 @@ void GeneralizedDecomposition::evaluateNode()
     default:
         weight = dirVec();
 
-        std::transform(weight.begin(), weight.end(), weight.begin(),
-            [](double w) { return 1.0/(w+0.01); });
+        std::transform(weight.begin(), weight.end(), weight.begin(), gfunc);
         toUnitVec(weight, 1.0);
 
-//        for(int i=0; i<M; i++) {
-//            weight[i] = 1.0 / dirVec()[i];
-//        }
-//        toUnitVec(weight, 1.0);
-        //magnitudeAndDirectionP(weight, 1.0);
         break;
     }
+
+    TVector<double> ideal = IElementVecToRealVec(idealVec());
+    TVector<double> antiIdeal = IElementVecToRealVec(antiIdealVec());
 
     while(hasNextOutputSet()) {
         ISet* oSet = nextOutputSet();
 
-        // Normalise the objective vectors
-        int setSize = oSet->size();
-        TVector<TVector<double> > normalObjectives(setSize);
-        TVector<double> ideal = IElementVecToRealVec(idealVec());
-        TVector<double> antiIdeal = IElementVecToRealVec(antiIdealVec());
-        for (int i=0; i<setSize; i++) {
-            if(!oSet->at(i)->isScalarised()) {
-                TVector<double> normVec = oSet->at(i)->doubleObjectiveVec();
-                normaliseToUnitBoxInMemory(normVec, ideal, antiIdeal);
-                normalObjectives[i] = normVec;
-            }
-        }
+        for(auto sol : oSet->all()) {
 
-        for(int i=0; i<setSize; i++) {
+            if(!sol->isScalarised()) {
 
-            if(!oSet->at(i)->isScalarised()) {
-
-                switch(weightScopeApproach()) {
+                switch(TP_weightScopeApproach()) {
                 case LocalWeight: // construct local weight
 
-                    weight = oSet->at(i)->weightingVec();
+                    weight = sol->weightingVec();
 
-                    std::transform(weight.begin(), weight.end(), weight.begin(),
-                        [](double w) { return 1.0/(w+0.01); });
+                    std::transform(weight.begin(), weight.end(),
+                                   weight.begin(), gfunc);
                     toUnitVec(weight, 1.0);
 
-//                    for(int j=0; j<weight.size(); j++) {
-//                        weight[j] = 1.0 / oSet->at(i)->weightingVec()[j];
-//                    }
-//                    toUnitVec(weight, 1.0);
                     break;
                 case GlobalWeight:
                 default:
@@ -127,29 +103,36 @@ void GeneralizedDecomposition::evaluateNode()
                     break;
                 }
 
+                // normalise the objectives according to the ideal and antiIdeal
+                TVector<double> normObj =
+                        normaliseToUnitBox(sol->doubleObjectiveVec(),
+                                           ideal, antiIdeal);
+
                 // Scalarise
                 double cost;
                 switch(TP_scalarisingFunction()) {
                 case (Tigon::WeightedSum):
-                    cost = weightedSum(weight, normalObjectives[i]);
+                    cost = weightedSum(weight, normObj);
                     break;
                 case (Tigon::WeightedChebyshev):
-                    cost = weightedChebyshev(weight, normalObjectives[i]);
+                    cost = weightedChebyshev(weight, normObj);
                     break;
                 case (Tigon::WeightedChebyshevAugmented):
-                    cost = weightedChebyshevAugmented(weight, normalObjectives[i]);
+                    cost = weightedChebyshevAugmented(weight, normObj);
                     break;
                 case (Tigon::WeightedLp):
-                    cost = weightedLp(weight, normalObjectives[i], pNorm());
+                    cost = weightedLp(weight, normObj, pNorm());
                     break;
                 default:
                     throw TException(this->className(),
                                      UnrecognisedScalarisationFunction);
                 }
-                oSet->at(i)->defineCost(cost);
-                if(weightScopeApproach() == LocalWeight) {
-                    oSet->at(i)->defineScalarised();
+                sol->defineCost(cost);
+
+                if(TP_weightScopeApproach() == LocalWeight) {
+                    sol->defineScalarised();
                 }
+
             }
         }
     }
@@ -157,12 +140,18 @@ void GeneralizedDecomposition::evaluateNode()
 
 TString GeneralizedDecomposition::name()
 {
-    return m_name;
+    return TString("Generalized Decomposition");
 }
 
 TString GeneralizedDecomposition::description()
 {
-    return m_description;
+    return TString("Assigns every solution in the set a scalar value that is "
+                   "determined by a scalarization function according to the "
+                   "concept of generalized decomposition, based on \"Ioannis "
+                   "Giagkiozis, Robin C. Purshouse, Peter J. Fleming, "
+                   "Generalized Decomposition, in International Conference on "
+                   "Evolutionary Multi-Criterion Optimization, EMO 2013, "
+                   "pp 428-442.\"");
 }
 
 } // namespace Operators

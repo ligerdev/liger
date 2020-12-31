@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -19,9 +19,8 @@
 #include <boost/math/constants/constants.hpp>
 #include <numeric>
 
-
-using namespace boost;
 using namespace std;
+using namespace boost::math::constants;
 
 namespace Tigon {
 
@@ -37,7 +36,7 @@ double gaussianKDE(const TVector<TVector<double>>& xx,
         double dist = l2dist(xx[i], xq);
         f += std::exp(-dist*dist / twoHSquare);
     }
-    f /= std::pow(twoHSquare * boost::math::constants::pi<double>(), d/2.0) ;
+    f /= std::pow(twoHSquare * pi<double>(), d/2.0) ;
     f /= n;
 
     return f;
@@ -93,7 +92,7 @@ double gaussianKDE(const TVector<double> &xx, double xq, double h)
 
     for(int i=0; i<n; i++) {
         double u = (xx[i] - xq)/h;
-        f += std::exp(-u*u/2.0)/std::sqrt(2*math::constants::pi<double>());
+        f += std::exp(-u*u/2.0)/std::sqrt(2.0*pi<double>());
     }
     f /= n*h;
 

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -16,19 +16,9 @@
 #include <tigon/Operators/Composites/SurrogateBasedOptimizerWithPerturbation.h>
 #include <tigon/Representation/Sets/ISet.h>
 #include <tigon/Representation/Mappings/IMapping.h>
-#include <tigon/Utils/Kriging.h>
-#include <tigon/Utils/PowerVariogram.h>
-#include <tigon/Representation/Functions/ExpectedImprovement.h>
-#include <tigon/Representation/Functions/RandExpectedImprovement.h>
-#include <tigon/Representation/PSets/PSetBase.h>
-#include <tigon/Operators/Formulations/IFormulation.h>
-#include <tigon/Operators/Initialisation/FitnessBasedInit.h>
-#include <tigon/Operators/Initialisation/UserDefinedInit.h>
-#include <tigon/Operators/Evaluators/Evaluator.h>
+
 #include <tigon/Operators/EmptyOperator.h>
 #include <tigon/Operators/Perturbations/BoundedPerturbation.h>
-#include <tigon/Algorithms/ACROMUSE.h>
-#include <tigon/Representation/Properties/ElementProperties.h>
 
 namespace Tigon {
 namespace Operators {
@@ -51,7 +41,12 @@ SurrogateBasedOptimizerWithPerturbation::~SurrogateBasedOptimizerWithPerturbatio
 
 void SurrogateBasedOptimizerWithPerturbation::initialise()
 {
+    addProperty("NeighbourhoodRadius"
+                , TString("Neighbourhood Radius")
+                , getTType(double));
 
+    // an invalid radius that keeps the RandExpectedImprovement default value:
+    TP_defineNeighbourhoodRadius(Tigon::UseDefaultNeighbourhoodRadius);
 }
 
 void SurrogateBasedOptimizerWithPerturbation::evaluateNode()
@@ -72,8 +67,9 @@ void SurrogateBasedOptimizerWithPerturbation::evaluateNode()
     BoundedPerturbation* mutat = new BoundedPerturbation(toPerturb);
     mutat->defineOutputTags(toPerturb->outputTags());
     mutat->TP_defineSolutionMutationProbability(1.0);
-    mutat->TP_definePerturbationRadius(TP_neighbourhoodRadius() *
-                                       Tigon::PerturbationRadiusByNeighbourhoodRadius);
+    double pertRadius = TP_neighbourhoodRadius() *
+                        Tigon::PerturbationRadiusByNeighbourhoodRadius;
+    mutat->TP_definePerturbationRadius(pertRadius);
     mutat->evaluateOnlyThisNode();
 
     for(auto sol : mutat->outputSet(0)->all()) {
@@ -84,6 +80,17 @@ void SurrogateBasedOptimizerWithPerturbation::evaluateNode()
 
     delete mutat;
     delete toPerturb;
+}
+
+void SurrogateBasedOptimizerWithPerturbation::
+TP_defineNeighbourhoodRadius(double r)
+{
+    m_neighbourhoodRadius = r;
+}
+
+double SurrogateBasedOptimizerWithPerturbation::TP_neighbourhoodRadius() const
+{
+    return m_neighbourhoodRadius;
 }
 
 TString SurrogateBasedOptimizerWithPerturbation::name()

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -16,10 +16,6 @@
 #include <tigon/Representation/Functions/SingleObjective/Alpine2.h>
 #include <tigon/Representation/Elements/IElement.h>
 #include <tigon/Utils/IElementUtils.h>
-#include <tigon/Representation/Functions/DTLZ/DTLZProblems.h>
-
-
-
 
 namespace Tigon {
 namespace Representation {

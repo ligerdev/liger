@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -166,6 +166,12 @@ enum ErrorHandlingMethod {
     ErrConfidenceIntervalBased
 };
 
+enum ConstraintHandlingMethod {
+    NoConstraintHandling,
+    PenaltyBased,
+    SurrogateBased
+};
+
 enum ArchiveUpdateStatus {
     UnchangedArchive,
     AddedToArchive,
@@ -188,7 +194,9 @@ enum ProblemDefinitionStatus {
     IllDefinedIdealVec,
     IllDefinedAntiIdealVec,
     IllDefinedNadirVec,
+    IllDefinedSetGoalVec,
     IllDefinedGoalVec,
+    IllDefinedPriorityVec,
     IllDefinedThresholdVec,
     IllDefinedUncertaintyVec,
     IllDefinedFuncOutUncertaintyVec,
@@ -237,7 +245,6 @@ enum DominanceRelationType {
     PreferabilityRelation,
     PreferabilityConstraintHandlingRelation
 };
-
 
 /// IMapping constants
 const TVector<Tigon::ElementType> EmptyType;
@@ -322,6 +329,33 @@ const double   AcK(0.5);
 const double   AcK1(0.4);
 const double   AcK2(0.8);
 
+// ACROMUSE parameters for surrogate based optimization
+// Parameters for high computationally intensive optimization search
+// Search the surrogate
+const int      DefaultBudgetPerVariableSS_H(100);
+const int      DefaultInitialPopsizePerVariableSS_H(20);
+const int      DefaultStallIterationsSS_H(20);
+// Train the surrogate
+const int      DefaultBudgetPerVariableTS_H(100);
+const int      DefaultInitialPopsizePerVariableTS_H(20);
+const int      DefaultStallIterationsTS_H(20);
+
+// Parameters for low computationally intensive optimization search
+// Search the surrogate
+const int      DefaultBudgetPerVariableSS_L(40);
+const int      DefaultInitialPopsizePerVariableSS_L(5);
+const int      DefaultStallIterationsSS_L(3);
+// Train the surrogate
+const int      DefaultBudgetPerVariableTS_L(40);
+const int      DefaultInitialPopsizePerVariableTS_L(5);
+const int      DefaultStallIterationsTS_L(3);
+
+
+// Normal Mutation
+const double DefaultMutationSigma(-1.0);
+const double DefaultWidthPercent(0.1);
+const double DefaultMutationStepSize(-1.0);
+
 // NSGA-II
 const double DefaultCrossoverDistributionIndex(15.0);
 const double DefaultMutationDistributionIndex(20.0);
@@ -336,19 +370,22 @@ const int   DefaultMaxNumberReplacements(2);
 const double DefaultReplacementProbability(0.1);
 
 // ParEGO
-const double   UseDefaultNeighbourhoodRadius(-1.0);
-const double   KDEBandwithRatio(0.1);
-const double   PerturbationRadiusByNeighbourhoodRadius(0.5);
-const double   DefaultNeighbourhoodRadius(0.1);
-const TString  SampleSizes("Sample sizes");  //multipack key
+const int DefaultMaxSolutionsSurrogateModelling(100);
 
 // sParEGO
+const double   UseDefaultNeighbourhoodRadius(-1.0);
+const double   KDEBandwidthRatio(0.1);
+const double   PerturbationRadiusByNeighbourhoodRadius(0.5);
+const double   DefaultNeighbourhoodRadius(0.1);
 const double   DefaultsParEGOInitPerturbationRatio(0.5);
+const TString  SampleSizes("Sample sizes");  //multipack key
 
 // MOGA
 const double   DefaultErrorSigmaEstimation(1e-6);
 const double   DefaultSharingFunctionAlpha(1.0);
 
+// InterwovenSystemHandler
+const int DefaultNumberPointsForKDE(100);
 
 enum ConfidenceInSampleType {
     UnchangedDistribution,
@@ -371,6 +408,7 @@ const double GenericRobustnessParameter(0.0);
 
 /// Exception Constants
 const TString DivisionByZeroException("Division by zero.");
+const TString IncorrectNumberArguments("Incorrect number of arguments.");
 const TString IncorrectProblemFormatException("Incorrect problem format.");
 const TString RangeException("Range errors in internal computation.");
 const TString DomainException("Parameter outside the valid range.");

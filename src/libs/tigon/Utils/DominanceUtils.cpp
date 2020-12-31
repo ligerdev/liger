@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -31,7 +31,7 @@ tribool weakDominance(const TVector<double> &a, const TVector<double> &b)
 
     bool aDominate(false);
     bool bDominate(false);
-    for(int i=0; i<a.size(); i++)
+    for(size_t i=0; i<a.size(); i++)
     {
         if(a[i] < b[i]) {
             if(bDominate) {
@@ -128,6 +128,42 @@ tribool epsilonDominance(const TVector<double> &a, const TVector<double> &b,
     }
 }
 
+
+TVector<int> dominanceCount(const ISet* set, bool weakDom)
+{
+    return dominanceCount(set->all(), weakDom);
+}
+
+TVector<int> dominanceCount(const TVector<IMappingSPtr>& set, bool weakDom)
+{
+    int N = set.size();
+    TVector<int> domCount(N, 0);
+
+    // Compare all solutions
+    tribool dom;
+    for(int i=0; i<N-1; i++) {
+        IMappingSPtr a = set.at(i);
+
+        for(int j=i+1; j<N; j++) {
+            IMappingSPtr b = set.at(j);
+
+            // normal domination
+            if(weakDom){
+                dom = *a <= *b;
+            } else {
+                dom = *a < *b;
+            }
+
+            if(dom == true) {
+                domCount[j]++;
+            } else if(dom == false) {
+                domCount[i]++;
+            }
+        }
+    }
+
+    return domCount;
+}
 
 TVector<ISet*> nonDominanceSort(const ISet* set, bool weakDom)
 {
@@ -687,7 +723,7 @@ tribool preferability(const TVector<double> &a,
                       const TVector<double> &g,
                       bool weakDom)
 {
-    int Nobj = a.size();
+    size_t Nobj = a.size();
 
     /// Classification of the solutions
     /// 0: solution meets all goals
@@ -695,7 +731,7 @@ tribool preferability(const TVector<double> &a,
     int aclass=0;
     int bclass=0;
 
-    for(int k=0; k<Nobj; k++) {
+    for(size_t k=0; k<Nobj; k++) {
         if(!areDoublesEqual(g[k],Tigon::Lowest)) { // only for set goals
             if(a[k] > g[k]) {
                 aclass=1;
@@ -704,7 +740,7 @@ tribool preferability(const TVector<double> &a,
         }
     }
 
-    for(int k=0; k<Nobj; k++) {
+    for(size_t k=0; k<Nobj; k++) {
         if(!areDoublesEqual(g[k],Tigon::Lowest)) { // only for set goals
             if(b[k] > g[k]) {
                 bclass=1;
@@ -723,7 +759,7 @@ tribool preferability(const TVector<double> &a,
 
     AbetterB = AequalB = BbetterA = BequalA = 1;
 
-    for(int k=0; k<Nobj; k++) {
+    for(size_t k=0; k<Nobj; k++) {
         if(!areDoublesEqual(g[k],Tigon::Lowest)) { // only for set goals
             if(a[k] > g[k]) { // a does not meet the goal
                 if(weakDom) {
@@ -764,7 +800,7 @@ tribool preferability(const TVector<double> &a,
      * based on those objectives which satisfy their goals */
 
     AbetterB = AequalB = BbetterA = 1;
-    for (int k=0; k<Nobj; k++) {
+    for (size_t k=0; k<Nobj; k++) {
         if(weakDom) {
             AbetterB *= (a[k] <= b[k]);
             BbetterA *= (b[k] <= a[k]);
@@ -786,6 +822,140 @@ tribool preferability(const TVector<double> &a,
         return false;
 
     return incomparable;
+}
+
+LIGER_TIGON_EXPORT
+tribool preferability(const TVector<double> &a,
+                      const TVector<double> &b,
+                      const TVector<double> &g,
+                      const TVector<int> &p,
+                      bool weakDom)
+{
+    int maxElem = *min_element(p.begin(), p.end());
+    int minElem = *max_element(p.begin(), p.end());
+    for(size_t i=0; i<p.size(); i++) {
+        if(!areDoublesEqual(g[i],Tigon::Lowest)) { // only for set goals
+            if(p[i] > maxElem) {
+                maxElem = p[i];
+            }
+            if(p[i] < minElem) {
+                minElem = p[i];
+            }
+        }
+    }
+
+    if ((maxElem==minElem) && (maxElem==1)){ // if there is only one priority level
+        return preferability(a,b,g);
+    }
+    else { // if there is more than one priority level
+
+        // Store the indices of the objectives with the highest priority
+        TVector<size_t> mp_idx;
+        for(size_t i = 0; i<p.size(); i++) {
+            if(!areDoublesEqual(g[i],Tigon::Lowest)) { // only for set goals
+                if(p[i]==maxElem) {
+                    mp_idx.push_back(i);
+                }
+            }
+        }
+
+        int aclass=0;
+        for(auto idx : mp_idx) {
+            if(!areDoublesEqual(g[idx],Tigon::Lowest)) { // only for set goals
+                if(a[idx] > g[idx]) {
+                    aclass=1;
+                    break;
+                }
+            }
+        }
+
+        int bclass=0;
+        for(auto idx : mp_idx) {
+            if(!areDoublesEqual(g[idx],Tigon::Lowest)) { // only for set goals
+                if(b[idx] > g[idx]) {
+                    bclass=1;
+                    break;
+                }
+            }
+        }
+
+        if(aclass < bclass) {
+            return true;    // A is preferred
+        } else if(aclass > bclass) {
+            return false;   // B is preferred
+        }
+
+        // it reaches this point if both solutions have objectives that violate
+        // the goals, or both totally satisfy the goals
+
+        int AequalB, BequalA, AbetterB, BbetterA;
+        AbetterB = AequalB = BbetterA = BequalA = 1;
+
+        for(auto idx : mp_idx) {
+            if(!areDoublesEqual(g[idx],Tigon::Lowest)) { // only for set goals
+                if(a[idx] > g[idx]) { // A does not meet the goal
+                    if(weakDom) {
+                        AbetterB *= (a[idx] <= b[idx]);
+                    } else {
+                        AbetterB *= (a[idx] < b[idx]);
+                    }
+                    AequalB  *= (a[idx] == b[idx]);
+                }
+                if(b[idx] > g[idx]) { // B does not meet the goal
+                    if(weakDom) {
+                        BbetterA *= (b[idx] <= a[idx]);
+                    } else {
+                        BbetterA *= (b[idx] < a[idx]);
+                    }
+                    BequalA  *= (b[idx] == a[idx]);
+                }
+            }
+        }
+
+        // check if A and B are totally different
+        if (!(AequalB && BequalA)) {
+
+            // check if A dominates B with respect to the components that A
+            // does not meet the goal
+            if ((AbetterB && !AequalB) || (AequalB && !BequalA))
+                return true;
+
+            // check if B dominates A with respect to the components that B
+            // does not meet the goal
+            if ((BbetterA && !BequalA) || (BequalA && !AequalB))
+                return false;
+
+            return incomparable;
+        }
+
+        if( (maxElem == minElem) && (maxElem>1)) {
+            // Constraint satisfaction special case
+            return incomparable;
+        }
+
+        /* this point is only reached in case the decision is *
+                * based on objectives with lower priority levels */
+
+        size_t Nobj = a.size();
+
+        TVector<double> a2;
+        TVector<double> b2;
+        TVector<double> g2;
+        TVector<int> p2;
+
+        // Select objectives and corresponding goals with priority level lower
+        // than the current maximum
+        for(size_t k=0; k<Nobj; k++) {
+            if(p[k] < maxElem) {
+                a2.push_back(a[k]);
+                b2.push_back(b[k]);
+                g2.push_back(g[k]);
+                p2.push_back(p[k]);
+            }
+        }
+
+        return preferability(a2,b2,g2,p2);
+    }
 }
 
 TVector<ISet*> nonDominanceSort(const ISet* set, const TVector<double>& goal,
