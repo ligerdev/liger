@@ -35,6 +35,7 @@ matrix:
             - libqt5xmlpatterns5-dev
             - qttools5-dev
             - qttools5-dev-tools
+            - qtxmlpatterns5-dev-tools
 
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
