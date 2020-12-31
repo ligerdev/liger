@@ -21,6 +21,7 @@ matrix:
             - libqt5webchannel5
             - libqt5svg5
             - libqt5help5
+            - qttools5-dev
 
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
