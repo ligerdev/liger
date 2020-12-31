@@ -21,6 +21,7 @@ matrix:
             - libqt5webengine5
             - libqt5webchannel5
             - libqt5svg5
+            - libqt5svg5-dev
             - libqt5help5
             - qttools5-dev
             - qttools5-dev-tools
