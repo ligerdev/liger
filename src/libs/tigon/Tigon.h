@@ -78,6 +78,8 @@
 #include <tigon/Representation/Functions/DTLZ/DTLZ5_2.h>
 #include <tigon/Representation/Functions/DTLZ/DTLZ5_3.h>
 #include <tigon/Representation/Functions/SingleObjective/Alpine2.h>
+#include <tigon/Representation/Functions/SingleObjective/CBraninM1.h>
+#include <tigon/Representation/Functions/SingleObjective/Poly1.h>
 #include <tigon/Representation/Functions/CTP/CTPProblems.h>
 #include <tigon/Representation/Functions/CTP/CTP1.h>
 #include <tigon/Representation/Functions/CTP/CTP2.h>
@@ -135,6 +137,7 @@
 #include <tigon/Operators/Composites/IComposite.h>
 #include <tigon/Operators/Composites/SurrogateBasedOptimizer.h>
 #include <tigon/Operators/Composites/SurrogateBasedOptimizerWithPerturbation.h>
+#include <tigon/Operators/Composites/ConstrainedSurrogateBasedOptimizer.h>
 
 // Operators - Convergence
 #include <tigon/Operators/Convergence/IConvergence.h>

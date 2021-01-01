@@ -149,6 +149,13 @@ SOURCES += \
     Representation/Functions/SurrogateModelling/Likelihood.cpp \
     Representation/Functions/SurrogateModelling/ProbabilityFeasibilityBagheri.cpp \
     Representation/Functions/SingleObjective/Alpine2.cpp \
+    Representation/Functions/SingleObjective/ConstrainedProblems.cpp \
+    Representation/Functions/SingleObjective/BraninGomez.cpp \
+    Representation/Functions/SingleObjective/Camel.cpp \
+    Representation/Functions/SingleObjective/Sasena.cpp \
+    Representation/Functions/SingleObjective/CBranin.cpp \
+    Representation/Functions/SingleObjective/CBraninM1.cpp \
+    Representation/Functions/SingleObjective/Poly1.cpp \
     Utils/ScalarisingFunctions.cpp \
     Utils/ProjectionUtils.cpp \
     Utils/NormalisationUtils.cpp \
@@ -414,6 +421,13 @@ HEADERS += \
     Representation/Functions/SurrogateModelling/Likelihood.h \
     Representation/Functions/SurrogateModelling/ProbabilityFeasibilityBagheri.h \
     Representation/Functions/SingleObjective/Alpine2.h \
+    Representation/Functions/SingleObjective/ConstrainedProblems.h \
+    Representation/Functions/SingleObjective/BraninGomez.h \
+    Representation/Functions/SingleObjective/Camel.h \
+    Representation/Functions/SingleObjective/Sasena.h \
+    Representation/Functions/SingleObjective/CBranin.h \
+    Representation/Functions/SingleObjective/CBraninM1.h \
+    Representation/Functions/SingleObjective/Poly1.h \
     Operators/Formulations/IFormulation.h \
     Representation/Problems/Problem.h \
     Representation/Properties/FunctionPropertiesData.h \
