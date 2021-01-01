@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -45,8 +45,9 @@ FitnessEliteSelection::FitnessEliteSelection()
 FitnessEliteSelection::FitnessEliteSelection(Tigon::Representation::IPSet* ipset)
     : IFiltration(ipset)
 {
-    addProperty("EliteRatio",
-                TString("Proportion of the Elite solutions of the total population. Default is half.")
+    addProperty("EliteRatio"
+                , TString("Proportion of the Elite solutions of the total "
+                          "population. Default is half.")
                 , getTType(double));
 
     m_name = TString("Fitness-Based Elite Selection");
