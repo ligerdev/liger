@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -45,19 +45,17 @@ void AcromuseEliteFiltration::evaluateNode()
     clearOutputSets();
 
     ISet* iSet = setsUnion(inputSets());
-    int sSize = iSet->size();
-    int idx = -1;
-    double best = Tigon::Highest;
 
-    for(int i=0; i<sSize; i++) {
-        double f = iSet->at(i)->doubleCost();
-        if(f < best){
-            best = f;
-            idx = i;
-        }
+    TVector<double> cost;
+    cost.reserve(iSet->size());
+    for(auto sol : iSet->all()) {
+        cost.push_back(sol->doubleCost());
     }
+    int bestIdx = std::min_element(cost.begin(), cost.end()) - cost.begin();
+
     ISet* oSet = appendOutputSet();
-    oSet->append(iSet->at(idx));
+    oSet->append(iSet->at(bestIdx));
+
     delete iSet;
 }
 
