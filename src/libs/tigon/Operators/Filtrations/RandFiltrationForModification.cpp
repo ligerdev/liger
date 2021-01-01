@@ -65,8 +65,8 @@ int RandFiltrationForModification::TP_poolSize() const {
 
 void RandFiltrationForModification::initialise()
 {
-    addProperty("PoolSize", "Number of solutions to select. Default is 1",
-                typeid(int).hash_code());
+    addProperty("PoolSize", "Number of solutions to select. Default is 1"
+                , getTType(int));
 
     m_name = TString("Random selection for modification");
     m_description = TString("Creates a set of solutions selected randomly from a set tagged \"for selection\".\n");

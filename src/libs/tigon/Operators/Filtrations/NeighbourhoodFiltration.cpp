@@ -65,21 +65,21 @@ void NeighbourhoodFiltration::initialise()
                           "different scales, the distance is multiplied "
                           "by sqrt(d), where d is the number of decision "
                           "variables.\nThe default is 0.1.")
-                , typeid(double).hash_code());
+                , getTType(double));
     addProperty("MaxSolutions"
                 , TString("Maximum number of solutions to be used for "
                           "surrogate modelling. Default of the entire "
                           "input set is used when the value is "
                           "non-positive.")
-                , typeid(int).hash_code());
+                , getTType(int));
     addProperty("NeighbourhoodSize"
                 , TString("Number of neighbours attributed to each solution.\n")
-                , typeid(int).hash_code());
+                , getTType(int));
     addProperty("IsClearOutputSets"
                 , TString("This property flag, if set to true clears the existing "
                           "Outputsets, otherwise the outputsets are not clear.\n"
                           "The default is true.\n")
-                , typeid(bool).hash_code());
+                , getTType(bool));
 //    addProperty("DistanceMeasureSelection"
 //                , TString("Selects the distance measure used to determine the "
 //                          "neighbourhoods. The available options are "

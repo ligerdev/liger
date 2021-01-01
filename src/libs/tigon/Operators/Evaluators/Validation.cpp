@@ -202,16 +202,16 @@ void Validation::initialise()
     addProperty("NEvaluations"
                 , TString("Number of repeated evaluations of every "
                           "IMapping.\nDefault is ")
-                , typeid(int).hash_code());
+                , getTType(int));
     addProperty("OperateOnFinal"
                 , TString("Disable the repeated evaluations during "
                           "the optimization process, and only validate "
                           "the final solutions.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
     addProperty("DefineEvaluated"
                 , TString("Indicates if the solutions are to be set as "
                           "evaluated or not.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
 
     addAdditionalOutputTag(Tigon::TValidation);
 

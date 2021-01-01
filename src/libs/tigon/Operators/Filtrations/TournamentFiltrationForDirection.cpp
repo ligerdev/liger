@@ -55,13 +55,13 @@ void TournamentFiltrationForDirection::initialise()
     addProperty("MappingsPerSet", TString("This is the number of mappings of each Set that "
                                           "is to be sent \"for direction\".\n"
                                           "The default is 2 mappings per set")
-                , typeid(int).hash_code());
+                , getTType(int));
 
     addProperty("NumberOfMappings", TString("This is the total number of mappings that can be "
                                             "added to the output set"
                                             "The default is -1 which means that the entire "
                                             "input set is selected into the output set")
-                , typeid(int).hash_code());
+                , getTType(int));
 
 //    addProperty("SelectionMethod", TString("This property allows the user to select the method, "
 //                                           " utilised by this operator, for picking the "

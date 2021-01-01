@@ -107,17 +107,17 @@ void IDirection::initialise()
     addProperty("SolutionCrossoverProbability"
                 , TString("Probability of applying crossover to a solution. "
                           "Default is 0.9.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     addProperty("VariableCrossoverProbability"
                 , TString("Probability of applying crossover to a variable in a solution. "
                           "Default is 0.5.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     addProperty("VariableSwapCrossoverProbability"
                 , TString("Probability of swapping a variable between two created child solutions. "
                           "Default is 0.5.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     TP_defineSolutionCrossoverProbability(Tigon::DefaultCrossoverSolutionProbability);
     TP_defineVariableCrossoverProbability(Tigon::DefaultCrossoverVariableProbability);

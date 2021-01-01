@@ -38,11 +38,10 @@ PolynomialMutation::PolynomialMutation(Tigon::Representation::IPSet* ipset)
 
 void PolynomialMutation::initialise()
 {
-    addProperty("MutationDistributionIndex",
-                TString("Controls the remoteness of the children from "
-                        "the parent (see reference). "
-                        "Default is 20.0"),
-                typeid(double).hash_code());
+    addProperty("MutationDistributionIndex"
+                , TString("Controls the remoteness of the children from "
+                        "the parent (see reference). Default is 20.0.")
+                , getTType(double));
 
     TP_defineMutationDistributionIndex(Tigon::DefaultMutationDistributionIndex);
 

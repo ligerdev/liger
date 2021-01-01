@@ -89,11 +89,11 @@ void ITermination::initialise()
 {
     addProperty("maxIter"
                 , TString("Max number of iterations")
-                , typeid(int).hash_code());
+                , getTType(int));
 
     addProperty("budget"
                 , TString("Maximum number of function evaluations")
-                , typeid(int).hash_code());
+                , getTType(int));
 }
 
 } // namespace Operators

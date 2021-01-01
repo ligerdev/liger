@@ -29,7 +29,7 @@ FitnessEliteSelection::FitnessEliteSelection()
     addProperty("EliteRatio"
                 , TString("Proportion of the Elite solutions of the "
                           "total population. Default is half.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     m_name = TString("Fitness-Based Elite Selection");
     m_description = TString("Creates a set with the best solutions selected "
@@ -47,7 +47,7 @@ FitnessEliteSelection::FitnessEliteSelection(Tigon::Representation::IPSet* ipset
 {
     addProperty("EliteRatio",
                 TString("Proportion of the Elite solutions of the total population. Default is half.")
-                ,typeid(double).hash_code());
+                , getTType(double));
 
     m_name = TString("Fitness-Based Elite Selection");
     m_description = TString("Creates a set with the best solutions selected "
