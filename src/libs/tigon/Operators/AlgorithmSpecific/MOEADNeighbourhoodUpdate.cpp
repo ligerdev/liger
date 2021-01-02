@@ -69,14 +69,14 @@ void MOEADNeighbourhoodUpdate::initialise()
                 TString("Defines the maximum number of solutions that can be "
                         "replaced by the same child solution.\n"
                         "The default is 2")
-                , getType(int));
+                , getTType(int));
 
     addProperty("IsGeneralisedDecomposition"
                 , TString("Flag that indicates if the weight vectors follow the"
                           " principles of generalised decomposition or if the"
                           " original weight vectors are to be used instead.\n"
                           "The default is false\n")
-                ,getType(bool));
+                ,getTType(bool));
 
     TP_defineScalarisingFunction(Tigon::DefaultScalarisationFunction);
     TP_defineMaxNumberReplacements(Tigon::DefaultMaxNumberReplacements);

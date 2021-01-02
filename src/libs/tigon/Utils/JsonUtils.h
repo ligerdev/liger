@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -56,10 +56,13 @@ LIGER_TIGON_EXPORT void fromJsonArrayFullInfo(JsonArray array,
 
 /// TVector
 LIGER_TIGON_EXPORT JsonArray toJsonArray(const TVector<double>& vec);
+LIGER_TIGON_EXPORT JsonArray toJsonArray(const TVector<int>& vec);
 LIGER_TIGON_EXPORT JsonArray toJsonArray(const TVector<bool>& vec);
 LIGER_TIGON_EXPORT JsonArray toJsonArray(const TVector<TVector<int> > &vec);
 LIGER_TIGON_EXPORT
 void fromJsonArray(const JsonArray& jarray, TVector<double> &vec);
+LIGER_TIGON_EXPORT
+void fromJsonArray(const JsonArray& jarray, TVector<int> &vec);
 LIGER_TIGON_EXPORT
 void fromJsonArray(const JsonArray& jarray, TVector<bool> &vec);
 LIGER_TIGON_EXPORT

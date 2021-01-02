@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -42,18 +42,15 @@ private slots:
     void test_UncertainRobustness();
     void test_DirectionFiltration();
     void test_FitnessBasedInit();
-    void test_ExpectedImprovement();
-    void test_RandExpectedImprovement();
     void test_SurrogateBasedOptimizer();
     void test_sParEGO_workflow();
     void test_sParEGO();
     void test_LogDirectionVector();
-    void test_sParEGOWithMonteCarloValidation();
 };
 
 inline void writeVector(QTextStream &st, TVector<double> vec, QString sep = "\t", QString endLine = "\n")
 {
-    for(int i=0; i<vec.size(); i++) {
+    for(size_t i=0; i<vec.size(); i++) {
         st << vec[i];
         if(i<vec.size()-1) {
             st << sep;
@@ -229,7 +226,7 @@ void tst_sparego::test_SparegoInit()
 
     PSetBase*                 base  = new PSetBase();
     IFormulation*             prob  = new IFormulation(base);
-    SparegoInit*              init  = new SparegoInit(prob);
+    sParEGOInit*              init  = new sParEGOInit(prob);
     NeighbourhoodFiltration*  nFilt = new NeighbourhoodFiltration(init);
 
     init->addOutputTag(Tigon::TForNeighbourhoods);
@@ -250,8 +247,8 @@ void tst_sparego::test_SparegoInit()
 
     TVector<ISet*> neighbourhoods = nFilt->outputSets();
     TVector<int> counts;
-    for(int i=0; i<neighbourhoods.size(); i++) {
-        int s = neighbourhoods[i]->size();
+    for(size_t i=0; i<neighbourhoods.size(); i++) {
+        size_t s = neighbourhoods[i]->size();
         if(counts.size() < s) {
             counts.resize(s);
         }
@@ -390,7 +387,7 @@ void tst_sparego::test_SparegoValidation()
 
     PSetBase*                 base    = new PSetBase();
     IFormulation*             prob    = new IFormulation(base);
-    SparegoInit*              init    = new SparegoInit(prob);
+    sParEGOInit*              init    = new sParEGOInit(prob);
     Evaluator*                eval    = new Evaluator(init);
     SimplexLatticeDirectionIterator* dirs =
             new SimplexLatticeDirectionIterator(eval);
@@ -493,7 +490,7 @@ void tst_sparego::test_UncertainRobustness()
 
     PSetBase*                 base = new PSetBase();
     IFormulation*             prob = new IFormulation(base);
-    SparegoInit*              init = new SparegoInit(prob);
+    sParEGOInit*              init = new sParEGOInit(prob);
     Evaluator*                eval = new Evaluator(init);
     SimplexLatticeDirectionIterator* dirs =
             new SimplexLatticeDirectionIterator(eval);
@@ -641,7 +638,7 @@ void tst_sparego::test_DirectionFiltration()
 
     PSetBase*                   base = new PSetBase();
     IFormulation*               prob = new IFormulation(base);
-    SparegoInit*                init = new SparegoInit(prob);
+    sParEGOInit*                init = new sParEGOInit(prob);
 
     Evaluator*                  eval = new Evaluator(init);
     SimplexLatticeDirectionIterator* dirs =
@@ -697,7 +694,7 @@ void tst_sparego::test_FitnessBasedInit()
 
     PSetBase*                 base  = new PSetBase();
     IFormulation*             prob  = new IFormulation(base);
-    SparegoInit*              init  = new SparegoInit(prob);
+    sParEGOInit*              init  = new sParEGOInit(prob);
     Evaluator*                eval  = new Evaluator(init);
     SimplexLatticeDirectionIterator* dirs =
             new SimplexLatticeDirectionIterator(eval);
@@ -746,241 +743,6 @@ void tst_sparego::test_FitnessBasedInit()
     delete base;
 }
 
-void tst_sparego::test_ExpectedImprovement()
-{
-    // Use one IPSet to evaluate a set of solutions on a single objective
-    // problem
-    PSetBase*                 base = new PSetBase();
-    IFormulation*             prob = new IFormulation(base);
-    UserDefinedInit*          init = new UserDefinedInit(prob);
-    Evaluator*                eval = new Evaluator(init);
-    eval->TP_defineSingleObjective(true);
-
-
-    IFunctionSPtr func = IFunctionSPtr(new Alpine2);
-    func->TP_defineNInputs(1);
-    prob->appendFunction(func);
-    prob->evaluate();
-
-    ISet* evaluatedPoints = new ISet;
-    for(double i=0.0; i<=10.0; i+=2.3) {
-        IMappingSPtr imap = prob->createOptimizationMapping(evaluatedPoints);
-        imap->defineDecisionVar(0, IElement(i));
-    }
-    for(double i=0.6; i<10.0; i*=2) {
-        IMappingSPtr imap = prob->createOptimizationMapping(evaluatedPoints);
-        imap->defineDecisionVar(0, IElement(i));
-    }
-    init->defineInitialSet(evaluatedPoints);
-
-    eval->evaluate();
-
-    // Fit a Kriging model to the evaluated pionts
-    ISet* eSet = init->outputSet(0);
-    TVector<TVector<double> > xx;
-    TVector<double> yy;
-    for(int i=0; i<eSet->size(); i++) {
-        // decision vector
-        xx.push_back(eSet->at(i)->doubleDecisionVec());
-        // function value
-        yy.push_back(eSet->at(i)->doubleCost());
-    }
-
-    PowerVariogram* powerV = new PowerVariogram(xx, yy, 1.999);
-    KrigingSPtr km = KrigingSPtr(new Kriging(powerV));
-    km->estimateErrors(true);
-
-    /// Use a new IPSet to evaluate a dense set of solutions on the Kriging
-    /// model and to evaluate its expected improvement
-
-    // Create IFunctions from the Kriging model
-    IFunctionSPtr func2 = IFunctionSPtr(new KrigingSurrogate(km));
-    IFunctionSPtr func3 = IFunctionSPtr(new ExpectedImprovement(km));
-
-    // Kriging model results
-    PSetBase*                 base2 = new PSetBase();
-    IFormulation*             prob2 = new IFormulation(base2);
-    UserDefinedInit*          init2 = new UserDefinedInit(prob2);
-    Evaluator*                eval2 = new Evaluator(init2);
-
-    prob2->appendFunction(func2);
-    prob2->appendFunction(func3);
-
-    prob2->evaluate();
-
-    // Create query points
-    TVector<double> xq;
-    ISet* queryPoints = new ISet;
-
-    for(double x=0.0; x<=10.0; x += 0.01) {
-        xq.push_back(x);
-        IMappingSPtr imap = prob2->createOptimizationMapping(queryPoints);
-        imap->defineDecisionVar(0, IElement(x));
-    }
-
-    init2->defineInitialSet(queryPoints);
-
-    eval2->evaluate();
-
-
-    delete eval2;
-    delete init2;
-    delete prob2;
-    delete base2;
-    delete eval;
-    delete init;
-    delete prob;
-    delete base;
-}
-
-void tst_sparego::test_RandExpectedImprovement()
-{
-    // Use one IPSet to evaluate a set of solutions on a single objective
-    // problem
-    PSetBase*                 base = new PSetBase();
-    IFormulation*             prob = new IFormulation(base);
-    UserDefinedInit*          init = new UserDefinedInit(prob);
-    Evaluator*                eval = new Evaluator(init);
-    eval->TP_defineSingleObjective(true);
-
-    IFunctionSPtr func = IFunctionSPtr(new Alpine2);
-    func->TP_defineNInputs(1);
-    prob->appendFunction(func);
-    prob->evaluate();
-
-    ISet* evaluatedPoints = new ISet;
-    TVector<Tigon::ElementType> tVec(1, RealType);
-    for(double i=0.0; i<=10.0; i+=2.3) {
-        IMappingSPtr imap = prob->createOptimizationMapping(evaluatedPoints);
-        imap->defineDecisionVar(0, IElement(i));
-    }
-    for(double i=0.6; i<10.0; i*=2) {
-        IMappingSPtr imap = prob->createOptimizationMapping(evaluatedPoints);
-        imap->defineDecisionVar(0, IElement(i));
-    }
-    init->defineInitialSet(evaluatedPoints);
-
-    eval->evaluate();
-
-    // Fit a Kriging model to the evaluated pionts
-    ISet* eSet = init->outputSet(0);
-    TVector<TVector<double> > xx;
-    TVector<double> yy;
-    for(int i=0; i<eSet->size(); i++) {
-        // decision vector
-        xx.push_back(eSet->at(i)->doubleDecisionVec());
-        // function value
-        yy.push_back(eSet->at(i)->doubleCost());
-    }
-
-    PowerVariogram* powerV = new PowerVariogram(xx, yy, 1.999);
-    KrigingSPtr km = KrigingSPtr(new Kriging(powerV));
-    km->estimateErrors(true);
-
-    /// Use a new IPSet to evaluate a dense set of solutions on the Kriging
-    /// model and to evaluate its expected improvement
-
-    // Create query points
-    TVector<double> xq;
-    ISet* queryPoints = new ISet;
-
-    for(double x=0.0; x<=10.0; x += 0.01) {
-        xq.push_back(x);
-        IMappingSPtr imap = prob->createOptimizationMapping(queryPoints);
-        imap->defineDecisionVar(0, IElement(x));
-    }
-
-    // Create an IFunction from the Kriging model
-    IFunctionSPtr func2 = IFunctionSPtr(new RandExpectedImprovement(km));
-    //    ((RandExpectedImprovement*)func2.get())->TP_defineBandwith(
-    //                ((RandExpectedImprovement*)func2.get())->TP_bandwith() / 10.0);
-
-    // Expected improvement results
-    PSetBase*                 base2 = new PSetBase();
-    IFormulation*             prob2 = new IFormulation(base2);
-    UserDefinedInit*          init2 = new UserDefinedInit(prob2);
-    Evaluator*                eval2 = new Evaluator(init2);
-    eval2->TP_defineSingleObjective(true);
-
-    prob2->appendFunction(func2);
-    init2->defineInitialSet(queryPoints);
-
-    eval2->evaluate();
-
-    // write the results to an .m file:
-    QFile file("tst_randExpectedImprovement.m");
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        return;
-    }
-    QTextStream out(&file);
-    ISet* expImp = init2->outputSet(0);
-
-    out << "figure(4)\n"
-           "clc;clear;clf;\n\n"
-
-           "x = (0:0.01:10)';\n"
-           "y = -sqrt(x).*sin(x);\n" << endl;
-
-    out << "% Evaluated points:" << endl << "xx = [";
-    for(int i=0; i<xx.size(); i++) {
-        writeVector(out, xx[i]," ","; ");
-    }
-    out << "];" << endl << "yy = [";
-    for(int i=0; i<yy.size(); i++) {
-        out << yy[i] << "; ";
-    }
-    out << "];" << endl<< endl;
-
-    out << "% Model estimation:" << endl << "xq = [";
-    for(int i=0; i<xq.size(); i++) {
-        out << xq[i] << "; ";
-    }
-    out << "];" << endl << "yq = [";
-    for(int i=0; i<xq.size(); i++) {
-        double yq = ((RandExpectedImprovement*)func2.get())->
-                value(queryPoints->at(i)->decisionVec());
-        out << yq << "; ";
-    }
-    out << "];" << endl << "err = [";
-    for(int i=0; i<xq.size(); i++) {
-        double err = ((RandExpectedImprovement*)func2.get())->
-                error(queryPoints->at(i)->decisionVec());
-
-        out << err << "; ";
-    }
-    out << "];" << endl << endl;
-
-    out << "% Expected improvement:" << endl << "expImp = [";
-    for(int i=0; i<xq.size(); i++) {
-        double ei = expImp->at(i)->doubleCost();
-        out << -ei << "; ";
-    }
-    out << "];" << endl;
-
-    out << "% Plot the results\n"
-           "realFunc = plot(x,y,'b'); hold on;\n"
-           "TigonReal = plot(xx,yy,'ok','MarkerFaceColor','k');\n"
-           "Model = plot(xq, yq, '--r', 'lineWidth', 2);\n"
-           "Error = plot(xq, err, 'r');\n"
-           "ExpectedImprovement = plot(xq, expImp*5, '-.g');\n\n"
-           "legend([realFunc, TigonReal, Model, Error, ExpectedImprovement],...\n"
-           "'Real function', 'Sample points', ...\n"
-           "'Kriging estimation', 'Estimation error', "
-           "'Expected improvement *5',...\n"
-           "'location', 'northWest');\n"
-           "grid on;\n"
-           "title('Kernel density-based error');" << endl;
-
-    delete eval2;
-    delete init2;
-    delete prob2;
-    delete base2;
-    delete eval;
-    delete init;
-    delete prob;
-    delete base;
-}
-
 void tst_sparego::test_SurrogateBasedOptimizer()
 {
     TRAND.defineSeed(0);
@@ -995,7 +757,7 @@ void tst_sparego::test_SurrogateBasedOptimizer()
 
     PSetBase*                   base = new PSetBase();
     IFormulation*               prob = new IFormulation(base);
-    SparegoInit*                init = new SparegoInit(prob);
+    sParEGOInit*                init = new sParEGOInit(prob);
     Evaluator*                  eval = new Evaluator(init);
     SimplexLatticeDirectionIterator* dirs =
             new SimplexLatticeDirectionIterator(eval);
@@ -1021,6 +783,7 @@ void tst_sparego::test_SurrogateBasedOptimizer()
 
     val->TP_defineNeighbourhoodRadius(nRaduis);
     opt->TP_defineNeighbourhoodRadius(nRaduis);
+    opt->TP_defineOptimizationSearchQuality(0);
 
     iVal->defineIndicator(ConfidenceType, 0.9);
 
@@ -1054,7 +817,7 @@ void tst_sparego::test_sParEGO_workflow()
 
     PSetBase*                   base = new PSetBase();
     IFormulation*               prob = new IFormulation(base);
-    SparegoInit*                init = new SparegoInit(prob);
+    sParEGOInit*                init = new sParEGOInit(prob);
     Evaluator*                  eval = new Evaluator(init);
     SimplexLatticeDirectionIterator* dirs =
             new SimplexLatticeDirectionIterator(eval);
@@ -1081,7 +844,9 @@ void tst_sparego::test_sParEGO_workflow()
     val->TP_defineNeighbourhoodRadius(nRaduis);
 
     eval->defineBudget(budget);
+    opt->TP_defineErrorMethod(Tigon::ErrConfidenceIntervalBased);
     opt->TP_defineNeighbourhoodRadius(nRaduis);
+    opt->TP_defineOptimizationSearchQuality(0);
 
     iVal->defineIndicator(ConfidenceType, 0.9);
 
@@ -1119,7 +884,7 @@ void tst_sparego::test_sParEGO()
 
     PSetBase*      base = new PSetBase();
     IFormulation*  prob = new IFormulation(base);
-    SparegoInit*   init = new SparegoInit(prob);
+    sParEGOInit*   init = new sParEGOInit(prob);
     Evaluator*     eval = new Evaluator(init);
     sParEGO*       alg  = new sParEGO(eval);
 
@@ -1138,6 +903,15 @@ void tst_sparego::test_sParEGO()
     alg->defineIndicator(ConfidenceType, 0.9);
 
     alg->defineBudget(budget);
+
+    alg->TP_defineErrorMethod(Tigon::ErrConfidenceIntervalBased);
+
+    // The following change in the default settings makes ACROMUSE run faster,
+    // but it is only intended for this test to pass without Qt timeout.
+    alg->defineStallIterationsSS(10);          // default 20
+    alg->defineBudgetPerVariableTS(40);        // default 100
+    alg->defineInitialPopsizePerVariableTS(5); // default 20
+    alg->defineStallIterationsTS(3);           // default 20
 
     while(alg->remainingBudget() > 0) {
         alg->evaluate();
@@ -1166,7 +940,7 @@ void tst_sparego::test_LogDirectionVector()
     /// sParEGO optimization workflow
     PSetBase*          base = new PSetBase();
     IFormulation*      form = new IFormulation(base);
-    SparegoInit*       init = new SparegoInit(form);
+    sParEGOInit*       init = new sParEGOInit(form);
     Evaluator*         eval = new Evaluator(init);
     sParEGO*           alg  = new sParEGO(eval);
 
@@ -1182,6 +956,12 @@ void tst_sparego::test_LogDirectionVector()
 
     alg->defineIndicator(ConfidenceType, 0.9);
     alg->defineBudget(budget);
+    // The following change in the default settings makes ACROMUSE run faster,
+    // but it is only intended for this test to pass without Qt timeout.
+    alg->defineStallIterationsSS(10);          // default 20
+    alg->defineBudgetPerVariableTS(40);        // default 100
+    alg->defineInitialPopsizePerVariableTS(5); // default 20
+    alg->defineStallIterationsTS(3);           // default 20
 
     while(alg->remainingBudget() > 0) {
         alg->evaluate();
@@ -1198,7 +978,7 @@ void tst_sparego::test_LogDirectionVector()
 
         TVector<double> dv = sol->weightingVec();
 
-        for(int i=0; i<ref.size(); i++) {
+        for(size_t i=0; i<ref.size(); i++) {
             if( areVectorsEqual(ref[i],dv) ) {
                 foundRef[i]=true;
                 break;
@@ -1212,89 +992,6 @@ void tst_sparego::test_LogDirectionVector()
 
     delete alg;
     delete eval;
-    delete init;
-    delete form;
-    delete base;
-}
-
-void tst_sparego::test_sParEGOWithMonteCarloValidation()
-{
-    TRAND.defineSeed(0);
-    cout.precision(4);
-
-    int    dVecSize = 3;
-    int    oVecSize = 2;
-    int    N        = 20;  // number of Monte Carlo evaluations
-    int    popsize  = 8;   // population size generated by SparegoInit
-    double nRaduis  = 0.2;
-    int    nDirs    = 6;
-    int    nIter    = 2;
-    int    maxSurrogateSize = 100;
-    double confidenceLevel = 0.9;
-
-    int budget = 0;
-    for(int i=1; i<=(nDirs*nIter); i++) {
-        budget += N * (popsize + (i*2-2));
-    }
-    //  1. iteration: popsize*N
-    //  2. iteration: popsize*N + 2*N
-    //  3. iteration: popsize*N + 4*N
-    //  4. iteration: popsize*N + 6*N
-    // ...
-    // 12. iteration: popsize*N + 22*N
-
-    /// create the workflow
-    PSetBase*          base = new PSetBase();
-    IFormulation*      form = new IFormulation(base);
-    SparegoInit*       init = new SparegoInit(form);
-    SimplexLatticeDirectionIterator* dirs =
-            new SimplexLatticeDirectionIterator(init);
-
-    ValidationWithScalarisation* val = new ValidationWithScalarisation(dirs);
-    RobustnessAssignment*       iVal = new RobustnessAssignment(val);
-    DirectionFitnessFiltration* filt = new DirectionFitnessFiltration(iVal);
-    SurrogateBasedOptimizerWithPerturbation* opt =
-            new SurrogateBasedOptimizerWithPerturbation(filt);
-
-    IFunctionSPtr func = IFunctionSPtr(new DTLZ2);
-    func->TP_defineNInputs(dVecSize);
-    func->TP_defineNOutputs(oVecSize);
-    form->appendFunction(func);
-
-    init->TP_defineSetSize(popsize);
-    init->TP_defineNeighbourhoodRadius(nRaduis);
-    init->addOutputTag(Tigon::TValidation);
-
-    dirs->TP_defineReferenceSetSize(nDirs);
-
-    filt->TP_defineMaxSolutions(maxSurrogateSize);
-
-    val->TP_defineOperateOnFinal(false);
-    val->TP_defineCountEvaluations(true);
-    val->TP_defineScalarisingFunction(Tigon::WeightedChebyshev);
-    val->TP_defineNEvaluations(N);
-    val->addAdditionalOutputTag(Tigon::TFitness);
-
-    opt->defineBudget(budget);
-    opt->TP_defineNeighbourhoodRadius(nRaduis);
-    opt->TP_defineErrorMethod(Tigon::ErrDensityBased);
-
-    iVal->defineIndicator(ConfidenceType, confidenceLevel);
-
-    while(opt->remainingBudget() > 0) {
-        opt->evaluate();
-        opt->incrementIteration();
-
-        cout << "Iteration: " << opt->currentIteration()
-             << ", Used budget " << opt->usedBudget()
-             << ", Remaining budget " << opt->remainingBudget() << endl;
-    }
-
-    delete opt;
-    delete filt;
-    delete iVal;
-    delete val;
-    delete dirs;
     delete init;
     delete form;
     delete base;

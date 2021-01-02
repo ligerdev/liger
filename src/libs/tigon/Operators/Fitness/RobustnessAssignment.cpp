@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -59,7 +59,7 @@ void RobustnessAssignment::initialise()
     addProperty("IndicatorParameter"
                 , TString("Default is 95% (for the confidence "
                           "indicator type).")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     clearAdditionalOutputTags();
     TStringList tags;
@@ -123,7 +123,6 @@ void RobustnessAssignment::evaluateNode()
             oSet->at(i)->defineCost(r);
         }
     }
-
 }
 
 TString RobustnessAssignment::TP_indicatorType() const

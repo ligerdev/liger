@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -19,11 +19,11 @@
 #include <tigon/Operators/Directions/SimplexLatticeDirectionIterator.h>
 #include <tigon/Operators/Fitness/GeneralizedDecomposition.h>
 #include <tigon/Operators/Fitness/ConstraintPenalty.h>
-#include <tigon/Operators/AlgorithmSpecific/Sparego/SparegoValidation.h>
+#include <tigon/Operators/AlgorithmSpecific/sParEGO/SparegoValidation.h>
 #include <tigon/Operators/Fitness/RobustnessAssignment.h>
 #include <tigon/Operators/Fitness/UncertainMonteCarloRobustness.h>
 #include <tigon/Operators/Fitness/UncertainConfidenceRobustness.h>
-#include <tigon/Operators/AlgorithmSpecific/parego/DirectionFitnessFiltration.h>
+#include <tigon/Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.h>
 #include <tigon/Operators/Composites/SurrogateBasedOptimizerWithPerturbation.h>
 #include <tigon/Representation/Sets/ISet.h>
 #include <tigon/Representation/Mappings/IMapping.h>
@@ -62,13 +62,6 @@ void sParEGO::initialise()
     /*6*/ SurrogateBasedOptimizerWithPerturbation*    opt   =
             new SurrogateBasedOptimizerWithPerturbation(this);
 
-    scal->TP_defineScalarisingFunction(Tigon::WeightedChebyshev);
-    scal->TP_defineWeightScopeApproach(Tigon::GlobalWeight);
-    iVal->TP_defineIndicatorType(ConfidenceType);
-    iVal->TP_defineIndicatorParameter(0.9);
-    opt->TP_defineErrorMethod(Tigon::ErrDensityBased);
-
-
     appendOperator(dirs);
     appendOperator(scal);
     appendOperator(cnstr);
@@ -77,25 +70,48 @@ void sParEGO::initialise()
     appendOperator(filt);
     appendOperator(opt);
 
+    scal->TP_defineScalarisingFunction(Tigon::WeightedChebyshev);
+    scal->TP_defineWeightScopeApproach(Tigon::GlobalWeight);
+    filt->TP_defineMaxSolutions(Tigon::DefaultMaxSolutionsSurrogateModelling);
+    opt->TP_defineErrorMethod(Tigon::ErrConfidenceIntervalBased);
+    //opt->TP_defineErrorMethod(Tigon::ErrDensityBased);
+    opt->TP_defineDensityEstimationBandwidth(Tigon::KDEBandwidthRatio *
+                                             TP_neighbourhoodRadius());
+
+    // Changing the following parameter to 1 delivers better results for the
+    // tasks of training and searching the surrogate, but it will take longer
+    // for the optimization task to complete
+    opt->TP_defineOptimizationSearchQuality(0);
+
     addProperty("maxSolutions"
                 , TString("Maximum number of samples for the surrogate model.\n"
                           "If there are more evaluated solutions than this, "
                           "the sample is constructed according to the direction "
                           "of the objective vector, and the scalarised function "
                           "value.")
-                , typeid(int).hash_code());
+                , getTType(int));
 
     addProperty("neighbourhoodRadius"
                 , TString("Maximum Euclidean distance in normalised decision "
                           "space for two solutions to be considered as neighbours.")
-                , typeid(double).hash_code());
+                , getTType(double));
+}
+
+void sParEGO::defineOptimizationSearchQuality(int mode)
+{
+    static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_defineOptimizationSearchQuality(mode);
+}
+
+int sParEGO::optimizationSearchQuality() const
+{
+    return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_optimizationSearchQuality();
 }
 
 void sParEGO::TP_defineErrorMethod(ErrorHandlingMethod err)
 {
-    m_errMethod = err;
-
-    switch(m_errMethod) {
+    switch(err) {
     case Tigon::ErrConfidenceIntervalBased:
         static_cast<SparegoValidation*>(operators().at(3))->
                 TP_defineConfidenceInSample(ConfidenceDecrease);
@@ -109,12 +125,13 @@ void sParEGO::TP_defineErrorMethod(ErrorHandlingMethod err)
     }
 
     static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
-            TP_defineErrorMethod(m_errMethod);
+            TP_defineErrorMethod(err);
 }
 
 Tigon::ErrorHandlingMethod sParEGO::TP_errorMethod() const
 {
-    return m_errMethod;
+    return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_errorMethod();
 }
 
 void sParEGO::TP_defineMaxSolutions(int n)
@@ -147,7 +164,7 @@ TVector<IMappingSPtr> sParEGO::evaluatedMappings() const
 {
     TVector<IMappingSPtr> pop = operators().at(6)->outputSet(0)->all();
     TVector<IMappingSPtr> ret;
-    for(int i=0; i<pop.size(); i++) {
+    for(size_t i=0; i<pop.size(); i++) {
         if(pop[i]->isEvaluated()) {
             ret.push_back(pop[i]);
         }
@@ -159,7 +176,7 @@ TVector<IMappingSPtr> sParEGO::newMappings()  const
 {
     TVector<IMappingSPtr> pop = operators().at(6)->outputSet(0)->all();
     TVector<IMappingSPtr> ret;
-    for(int i=0; i<pop.size(); i++) {
+    for(size_t i=0; i<pop.size(); i++) {
         if(!pop[i]->isEvaluated()) {
             ret.push_back(pop[i]);
         }
@@ -197,17 +214,78 @@ void sParEGO::definePercentile(double p)
             TP_definePercentile(p);
 }
 
-void sParEGO::defineBudgetPerVariable(int n)
+void sParEGO::defineBudgetPerVariableSS(int n)
 {
     static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
-            TP_defineBudgetPerVariable(n);
+            TP_defineBudgetPerVariableSS(n);
 }
 
-int sParEGO::budgetPerVariable() const
+int sParEGO::budgetPerVariableSS() const
 {
     return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
-            TP_budgetPerVariable();
+            TP_budgetPerVariableSS();
 }
+
+void sParEGO::defineInitialPopsizePerVariableSS(int popsize)
+{
+    static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_defineInitialPopsizePerVariableSS(popsize);
+}
+
+int sParEGO::initialPopsizePerVariableSS() const
+{
+    return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_initialPopsizePerVariableSS();
+}
+
+void sParEGO::defineStallIterationsSS(int iter)
+{
+    static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_defineStallIterationsSS(iter);
+}
+
+int sParEGO::stallIterationsSS() const
+{
+    return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_stallIterationsSS();
+}
+
+void sParEGO::defineBudgetPerVariableTS(int n)
+{
+    static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_defineBudgetPerVariableTS(n);
+}
+
+int sParEGO::budgetPerVariableTS() const
+{
+    return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_budgetPerVariableTS();
+}
+
+void sParEGO::defineInitialPopsizePerVariableTS(int popsize)
+{
+    static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_defineInitialPopsizePerVariableTS(popsize);
+}
+
+int sParEGO::initialPopsizePerVariableTS() const
+{
+    return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_initialPopsizePerVariableTS();
+}
+
+void sParEGO::defineStallIterationsTS(int iter)
+{
+    static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_defineStallIterationsTS(iter);
+}
+
+int sParEGO::stallIterationsTS() const
+{
+    return static_cast<SurrogateBasedOptimizerWithPerturbation*>(operators().at(6))->
+            TP_stallIterationsTS();
+}
+
 
 void sParEGO::defineScalarisingFunction(Tigon::ScalarisationType t, double p)
 {

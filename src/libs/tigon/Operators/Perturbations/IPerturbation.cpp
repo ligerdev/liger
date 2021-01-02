@@ -40,14 +40,14 @@ void IPerturbation::initialise()
 {
     addProperty("SolutionMutationProbability"
                 , TString("Probability of applying mutation to a solution. Default is 1.0.")
-                , typeid(double).hash_code());
+                , getTType(double));
     addProperty("VariableMutationProbability"
                 , TString("Average number of mutations per "
                           "decision vector.\nThe per-variable "
                           "probability is this number, divided "
                           "by the number of decision variables\n"
                           "Default is 1.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     TP_defineSolutionMutationProbability(Tigon::DefaultMutationSolutionProbability);
     TP_defineVariableMutationProbability(Tigon::DefaultMutationVariableProbability);

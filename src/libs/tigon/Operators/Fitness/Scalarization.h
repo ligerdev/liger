@@ -1,3 +1,18 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
+**
+** This file is part of Liger.
+**
+** GNU Lesser General Public License Usage
+** This file may be used under the terms of the GNU Lesser General
+** Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+****************************************************************************/
 #ifndef SCALARIZATION_H
 #define SCALARIZATION_H
 #include <tigon/Operators/Fitness/IFitness.h>
@@ -7,22 +22,12 @@ namespace Operators {
 
 class LIGER_TIGON_EXPORT Scalarization : public IFitness
 {
-    //HANDLE_READ_PROPERTIES_BEGIN(IFitness)
-    //READ(ScalarisingFunction, TP_scalarisingFunction)
-    //READ(WeightScopeApproach, TP_weightScopeApproach)
-    //HANDLE_READ_PROPERTIES_END
-
-    //HANDLE_WRITE_PROPERTIES_BEGIN(IFitness)
-    //WRITE(ScalarisingFunction, Tigon::ScalarisationType, TP_defineScalarisingFunction)
-    //WRITE(WeightScopeApproach, Tigon::WeightScope, TP_defineWeightScopeApproach)
-    //HANDLE_WRITE_PROPERTIES_END
-
     DECLARE_CLASS(Tigon::Operators::Scalarization)
 
 public:
     Scalarization();
     Scalarization(Tigon::Representation::IPSet* ipset);
-    virtual ~Scalarization();
+    ~Scalarization();
 
     void evaluateNode();
 
@@ -30,8 +35,6 @@ public:
     TString     name();
     TString     description();
     
-    
-
     // Properties
     void  TP_defineScalarisingFunction(Tigon::ScalarisationType t, double p=1.0);
     Tigon::ScalarisationType TP_scalarisingFunction() const;
@@ -40,17 +43,13 @@ public:
     Tigon::WeightScope TP_weightScopeApproach() const;
 
     double pNorm() const;
-    Tigon::WeightScope weightScopeApproach();
 
 private:
     void initialise();
-    TString   m_name;
-    TString   m_description;
 
-    TVector<double>             m_weight;
     Tigon::ScalarisationType m_scalarisingFunc;
-    double                       m_pNorm;
-    Tigon::WeightScope m_weightScopeApproach;
+    double                   m_pNorm;
+    Tigon::WeightScope       m_weightScopeApproach;
 };
 
 } // namespace Operators

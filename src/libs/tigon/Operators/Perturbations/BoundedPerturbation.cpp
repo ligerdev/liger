@@ -47,7 +47,7 @@ void BoundedPerturbation::initialise()
                           "different scales, the distance is multiplied "
                           "by sqrt(d), where d is the number of decision "
                           "variables.\nThe default is 0.05")
-                ,getType(double));
+                ,getTType(double));
 
     TP_definePerturbationRadius(0.05);
 

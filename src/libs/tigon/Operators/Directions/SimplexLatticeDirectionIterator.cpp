@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -49,11 +49,12 @@ SimplexLatticeDirectionIterator::~SimplexLatticeDirectionIterator()
 
 void SimplexLatticeDirectionIterator::initialise()
 {
-    addProperty("ReferenceSetSize",
-                TString("The size of the reference set.\n"
-                        "When a certain size is requseted,\n"
-                        "the actual size is equal or larger. Default is 1"),
-                typeid(int).hash_code());
+    addProperty("ReferenceSetSize"
+                , TString("The size of the reference set.\n"
+                           "When a certain size is requseted,\n"
+                           "the actual size is equal or larger.\n"
+                           "Default is 1.")
+                , getTType(int));
 
     TP_defineReferenceSetSize(1);
     defineKeepArchive(true);  // to enable calculation of the nadir vector
@@ -129,6 +130,7 @@ void SimplexLatticeDirectionIterator::nextDirection()
         m_currentVec = 0;
     } else {        
         m_currentVec = 0;
+        m_referenceSet = Tigon::shuffle(m_referenceSet);
     }
     defineDirVec(m_referenceSet[m_currentVec]);
 }

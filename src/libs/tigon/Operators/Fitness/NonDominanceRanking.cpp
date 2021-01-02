@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -54,7 +54,7 @@ void NonDominanceRanking::initialise()
                           "solutions. Otherwise the constraints have no "
                           "influence in the ranks.\n"
                           "The default value is true.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
 
     addProperty("IsPreferabilityUsed"
                 , TString("If set to true then the ranks of dominance are "
@@ -62,14 +62,13 @@ void NonDominanceRanking::initialise()
                           "Otherwise any goal vector has no influence in the "
                           "ranks.\n"
                           "The default value is true.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
 
     addProperty("IsWeakDom"
                 , TString("Indicates if either weak (true) or strong (false) "
                           "dominance relation is used.\n"
                           "The default value is true.")
-                , typeid(bool).hash_code());
-
+                , getTType(bool));
 
     TP_defineIsConstrainedHandlingUsed(true);
     TP_defineIsPreferabilityUsed(true);
@@ -90,32 +89,34 @@ void NonDominanceRanking::evaluateNode()
     clearOutputSets();
     ISet* iSet = inputSet(0);
 
-    TVector<IElementSPtr> goals = goalVec();
-    TVector<IElementSPtr>::iterator iter =
-        std::find_if(goals.begin(),goals.end(),
-        [](IElementSPtr g){
-            tribool rs = *g==g->minValue();
-            return (rs.value == false);
-        });
+    bool areGoalsDefined = false;
+    TVector<bool> usedGoals = setGoalVec();
+    for(auto val : usedGoals ) {
+        if(val == true) {
+            areGoalsDefined = true;
+            break;
+        }
+    }
 
-    bool         isGoalVectorUsed = ((iter != goals.end()) &&
+    bool         isGoalVectorUsed = (areGoalsDefined &&
                                      TP_isPreferabilityUsed());
     bool isThresholdVectorDefined = ((constraintVecSize() > 0) &&
                                     TP_isConstrainedHandlingUsed());
 
     m_domRelation->defineWeakDom(TP_isWeakDom());
 
-    // build a vector that indicates if goals are used or not
-    TVector<double> setGoals;
-    if(isGoalVectorUsed) {
-        for(IElementSPtr g : goalVec()) {
-            if(*g==g->minValue()) {
-                setGoals.push_back(false);
-            }
-            else {
-                setGoals.push_back(true);
-            }
+    // build a vector that indicates if goals are used or not in double format
+    TVector<double> setGoals; setGoals.reserve(usedGoals.size());
+    if(isGoalVectorUsed) { 
+        for(auto val : usedGoals) {
+            setGoals.push_back(val);
         }
+    }
+
+    TVector<int> priorities = priorityVec();
+    TVector<double> priority; priority.reserve(priorities.size());
+    for(auto elem : priorities) {
+        priority.push_back(elem);
     }
 
     // build parameter vector
@@ -123,27 +124,22 @@ void NonDominanceRanking::evaluateNode()
     if(isGoalVectorUsed && isThresholdVectorDefined) {
 
         defineRelationType(PreferabilityConstraintHandlingRelation);
-
-        parameters.resize(5);
-        parameters[0] = IElementVecToRealVec(goalVec());
-        parameters[1] = setGoals;
-        parameters[2] = IElementVecToRealVec(thresholdVec());
+        m_domRelation->defineGoalVec(IElementVecToRealVec(goalVec()));
+        m_domRelation->defineSetGoals(setGoalVec());
+        m_domRelation->definePriorityVec(priorityVec());
+        m_domRelation->defineThresholdVec(IElementVecToRealVec(thresholdVec()));
     }
     else if(!isGoalVectorUsed && isThresholdVectorDefined) {
 
         defineRelationType(ConstraintHandlingDominanceRelation);
-
-        parameters.resize(3);
-        parameters[0] = IElementVecToRealVec(thresholdVec());
+        m_domRelation->defineThresholdVec(IElementVecToRealVec(thresholdVec()));
     }
     else if(isGoalVectorUsed && !isThresholdVectorDefined) {
 
         defineRelationType(PreferabilityRelation);
-
-        parameters.resize(2);
-        parameters[0] = IElementVecToRealVec(goalVec());
-        parameters[1] = setGoals;
-        m_domRelation->defineParameters(parameters);
+        m_domRelation->defineGoalVec(IElementVecToRealVec(goalVec()));
+        m_domRelation->defineSetGoals(setGoalVec());
+        m_domRelation->definePriorityVec(priorityVec());
     } else {
 
         defineRelationType(NormalDominanceRelation);
@@ -162,20 +158,9 @@ void NonDominanceRanking::evaluateNode()
             IMappingSPtr b = iSet->at(j);
 
             // add parameters to the dominance relation for constraint handling
-            if(isGoalVectorUsed && isThresholdVectorDefined) {
-
-                parameters[3] = a->doubleConstraintVec();
-                parameters[4] = b->doubleConstraintVec();
-                m_domRelation->defineParameters(parameters);
-            }
-            else if(!isGoalVectorUsed && isThresholdVectorDefined) {
-
-                parameters[1] = a->doubleConstraintVec();
-                parameters[2] = b->doubleConstraintVec();
-                m_domRelation->defineParameters(parameters);
-            }
-            else {
-                // no need to define parameters, or already defined
+            if(isThresholdVectorDefined) {
+                m_domRelation->defineConstraintVecA(a->doubleConstraintVec());
+                m_domRelation->defineConstraintVecB(b->doubleConstraintVec());
             }
 
             dom = m_domRelation->isBetterThan(a->doubleObjectiveVec(),
@@ -228,7 +213,7 @@ void NonDominanceRanking::evaluateNode()
 }
 
 void NonDominanceRanking::defineRelationType(DominanceRelationType r)
-{
+{    
     DominanceRelation* temp = m_factory->create(r);
     if(temp != nullptr) {
         m_domRelationType = r;

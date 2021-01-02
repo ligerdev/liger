@@ -27,7 +27,7 @@ RandFiltrationForPerturbation::RandFiltrationForPerturbation()
                 ,TString("Number of new solution created by the operator "
                          "divided by the number of solutions in the input set. "
                          "Default is 1")
-                ,typeid(double).hash_code());
+                , getTType(double));
     m_name = TString("Random filtration for Perturbation");
     m_description = TString("Creates a set of solutions selected randomly "
                             "from the set tagged \"for modification\".\n"
@@ -44,10 +44,10 @@ RandFiltrationForPerturbation::RandFiltrationForPerturbation(Tigon::Representati
     : IFiltration(ipset)
 {
     addProperty("RatioOfNewSolutions"
-                ,TString("Number of new solution created by the operator "
+                , TString("Number of new solution created by the operator "
                          "divided by the number of solutions in the input set. "
                          "Default is 1")
-                ,typeid(double).hash_code());
+                , getTType(double));
     m_name = TString("Random filtration for Perturbation");
     m_description = TString("Creates a set of solutions selected randomly from the set tagged \"for modification\".\n");
     m_description += TString("The set is tagged \"For Perturbation\".\n");

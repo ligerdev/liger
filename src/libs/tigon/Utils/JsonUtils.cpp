@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -89,6 +89,14 @@ JsonArray toJsonArray(const TVector<double> &vec)
     JsonArray jArray;
     std::transform(vec.begin(), vec.end(),std::back_inserter(jArray),
                    [](double t) {return t;});
+    return jArray;
+}
+
+JsonArray toJsonArray(const TVector<int> &vec)
+{
+    JsonArray jArray;
+    std::transform(vec.begin(), vec.end(),std::back_inserter(jArray),
+                   [](int t) {return t;});
     return jArray;
 }
 
@@ -395,7 +403,9 @@ JsonObject problemToJsonObject(const ProblemSPtr prob)
     }
 
     jprob["pVector"]    = toJsonArrayFullInfo(prob->parameterVector());
+    jprob["setGoals"]   = toJsonArray(prob->setGoalVector());
     jprob["goals"]      = toJsonArrayDoubleValue(prob->goalVector());
+    jprob["priorities"] = toJsonArray(prob->priorityVector());
     jprob["thresholds"] = toJsonArrayDoubleValue(prob->thresholdVector());
     jprob["isExternalParameters"] = toJsonArray(prob->isExternalParameters());
 
@@ -551,6 +561,13 @@ void fromJsonArray(const JsonArray &jarray, TVector<double>& vec)
     std::transform(jarray.constBegin(), jarray.constEnd(),
                    std::back_inserter(vec),
                    [](const JsonValue jval) {return jval.toDouble();});
+}
+
+void fromJsonArray(const JsonArray &jarray, TVector<int>& vec)
+{
+    std::transform(jarray.constBegin(), jarray.constEnd(),
+                   std::back_inserter(vec),
+                   [](const JsonValue jval) {return jval.toInt();});
 }
 
 void fromJsonArray(const JsonArray &jarray, TVector<bool>& vec)

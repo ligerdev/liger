@@ -107,27 +107,27 @@ IFunctionSPtr ProblemGenerator::createFunctionByName(const TString &className,
  */
 void ProblemGenerator::initialise()
 {
-    addProperty("funcTypes", "Function Types", getType(TString));
-    addProperty("funcPathes", "Function Pathes", getType(TString));
-    addProperty("funcPrpts", "Function Properties", getType(TString));
-    addProperty("iprts", "iprts", getType(TString));
-    addProperty("oprts", "oprts", getType(TString));
-    addProperty("lbounds", "lbounds", getType(TString));
-    addProperty("ubounds", "ubounds", getType(TString));
-    addProperty("paramValueVec", "paramValueVec", getType(TString));
-    addProperty("externalParam", "externalParam", getType(TString));
-    addProperty("externalParamGroups", "externalParamGroups", getType(TString));
+    addProperty("funcTypes", "Function Types", getTType(TString));
+    addProperty("funcPathes", "Function Pathes", getTType(TString));
+    addProperty("funcPrpts", "Function Properties", getTType(TString));
+    addProperty("iprts", "iprts", getTType(TString));
+    addProperty("oprts", "oprts", getTType(TString));
+    addProperty("lbounds", "lbounds", getTType(TString));
+    addProperty("ubounds", "ubounds", getTType(TString));
+    addProperty("paramValueVec", "paramValueVec", getTType(TString));
+    addProperty("externalParam", "externalParam", getTType(TString));
+    addProperty("externalParamGroups", "externalParamGroups", getTType(TString));
     addProperty("externalParamGroupDataPathes", "externalParamGroupDataPathes",
-                getType(TString));
-    addProperty("goals", "goals", getType(TString));
-    addProperty("thresholds", "thresholds", getType(TString));
-    addProperty("dVecUncertainties", "dVecUncertaintiesJson", getType(TString));
-    addProperty("funcOutUncertainties", "funcOutUncertaintiesJson", getType(TString));
-    addProperty("f2dMap", "f2dMap", getType(TString));
-    addProperty("f2pMap", "f2pMap", getType(TString));
-    addProperty("f2oMap", "f2oMap", getType(TString));
-    addProperty("f2cMap", "f2cMap", getType(TString));
-    addProperty("f2uMap", "f2uMap", getType(TString));
+                getTType(TString));
+    addProperty("goals", "goals", getTType(TString));
+    addProperty("thresholds", "thresholds", getTType(TString));
+    addProperty("dVecUncertainties", "dVecUncertaintiesJson", getTType(TString));
+    addProperty("funcOutUncertainties", "funcOutUncertaintiesJson", getTType(TString));
+    addProperty("f2dMap", "f2dMap", getTType(TString));
+    addProperty("f2pMap", "f2pMap", getTType(TString));
+    addProperty("f2oMap", "f2oMap", getTType(TString));
+    addProperty("f2cMap", "f2cMap", getTType(TString));
+    addProperty("f2uMap", "f2uMap", getTType(TString));
 }
 
 void ProblemGenerator::evaluateNode()

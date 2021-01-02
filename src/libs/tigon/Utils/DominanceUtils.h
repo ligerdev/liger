@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -36,6 +36,11 @@ LIGER_TIGON_EXPORT
 tribool epsilonDominance(const TVector<double> &a, const TVector<double> &b,
                          double epsilon=Epsilon);
 
+
+LIGER_TIGON_EXPORT
+TVector<int> dominanceCount(const ISet* set, bool weakDom=true);
+LIGER_TIGON_EXPORT
+TVector<int> dominanceCount(const TVector<IMappingSPtr>& set, bool weakDom=true);
 
 LIGER_TIGON_EXPORT
 TVector<ISet*> nonDominanceSort(const ISet* set, bool weakDom=true);
@@ -102,6 +107,10 @@ TVector<TVector<IMappingSPtr>> nonDominanceSortParametricConstraintHandling(
 LIGER_TIGON_EXPORT
 tribool preferability(const TVector<double> &a, const TVector<double> &b,
                       const TVector<double> &g, bool weakDom=true);
+LIGER_TIGON_EXPORT
+tribool preferability(const TVector<double> &a, const TVector<double> &b,
+                      const TVector<double> &g, const TVector<int> &p,
+                      bool weakDom=true);
 LIGER_TIGON_EXPORT
 TVector<ISet*> nonDominanceSort(const ISet* set, const TVector<double>& goal,
                                 bool weakDom = true);

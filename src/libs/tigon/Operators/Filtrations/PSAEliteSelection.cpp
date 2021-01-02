@@ -45,7 +45,7 @@ void PSAEliteSelection::initialise()
     addProperty("EliteRatio"
                 , TString("Proportion of the Elite solutions of the total"
                           " population. Default is half.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     m_name = TString("PSA Elite Selection");
     m_description = TString("Creates a set with the best solutions selected from sets of non-dominace ranks.\n");

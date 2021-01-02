@@ -42,7 +42,7 @@ void IInitialisation::initialise()
 {
     addProperty("OptimizationSetSize"
                 , TString("Number of mappings to initialise. Default is one")
-                , typeid(int).hash_code());
+                , getTType(int));
 
     addOutputTag(Tigon::TMainOptimizationSet);
     addOutputTag(Tigon::TForEvaluation);

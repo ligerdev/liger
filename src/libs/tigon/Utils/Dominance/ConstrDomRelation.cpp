@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -97,30 +97,6 @@ tribool ConstrDomRelation::isBetterThan(const TVector<double> &a,
     return dom;
 }
 
-void ConstrDomRelation::defineParameters(const TVector<TVector<double>>& c)
-{
-    if(c.size()==3) {
-        defineThresholdVec(c[0]);
-        defineConstraintVecA(c[1]);
-        defineConstraintVecB(c[2]);
-    }
-}
-
-double ConstrDomRelation::solutionConstraintViolation(
-        const TVector<double>& g) const
-{
-    double constrViolation = 0.0;
-    int C = g.size();
-    for(int i=0; i<C; i++) {
-        double diff = g[i] - thresholdVec()[i];
-        if(diff > 0.0) {
-            constrViolation += diff;
-        }
-    }
-
-    return constrViolation;
-}
-
 void ConstrDomRelation::defineThresholdVec(const TVector<double> &t)
 {
     m_thresholdVec = t;
@@ -151,6 +127,20 @@ TVector<double> ConstrDomRelation::constraintVecB() const
     return m_constrainedVecB;
 }
 
+double ConstrDomRelation::solutionConstraintViolation(
+        const TVector<double>& g) const
+{
+    double constrViolation = 0.0;
+    int C = g.size();
+    for(int i=0; i<C; i++) {
+        double diff = g[i] - thresholdVec()[i];
+        if(diff > 0.0) {
+            constrViolation += diff;
+        }
+    }
+
+    return constrViolation;
+}
 
 } // namespace Representation
 } // namespace Tigon

@@ -99,11 +99,13 @@ SOURCES += \
     Utils/RBFInverseMultiQuadric.cpp \
     Utils/RBFBasis.cpp \
     Utils/RBFInterpolatorCascade.cpp \
-    Utils/KrigingVariogram.cpp \
-    Utils/Kriging.cpp \
-    Utils/PowerVariogram.cpp \
-    Utils/KrigingCascade.cpp \
-    Utils/SphericalVariogram.cpp \
+    Utils/Kriging/DACE.cpp \
+    Utils/Kriging/IKriging.cpp \
+    Utils/Kriging/KrigingCascade.cpp \
+    Utils/Kriging/KrigingVariogram.cpp \
+    Utils/Kriging/OrdinaryKriging.cpp \
+    Utils/Kriging/PowerVariogram.cpp \
+    Utils/Kriging/SphericalVariogram.cpp \
     Representation/Distributions/IDistribution.cpp \
     Representation/Distributions/UniformDistribution.cpp \
     Representation/Distributions/LinearDistribution.cpp \
@@ -135,12 +137,25 @@ SOURCES += \
     Representation/Functions/DTLZ/DTLZ2.cpp \
     Representation/Functions/DTLZ/DTLZ5_2.cpp \
     Representation/Functions/DTLZ/DTLZ5_3.cpp \
-    Representation/Functions/KrigingSurrogate.cpp \
+    Representation/Functions/SurrogateModelling/KrigingSurrogate.cpp \
+    Representation/Functions/SurrogateModelling/ExpectedImprovement.cpp \
+    Representation/Functions/SurrogateModelling/RandExpectedImprovement.cpp \
+    Representation/Functions/SurrogateModelling/FeedforwardSurrogate.cpp \
+    Representation/Functions/SurrogateModelling/FannNetwork.cpp \
+    Representation/Functions/SurrogateModelling/ConstrainedExpectedImprovement.cpp \
+    Representation/Functions/SurrogateModelling/FeasibleExpectedImprovement.cpp \
+    Representation/Functions/SurrogateModelling/FeasibleRandExpectedImprovement.cpp \
+    Representation/Functions/SurrogateModelling/ProbabilityFeasibility.cpp \
+    Representation/Functions/SurrogateModelling/Likelihood.cpp \
+    Representation/Functions/SurrogateModelling/ProbabilityFeasibilityBagheri.cpp \
     Representation/Functions/SingleObjective/Alpine2.cpp \
-    Representation/Functions/ExpectedImprovement.cpp \
-    Representation/Functions/RandExpectedImprovement.cpp \
-    Representation/Functions/FeedforwardSurrogate.cpp \
-    Representation/Functions/FannNetwork.cpp \
+    Representation/Functions/SingleObjective/ConstrainedProblems.cpp \
+    Representation/Functions/SingleObjective/BraninGomez.cpp \
+    Representation/Functions/SingleObjective/Camel.cpp \
+    Representation/Functions/SingleObjective/Sasena.cpp \
+    Representation/Functions/SingleObjective/CBranin.cpp \
+    Representation/Functions/SingleObjective/CBraninM1.cpp \
+    Representation/Functions/SingleObjective/Poly1.cpp \
     Utils/ScalarisingFunctions.cpp \
     Utils/ProjectionUtils.cpp \
     Utils/NormalisationUtils.cpp \
@@ -172,6 +187,7 @@ SOURCES += \
     Representation/Indicators/ThresholdIndicator.cpp \
     Operators/Composites/IComposite.cpp \
     Operators/Composites/SurrogateBasedOptimizer.cpp \
+    Operators/Composites/ConstrainedSurrogateBasedOptimizer.cpp \
     Operators/Transformations/Normalisation.cpp \
     Operators/Initialisation/FitnessBasedInit.cpp \
     Operators/Filtrations/MultiMemberTournamentForDirection.cpp \
@@ -179,10 +195,14 @@ SOURCES += \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.cpp \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForDirection.cpp \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForPerturbation.cpp \
-    Operators/Transformations/Denormalisation.cpp \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseMutation.cpp \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseEliteFiltration.cpp \
-    Operators/AlgorithmSpecific/parego/DirectionFitnessFiltration.cpp \
+    Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.cpp \
+    Operators/AlgorithmSpecific/ParEGO/ConstraintDirectionFitnessFiltration.cpp \
+    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.cpp \
+    Operators/AlgorithmSpecific/sParEGO/sParEGOInit.cpp \
+    Operators/AlgorithmSpecific/sParEGO/SparegoValidation.cpp \
+    Operators/Transformations/Denormalisation.cpp \
     Algorithms/ACROMUSE.cpp \
     Operators/Initialisation/UserDefinedInit.cpp \
     Representation/Distributions/ChiSquaredDistribution.cpp \
@@ -209,7 +229,6 @@ SOURCES += \
     Representation/Elements/IElementOperations.cpp \
     Representation/Mappings/IMappingOperations.cpp \
     Utils/IElementUtils.cpp \
-    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.cpp \
     Engine/TigonFunctionFactory.cpp \
     Operators/Filtrations/TruncateSets.cpp \
     Operators/Filtrations/TournamentFiltrationForDirection.cpp \
@@ -251,8 +270,6 @@ SOURCES += \
     Utils/CorrelationMatrix.cpp \
     Utils/ObjectiveReduction.cpp \
     Algorithms/sParEGO.cpp \
-    Operators/AlgorithmSpecific/Sparego/SparegoInit.cpp \
-    Operators/AlgorithmSpecific/Sparego/SparegoValidation.cpp \
     Operators/Evaluators/ValidationWithScalarisation.cpp \
     Representation/Functions/CODeM/CODeMDistribution.cpp \
     Representation/Functions/CODeM/CODeMOperators.cpp \
@@ -263,7 +280,6 @@ SOURCES += \
     Representation/Functions/CODeM/UncertaintyKernel.cpp \
     Utils/Dominance/ConstrDomRelation.cpp \
     Utils/Dominance/DominanceRelation.cpp \
-    Utils/Dominance/IOrderedRelation.cpp \
     Utils/Dominance/Preferability.cpp \
     Utils/Dominance/PreferabilityConstraintHandling.cpp \
     Algorithms/MOGA.cpp \
@@ -334,11 +350,13 @@ HEADERS += \
     Utils/RBFInverseMultiQuadric.h \
     Utils/RBFBasis.h \
     Utils/RBFInterpolatorCascade.h \
-    Utils/KrigingVariogram.h \
-    Utils/Kriging.h \
-    Utils/PowerVariogram.h \
-    Utils/KrigingCascade.h \
-    Utils/SphericalVariogram.h \
+    Utils/Kriging/DACE.h \
+    Utils/Kriging/IKriging.h \
+    Utils/Kriging/KrigingCascade.h \
+    Utils/Kriging/KrigingVariogram.h \
+    Utils/Kriging/OrdinaryKriging.h \
+    Utils/Kriging/PowerVariogram.h \
+    Utils/Kriging/SphericalVariogram.h \
     Representation/Distributions/IDistribution.h \
     Representation/Distributions/UniformDistribution.h \
     Representation/Distributions/LinearDistribution.h \
@@ -391,12 +409,25 @@ HEADERS += \
     Representation/Functions/DTLZ/DTLZ5_2.h \
     Representation/Functions/DTLZ/DTLZ5_3.h \
     Representation/Functions/ExampleFunction.h  \
-    Representation/Functions/KrigingSurrogate.h \
+    Representation/Functions/SurrogateModelling/KrigingSurrogate.h \
+    Representation/Functions/SurrogateModelling/ExpectedImprovement.h \
+    Representation/Functions/SurrogateModelling/RandExpectedImprovement.h \
+    Representation/Functions/SurrogateModelling/FeedforwardSurrogate.h \
+    Representation/Functions/SurrogateModelling/FannNetwork.h \
+    Representation/Functions/SurrogateModelling/ConstrainedExpectedImprovement.h \
+    Representation/Functions/SurrogateModelling/FeasibleExpectedImprovement.h \
+    Representation/Functions/SurrogateModelling/FeasibleRandExpectedImprovement.h \
+    Representation/Functions/SurrogateModelling/ProbabilityFeasibility.h \
+    Representation/Functions/SurrogateModelling/Likelihood.h \
+    Representation/Functions/SurrogateModelling/ProbabilityFeasibilityBagheri.h \
     Representation/Functions/SingleObjective/Alpine2.h \
-    Representation/Functions/ExpectedImprovement.h \
-    Representation/Functions/FeedforwardSurrogate.h \
-    Representation/Functions/FannNetwork.h \
-    Representation/Functions/RandExpectedImprovement.h \
+    Representation/Functions/SingleObjective/ConstrainedProblems.h \
+    Representation/Functions/SingleObjective/BraninGomez.h \
+    Representation/Functions/SingleObjective/Camel.h \
+    Representation/Functions/SingleObjective/Sasena.h \
+    Representation/Functions/SingleObjective/CBranin.h \
+    Representation/Functions/SingleObjective/CBraninM1.h \
+    Representation/Functions/SingleObjective/Poly1.h \
     Operators/Formulations/IFormulation.h \
     Representation/Problems/Problem.h \
     Representation/Properties/FunctionPropertiesData.h \
@@ -414,10 +445,14 @@ HEADERS += \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.h \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForDirection.h \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForPerturbation.h \
-    Operators/Transformations/Denormalisation.h \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseMutation.h \
     Operators/AlgorithmSpecific/ACROMUSE/AcromuseEliteFiltration.h \
-    Operators/AlgorithmSpecific/parego/DirectionFitnessFiltration.h \
+    Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.h \
+    Operators/AlgorithmSpecific/ParEGO/ConstraintDirectionFitnessFiltration.h \
+    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.h \
+    Operators/AlgorithmSpecific/sParEGO/sParEGOInit.h \
+    Operators/AlgorithmSpecific/sParEGO/SparegoValidation.h \
+    Operators/Transformations/Denormalisation.h \
     Algorithms/ACROMUSE.h \
     Operators/Initialisation/UserDefinedInit.h \
     Representation/Distributions/ChiSquaredDistribution.h \
@@ -447,7 +482,6 @@ HEADERS += \
     Representation/Mappings/IMappingOperations.h \
     Representation/Mappings/UncertaintyMapping.h \
     Utils/IElementUtils.h \
-    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.h \
     Operators/Filtrations/TruncateSets.h \
     Operators/Filtrations/TournamentFiltrationForDirection.h \
     Factories/RobustnessIndicatorFactory.h  \
@@ -496,8 +530,6 @@ HEADERS += \
     Utils/CorrelationMatrix.h \
     Utils/ObjectiveReduction.h \
     Algorithms/sParEGO.h \
-    Operators/AlgorithmSpecific/Sparego/SparegoInit.h \
-    Operators/AlgorithmSpecific/Sparego/SparegoValidation.h \
     Operators/Evaluators/ValidationWithScalarisation.h \
     Representation/Functions/CODeM/CODeMDistribution.h \
     Representation/Functions/CODeM/CODeMOperators.h \
@@ -508,7 +540,6 @@ HEADERS += \
     Representation/Functions/CODeM/UncertaintyKernel.h \
     Utils/Dominance/ConstrDomRelation.h \
     Utils/Dominance/DominanceRelation.h \
-    Utils/Dominance/IOrderedRelation.h \
     Utils/Dominance/Preferability.h \
     Utils/Dominance/PreferabilityConstraintHandling.h \
     Algorithms/MOGA.h \

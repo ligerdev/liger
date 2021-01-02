@@ -210,13 +210,13 @@ void UserDefinedInit::initialise()
 {
     addProperty("InitialSetFilePath",
                 TString("Path of file that contains initial decision vectors")
-                , getType(TString));
+                , getTType(TString));
     addProperty("SelectedIteration",
                 TString("Selected iteration from file"),
-                getType(int));
+                getTType(int));
     addProperty("TotalIterations",
                 TString("Total number of iterations in the populations file"),
-                getType(int));
+                getTType(int));
 
     TP_defineSetSize(0);
     m_filePath = "";

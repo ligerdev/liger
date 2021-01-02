@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -24,16 +24,17 @@ namespace Tigon {
 double magnitudeAndDirectionP(TVector<double>& vec, double p)
 {
     double magnitude = 0.0;
-    for(int i=0; i < vec.size(); i++) {
-        magnitude += std::pow(vec[i], p);
+    for(auto v : vec) {
+        magnitude += std::pow(v, p);
     }
+
     magnitude = std::pow(magnitude, 1.0 / p);
 
     if(magnitude == 0.0) {
         return magnitude;
     }
 
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         vec[i] /= magnitude;
     }
     return magnitude;
@@ -42,12 +43,13 @@ double magnitudeAndDirectionP(TVector<double>& vec, double p)
 double magnitudeAndDirectionP(TVector<IElementSPtr>& vec, double p)
 {
     double magnitude = 0.0;
-    for(int i=0; i < vec.size(); i++) {
-        magnitude += std::pow(vec[i]->value<double>(), p);
+    for(auto v : vec) {
+        magnitude += std::pow(v->value<double>(), p);
     }
+
     magnitude = std::pow(magnitude, 1.0 / p);
 
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         *vec[i] = *vec[i] / magnitude;
     }
     return magnitude;
@@ -66,14 +68,14 @@ void toUnitVec(TVector<IElementSPtr>& vec, double norm)
 
 void scale(TVector<double>& vec, double factor)
 {
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         vec[i] *= factor;
     }
 }
 
 void scale(TVector<IElementSPtr> vec, double factor)
 {
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         *vec[i] = *vec[i] * factor;
     }
 }
@@ -108,7 +110,7 @@ void normaliseToUnitInterval(IElement& val,
 void normaliseToUnitBoxInMemory(TVector<double>& vec, const TVector<double>& lBounds,
                                              const TVector<double>& uBounds)
 {
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         if(vec[i] <= lBounds[i]) {
             vec[i] = 0.0;
         } else if(vec[i] >= uBounds[i]) {
@@ -125,7 +127,7 @@ void normaliseToUnitBoxInMemory(TVector<IElementSPtr> vec,
     TVector<double> lBounds = IElementVecToRealVec(box->lowerBounds());
     TVector<double> uBounds = IElementVecToRealVec(box->upperBounds());
 
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         vec[i]->defineType(RealType);
         if(*vec[i] <= lBounds[i]) {
             vec[i]->defineValue(0.0);
@@ -142,7 +144,7 @@ TVector<double> normaliseToUnitBox(const TVector<double>& vec,
                                    const TVector<double>& uBounds)
 {
     TVector<double> ret(vec.size());
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         if(vec[i] <= lBounds[i]) {
             ret[i] = 0.0;
         } else if(vec[i] >= uBounds[i]) {
@@ -186,7 +188,7 @@ void scaleBackFromUnitBox(TVector<double>& vec, const TVector<double>& lBounds,
     /// \attention The normalisation of elements out-of-bounds is inconsistent.
     /// The CODEM problems seem to lead this situation.
     /// Further checks are needed here.
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         if(vec[i] > 1.0) {
             //vec[i] = uBounds[i];
             vec[i] = uBounds[i] - (1.0 - vec[i]) * (uBounds[i] - lBounds[i]);
@@ -204,7 +206,7 @@ void scaleBackFromUnitBox(TVector<IElementSPtr> vec, BoxConstraintsDataSPtr box)
     TVector<double> lBounds = IElementVecToRealVec(box->lowerBounds());
     TVector<double> uBounds = IElementVecToRealVec(box->upperBounds());
 
-    for(int i=0; i < vec.size(); i++) {
+    for(size_t i=0; i < vec.size(); i++) {
         if(*vec[i] >= 1.0) {
             vec[i]->defineValue(uBounds[i]);
         } else if(*vec[i] <= 0.0) {
@@ -227,7 +229,7 @@ TVector<double> normaliseForSimplexLattice(const TVector<double> &vec,
 
     // components not set in the original vector are kept temporarily
     // in the normalised vector
-    for(int i=0; i<vec.size(); i++) {
+    for(size_t i=0; i<vec.size(); i++) {
         if(areDoublesEqual(vec[i], valueNotSet)) {
             normVec[i] = valueNotSet;
         }
@@ -263,7 +265,7 @@ double normalisedDistanceP(TVector<IElementSPtr> m, TVector<IElementSPtr> c,
 {
     double ret = -1.0;
     int nElems = m.size();
-    if( (c.size() == nElems) && (box->size() == nElems) ) {
+    if( (c.size() == m.size()) && (box->size() == nElems) ) {
         TVector<double> diff(nElems, 0.0);
         for(int i = 0; i < nElems; i++) {
             double interval = box->upperBound(i).value() - box->lowerBound(i).value();
@@ -272,7 +274,7 @@ double normalisedDistanceP(TVector<IElementSPtr> m, TVector<IElementSPtr> c,
                     diff[i] = 1.0 / interval;
                 }
             } else {
-                diff[i] = std::abs(m[i]->value() - c[i]->value()) / interval;
+                diff[i] = std::fabs(m[i]->value() - c[i]->value()) / interval;
             }
         }
         ret = magnitudeAndDirectionP(diff, p);
@@ -285,11 +287,11 @@ double normalisedDistanceVecP(const TVector<double> &m, const TVector<double> &c
 {
     double ret = -1.0;
     int nElems = m.size();
-    if( (c.size() == nElems) && (box->size() == nElems) ) {
+    if( (c.size() == m.size()) && (box->size() == nElems) ) {
         TVector<double> diff(nElems, 0.0);
         for(int i = 0; i < nElems; i++) {
             double interval = box->upperBound(i).value() - box->lowerBound(i).value();
-            diff[i] = std::abs(m[i] - c[i]) / interval;
+            diff[i] = std::fabs(m[i] - c[i]) / interval;
         }
         ret = magnitudeAndDirectionP(diff, p);
     }
@@ -300,15 +302,17 @@ double normalisedDistanceVecP(const TVector<double> &m, const TVector<double> &c
 double directedBoxedIntervalLength(const TVector<double> dir, double p)
 {
     double maxComponent = 0.0;
-    for(int i=0; i < dir.size(); i++) {
-        if(dir[i] > maxComponent) {
-            maxComponent = dir[i];
+    for(auto d : dir) {
+        if(d > maxComponent) {
+            maxComponent = d;
         }
     }
+
     double len = 0.0;
-    for(int i=0; i < dir.size(); i++) {
-        len += std::pow((dir[i] / maxComponent), p);
+    for(auto d : dir) {
+        len += std::pow((d / maxComponent), p);
     }
+
     len = std::pow(len, 1.0 / p);
     return len;
 }

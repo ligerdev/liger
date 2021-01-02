@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -27,7 +27,7 @@ class LIGER_TIGON_EXPORT AcromuseEliteFiltration : public IFiltration
 public:
     AcromuseEliteFiltration();
     AcromuseEliteFiltration(Tigon::Representation::IPSet* ipset);
-    virtual ~AcromuseEliteFiltration();
+    ~AcromuseEliteFiltration();
 
     void evaluateNode();
 
@@ -39,8 +39,6 @@ public:
 
 protected:
     void initialise();
-    TString m_name;
-    TString m_description;
 
 };
 

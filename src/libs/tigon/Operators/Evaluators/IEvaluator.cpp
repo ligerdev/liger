@@ -84,19 +84,20 @@ void IEvaluator::initialise()
 {
     addProperty("ParallelEvaluation"
                 , TString("Every IMapping is evaluated in a "
-                          "separate thread."), typeid(bool).hash_code());
+                          "separate thread.")
+                , getTType(bool));
     addProperty("CountEvaluations"
                 , TString("The evaluation counter is incremented "
                           "after the evaluation of each solution.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
     addProperty("CountPerFunction"
                 , TString("Every function increments the "
                           "evaluation counter by one.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
     addProperty("SingleObjective"
                 , TString("The fitness is set to the first "
                           "objective after evaluation.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
 
     TP_defineParallel(false);
     TP_defineCountEvaluations(true);

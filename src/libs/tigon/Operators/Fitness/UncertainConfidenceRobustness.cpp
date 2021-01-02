@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -55,7 +55,7 @@ void UncertainConfidenceRobustness::initialise()
                           "values for them are chosen according to the "
                           "percentile.\n Default is 0.05 (optimistic). "
                           "Maximum is 0.999")
-                , getType(double));
+                , getTType(double));
 
     TP_definePercentile(1.0 - Tigon::DefaultConfidence);
 }

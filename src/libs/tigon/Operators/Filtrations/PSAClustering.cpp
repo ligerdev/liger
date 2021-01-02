@@ -45,19 +45,19 @@ void PSAClustering::initialise()
 {
     addProperty("numberOfClusters"
                 , TString("Number of cluster with similar IMappings")
-                , typeid(int).hash_code());
+                , getTType(int));
 
     addProperty("normalised"
                 , TString("Cluster the set according to the objective "
                           "vectors or design vectors.\n"
                           "Evaluate DVec is false for objective vectors "
                           "(default) and true for design vectors.")
-                , typeid(bool).hash_code());
+                , getTType(bool));
 
     addProperty("evaluateDVec"
                 , TString("Normalise every dimension to values between 0-1. \n"
                           "Default is true.")
-                , typeid(int).hash_code());
+                , getTType(int));
 
     TP_defineNumberOfClusters(1);
     TP_defineNormalised(true);

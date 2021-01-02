@@ -53,11 +53,11 @@ void RandomHypervolume::initialise()
                           "quantify the the random hypervolume "
                           "measure.\n"
                           "Default is confidence indicator.")
-                , getType(TString));
+                , getTType(TString));
     addProperty("IndicatorParameter"
                 , TString("Default is 95% (for the confidence "
                           "indicator type).")
-                , getType(double));
+                , getTType(double));
     addProperty("NSamples"
                 , TString("Number of samples from each random "
                           "objective vector.\nIf the objectives "
@@ -69,7 +69,7 @@ void RandomHypervolume::initialise()
                           "must be a positive integer.\nDefault "
                           "is ")
                 + std::to_string(DefaultMonteCarloSample)
-                , getType(int));
+                , getTType(int));
     m_isDefinedRef = false;
 
     m_factory = &RobustnessIndicatorFactory::instance();

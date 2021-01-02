@@ -50,7 +50,7 @@ QOpSparegoInitNode::QOpSparegoInitNode()
     m_backgroundColor = Qt::white;
     setNumberOfOutputs(1);
     setNumberOfInputs(1);
-    setData(new SparegoInit);
+    setData(new sParEGOInit);
 
     QFile img_file(":/qtigon/images/qopsparegoinitnode.svg");
     if(img_file.exists()) {
@@ -117,7 +117,7 @@ void QOpSparegoInitNode::writeDataProperties(QXmlStreamWriter &xmlWriter)
 void QOpSparegoInitNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     Q_UNUSED(event)
-    SparegoInit* thisOp = static_cast<SparegoInit*>(data());
+    sParEGOInit* thisOp = static_cast<sParEGOInit*>(data());
     if(thisOp) {
         m_dialog->setup(thisOp);
         m_dialog->show();

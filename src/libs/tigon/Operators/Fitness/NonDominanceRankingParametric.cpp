@@ -47,7 +47,7 @@ void NonDominanceRankingParametric::initialise()
                 , TString("Number of bins used to partition the parameter "
                           "space.\n"
                           "The default value is 20.")
-                , typeid(int).hash_code());
+                , getTType(int));
 
     TP_defineNumberOfBins(Tigon::DefaultNumberBins);
 }

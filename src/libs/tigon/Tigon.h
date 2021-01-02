@@ -77,12 +77,9 @@
 #include <tigon/Representation/Functions/DTLZ/DTLZ2.h>
 #include <tigon/Representation/Functions/DTLZ/DTLZ5_2.h>
 #include <tigon/Representation/Functions/DTLZ/DTLZ5_3.h>
-#include <tigon/Representation/Functions/KrigingSurrogate.h>
-#include <tigon/Representation/Functions/ExpectedImprovement.h>
 #include <tigon/Representation/Functions/SingleObjective/Alpine2.h>
-#include <tigon/Representation/Functions/RandExpectedImprovement.h>
-#include <tigon/Representation/Functions/FannNetwork.h>
-#include <tigon/Representation/Functions/FeedforwardSurrogate.h>
+#include <tigon/Representation/Functions/SingleObjective/CBraninM1.h>
+#include <tigon/Representation/Functions/SingleObjective/Poly1.h>
 #include <tigon/Representation/Functions/CTP/CTPProblems.h>
 #include <tigon/Representation/Functions/CTP/CTP1.h>
 #include <tigon/Representation/Functions/CTP/CTP2.h>
@@ -92,6 +89,16 @@
 #include <tigon/Representation/Functions/CTP/CTP6.h>
 #include <tigon/Representation/Functions/CTP/CTP7.h>
 #include <tigon/Representation/Functions/TF1.h>
+#include <tigon/Representation/Functions/SurrogateModelling/KrigingSurrogate.h>
+#include <tigon/Representation/Functions/SurrogateModelling/ExpectedImprovement.h>
+#include <tigon/Representation/Functions/SurrogateModelling/FeasibleExpectedImprovement.h>
+#include <tigon/Representation/Functions/SurrogateModelling/RandExpectedImprovement.h>
+#include <tigon/Representation/Functions/SurrogateModelling/FeasibleRandExpectedImprovement.h>
+#include <tigon/Representation/Functions/SurrogateModelling/ProbabilityFeasibility.h>
+#include <tigon/Representation/Functions/SurrogateModelling/ConstrainedExpectedImprovement.h>
+#include <tigon/Representation/Functions/SurrogateModelling/FannNetwork.h>
+#include <tigon/Representation/Functions/SurrogateModelling/FeedforwardSurrogate.h>
+#include <tigon/Representation/Functions/SurrogateModelling/ProbabilityFeasibilityBagheri.h>
 #include <tigon/Representation/Functions/CODeM/CODeMDistribution.h>
 #include <tigon/Representation/Functions/CODeM/UncertaintyKernel.h>
 #include <tigon/Representation/Functions/CODeM/CODeMOperators.h>
@@ -130,6 +137,7 @@
 #include <tigon/Operators/Composites/IComposite.h>
 #include <tigon/Operators/Composites/SurrogateBasedOptimizer.h>
 #include <tigon/Operators/Composites/SurrogateBasedOptimizerWithPerturbation.h>
+#include <tigon/Operators/Composites/ConstrainedSurrogateBasedOptimizer.h>
 
 // Operators - Convergence
 #include <tigon/Operators/Convergence/IConvergence.h>
@@ -219,9 +227,9 @@
 #include <tigon/Operators/Transformations/Denormalisation.h>
 
 // Operators - Algorithm specific
-#include <tigon/Operators/AlgorithmSpecific/Sparego/SparegoInit.h>
-#include <tigon/Operators/AlgorithmSpecific/Sparego/SparegoValidation.h>
-#include <tigon/Operators/AlgorithmSpecific/parego/DirectionFitnessFiltration.h>
+#include <tigon/Operators/AlgorithmSpecific/sParEGO/sParEGOInit.h>
+#include <tigon/Operators/AlgorithmSpecific/sParEGO/SparegoValidation.h>
+#include <tigon/Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.h>
 #include <tigon/Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.h>
 #include <tigon/Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.h>
 #include <tigon/Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForDirection.h>
@@ -267,11 +275,13 @@
 #include <tigon/Utils/RBFInterpolatorCascade.h>
 #include <tigon/Utils/PolynomialRegression.h>
 #include <tigon/Utils/MultiPolynomialRegression.h>
-#include <tigon/Utils/Kriging.h>
-#include <tigon/Utils/KrigingVariogram.h>
-#include <tigon/Utils/PowerVariogram.h>
-#include <tigon/Utils/KrigingCascade.h>
-#include <tigon/Utils/SphericalVariogram.h>
+#include <tigon/Utils/Kriging/IKriging.h>
+#include <tigon/Utils/Kriging/DACE.h>
+#include <tigon/Utils/Kriging/OrdinaryKriging.h>
+#include <tigon/Utils/Kriging/KrigingVariogram.h>
+#include <tigon/Utils/Kriging/PowerVariogram.h>
+#include <tigon/Utils/Kriging/KrigingCascade.h>
+#include <tigon/Utils/Kriging/SphericalVariogram.h>
 #include <tigon/Utils/NormalisationUtils.h>
 #include <tigon/Utils/ScalarisingFunctions.h>
 #include <tigon/Utils/ProjectionUtils.h>

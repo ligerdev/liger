@@ -326,7 +326,7 @@ void ValidationWithScalarisation::initialise()
                           " principles of generalised decomposition or if the"
                           " original weight vectors are to be used instead.\n"
                           "The default is false\n")
-                ,getType(bool));
+                ,getTType(bool));
 
     TP_defineIsGeneralisedDecomposition(true);
     TP_defineScalarisingFunction(Tigon::DefaultScalarisationFunction);

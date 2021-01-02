@@ -28,7 +28,7 @@ TournamentFiltrationForModification::TournamentFiltrationForModification()
 {
     addProperty("ChildrenRatio"
                 , TString("Proportion of the Children solutions of the total population. Default is half.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     addInputTag(Tigon::TForSelection);
     addInputTag(Tigon::TFitness);
@@ -42,7 +42,7 @@ TournamentFiltrationForModification::TournamentFiltrationForModification(Tigon::
 {
     addProperty("ChildrenRatio"
                 , TString("Proportion of the Children solutions of the total population. Default is half.")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     addInputTag(Tigon::TForSelection);
     addInputTag(Tigon::TFitness);

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -46,7 +46,7 @@ public:
     /// Variable/parameter/objective/constraint/unused Properties
     /// \note The fastest way to get ids, names, unites, descriptions,
     /// and types of the elements is to get their properties first and
-    /// then access the corresspoding memeber function.
+    /// then access the corresspoding member function.
     TVector<ElementProperties> dPrpts()            const;
     TVector<ElementProperties> oPrpts()            const;
     TVector<ElementProperties> pPrpts()            const;
@@ -86,18 +86,20 @@ public:
     TVector<OptimizationType>  oVecOptTypes()      const;
     TVector<OptimizationType>  cVecOptTypes()      const;
 
+    TVector<bool>              setGoalVector()     const;
     TVector<IElementSPtr>      goalVector()        const;
+    TVector<int>               priorityVector()    const;
     TVector<IElementSPtr>      thresholdVector()   const;
     TVector<IElementSPtr>      idealVector()       const;
     TVector<IElementSPtr>      antiIdealVector()   const;
     TVector<IElementSPtr>      nadirVector()       const;
 
     TVector<IFunctionSPtr>     functionVec()       const;
-    TVector<TVector<int> >     f2dMap()            const;
-    TVector<TVector<int> >     f2oMap()            const;
-    TVector<TVector<int> >     f2pMap()            const;
-    TVector<TVector<int> >     f2cMap()            const;
-    TVector<TVector<int> >     f2uMap()            const;
+    TVector<TVector<int>>      f2dMap()            const;
+    TVector<TVector<int>>      f2oMap()            const;
+    TVector<TVector<int>>      f2pMap()            const;
+    TVector<TVector<int>>      f2cMap()            const;
+    TVector<TVector<int>>      f2uMap()            const;
 
     BoxConstraintsDataSPtr     boxConstraints()    const;
 
@@ -106,8 +108,7 @@ public:
     TVector<UncertaintyMapping*>           dVecUncertainties()    const;
     TVector<TVector<UncertaintyMapping*> > funcOutUncertainties() const;
 
-    TVector<bool> isExternalParameters() const;
-
+    /// Properties
     void defineProbProperties(ProblemProperties        probprp);
     void defineDVecPrpts(const TVector<ElementProperties>  &dvecPrpts);
     void defineOVecPrpts(const TVector<ElementProperties>  &ovecPrpts);
@@ -115,6 +116,7 @@ public:
     void defineCVecPrpts(const TVector<ElementProperties>  &cvecPrpts);
     void defineUVecPrpts(const TVector<ElementProperties>  &uvecPrpts);
 
+    /// Types
     void defineDVecTypes(const TVector<ElementType>        &dvecTypes);
     void defineOVecTypes(const TVector<ElementType>        &ovecTypes);
     void definePVecTypes(const TVector<ElementType>        &pvecTypes);
@@ -123,6 +125,7 @@ public:
     void redefineDVarType (int idx, ElementType dvarType);
     void redefineParamType(int idx, ElementType paramType);
 
+    /// Optimization Types
     void defineOVecOptimizationTypes(const TVector<OptimizationType> &ovecOptTypes);
     void defineCVecOptimizationTypes(const TVector<OptimizationType> &cvecOptTypes);
     void redefineObjOptimizationType (int idx, OptimizationType      optType);
@@ -138,14 +141,18 @@ public:
      * A value of -1 means that the variable does not map to the function.
     */
     void defineFunctionVec(const TVector<IFunctionSPtr> &fvec);
-    void defineF2dMap(const TVector<TVector<int> > &map);
-    void defineF2oMap(const TVector<TVector<int> > &map);
-    void defineF2pMap(const TVector<TVector<int> > &map);
-    void defineF2cMap(const TVector<TVector<int> > &map);
-    void defineF2uMap(const TVector<TVector<int> > &map);
+    void defineF2dMap(const TVector<TVector<int>> &map);
+    void defineF2oMap(const TVector<TVector<int>> &map);
+    void defineF2pMap(const TVector<TVector<int>> &map);
+    void defineF2cMap(const TVector<TVector<int>> &map);
+    void defineF2uMap(const TVector<TVector<int>> &map);
 
+    void defineSetGoalVector(const TVector<bool> &setGoals);
+    void redefineSetGoal(int idx, bool setGoal);
     void defineGoalVector(const TVector<IElementSPtr> &goals);
     void redefineGoal(int idx, IElementSPtr goal);
+    void definePriorityVector(const TVector<int> &priorities);
+    void redefinePriority(int idx, int priority);
     void defineThresholdVector(const TVector<IElementSPtr> &thold);
     void redefineThreshold(int idx, IElementSPtr  thold);
     void defineIdealVector(const TVector<IElementSPtr>     &ideal);
@@ -155,22 +162,23 @@ public:
     void defineParameterVector(const TVector<IElementSPtr> &pvec);
     void defineExternalParameters(const TVector<bool> &extpar);
 
-    void defineDVecUncertainties(const TVector<UncertaintyMapping*>  &umaps);
-    void redefineDVarUncertainty(int idx, UncertaintyMapping*  umap);
-    void defineFuncOutUncertainties(const TVector<TVector<UncertaintyMapping*> > &umaps);
-    void redefineFuncOutputUncertainty(int funcIdx,     int outputIdx,
-                                     UncertaintyMapping*        umap);
+    void defineDVecUncertainties(const TVector<UncertaintyMapping*> &umaps);
+    void redefineDVarUncertainty(int idx, UncertaintyMapping* umap);
+    void defineFuncOutUncertainties(const TVector<TVector<UncertaintyMapping*>>
+                                    &umaps);
+    void redefineFuncOutputUncertainty(int funcIdx, int outputIdx,
+                                       UncertaintyMapping* umap);
 
     /*!
      * \brief updateIdeal, updateAntiIdeal, updateNadir
      * \param newVec
      * \return true if the vector is changed
      */
-    bool updateIdeal(const TVector<IElementSPtr> &newVec);
+    bool updateIdeal(const TVector<IElementSPtr>     &newVec);
     bool updateAntiIdeal(const TVector<IElementSPtr> &newVec);
     bool updateNadir(const TVector<IElementSPtr>     &newVec);
 
-    void defineBoxConstraints(BoxConstraintsDataSPtr  box);
+    void defineBoxConstraints(BoxConstraintsDataSPtr box);
 
     /*!
      * \brief appendFunction
@@ -184,6 +192,8 @@ public:
      * \param outObjIdx - a list of indices of function outputs that are
      * considerd as objectives. IMPORTANT: the default of empty vector means ALL
      * outputs are objectives.
+     * \param outUnuIdx - a list of indices of outputs that are not used by the
+     * optimization process. Default is empty, i.e., no unused outputs.
      */
     void appendFunction(IFunctionSPtr func,
                         const TVector<int>  &inParamIdx   = TVector<int>(),
@@ -196,6 +206,8 @@ public:
     /// *******************
     /// External parameters
     /// *******************
+
+    TVector<bool> isExternalParameters() const;
 
     int numberExternalParameters() const;
     TVector<int> externalParametersIndices() const;
@@ -263,15 +275,15 @@ private:
     TVector<ElementProperties> m_cvecPrpts;
     TVector<ElementProperties> m_uvecPrpts;
 
-    TVector<IFunctionSPtr>     m_fvec;
-    TVector<TVector<bool> >    m_fInPMap;
-    TVector<TVector<bool> >    m_fOutOMap;
-    TVector<TVector<bool> >    m_fOutCMap;
-    TVector<TVector<int> >     m_f2dMap;
-    TVector<TVector<int> >     m_f2oMap;
-    TVector<TVector<int> >     m_f2pMap;
-    TVector<TVector<int> >     m_f2cMap;
-    TVector<TVector<int> >     m_f2uMap;
+    TVector<IFunctionSPtr>    m_fvec;
+    TVector<TVector<bool>>    m_fInPMap;
+    TVector<TVector<bool>>    m_fOutOMap;
+    TVector<TVector<bool>>    m_fOutCMap;
+    TVector<TVector<int>>     m_f2dMap;
+    TVector<TVector<int>>     m_f2oMap;
+    TVector<TVector<int>>     m_f2pMap;
+    TVector<TVector<int>>     m_f2cMap;
+    TVector<TVector<int>>     m_f2uMap;
 
     TVector<IElementSPtr>      m_parameterVec;
 
@@ -286,7 +298,9 @@ private:
     /// for parameters
     BoxConstraintsDataSPtr     m_boxConstraints;
 
+    TVector<bool>              m_setGoalVec;
     TVector<IElementSPtr>      m_goalVec;
+    TVector<int>               m_priorityVec;
     TVector<IElementSPtr>      m_thresholdVec;
 
     ProblemDefinitionStatus    m_definitionStatus;
@@ -305,7 +319,9 @@ private:
     bool                       m_nadirDefined;
     bool                       m_antiIdealDefined;
     bool                       m_boxConstraintsDefined;
+    bool                       m_setGoalVecDefined;
     bool                       m_goalVecDefined;
+    bool                       m_priorityVecDefined;
     bool                       m_thresholdVecDefined;
 
     /// Objective reduction

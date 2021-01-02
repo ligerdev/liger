@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -52,17 +52,13 @@ class LIGER_TIGON_EXPORT sParEGO : public IAlgorithm
 public:
     sParEGO();
     sParEGO(IPSet* ipset);
-    virtual ~sParEGO();
-
-    void initialise();
+    ~sParEGO();
 
     // Information about the node.
     TString     name();
     TString     description();
-    
-    
 
-    // Algrithm-level properties
+    // Algorithm-level properties
     void TP_defineErrorMethod(Tigon::ErrorHandlingMethod err);
     Tigon::ErrorHandlingMethod TP_errorMethod()         const;
 
@@ -80,20 +76,41 @@ public:
     // through introspection. They are here for easy interfacing in tests.
     void  defineReferenceSetSize(int     s);
     int   referenceSetSize()          const;
+
     void  defineIndicator(TString indicatorType, double indParam=0);
 
     double percentile()        const;
     void  definePercentile(double p);
 
-    void  defineBudgetPerVariable(int    n);
-    int   budgetPerVariable()         const;
+    // Parameters for the optimizer to search the surrogate
+    void  defineBudgetPerVariableSS(int    n);
+    int   budgetPerVariableSS()         const;
+
+    void defineInitialPopsizePerVariableSS(int popsize);
+    int  initialPopsizePerVariableSS()            const;
+
+    void defineStallIterationsSS(int iter);
+    int  stallIterationsSS()         const;
+
+    // Parameters for the optimizer to train the surrogate
+    void  defineBudgetPerVariableTS(int    n);
+    int   budgetPerVariableTS()         const;
+
+    void defineInitialPopsizePerVariableTS(int popsize);
+    int  initialPopsizePerVariableTS()            const;
+
+    void defineStallIterationsTS(int iter);
+    int  stallIterationsTS()         const;
 
     // TODO: change this property according to the remaining budget
-    void  defineScalarisingFunction(Tigon::ScalarisationType t, double p=1.0);
+    void defineScalarisingFunction(Tigon::ScalarisationType t, double p=1.0);
     Tigon::ScalarisationType scalarisingFunction()                     const;
 
+    void defineOptimizationSearchQuality(int mode);
+    int  optimizationSearchQuality()         const;
+
 private:
-    Tigon::ErrorHandlingMethod    m_errMethod;
+    void initialise();
 };
 
 } // namespace Algorithms

@@ -42,7 +42,7 @@ void SBXCrossOver::initialise()
                 , TString("Controls the remoteness of the children "
                           "from the parents (see reference). "
                           "Default is 15.0")
-                , typeid(double).hash_code());
+                , getTType(double));
 
     TP_defineCrossoverDistributionIndex(Tigon::DefaultCrossoverDistributionIndex);
 

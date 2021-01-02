@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2018 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -139,8 +139,8 @@ bool isGoalDefined(IElementSPtr goal)
 
 bool areDoublesEqual(double a, double b)
 {
-    double c = std::max(std::abs(a),std::abs(b));
-    double relDif = (c==0.0) ? 0.0 : std::abs(a-b) / c;
+    double c = std::max(std::fabs(a),std::fabs(b));
+    double relDif = (c==0.0) ? 0.0 : std::fabs(a-b) / c;
     return relDif < Epsilon;
 }
 

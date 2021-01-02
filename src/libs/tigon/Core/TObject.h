@@ -24,7 +24,7 @@ namespace Tigon {
 typedef std::size_t TTypeHash;
 typedef TTuple<TString, TString, TTypeHash> TPropertyInfo;
 
-#define getType(t) typeid(t).hash_code()
+#define getTType(t) typeid(t).hash_code()
 
 namespace Constants {
 const TString TypeConversionFailure("Cannot convert string to required type");

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2020 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -24,7 +24,6 @@ DominanceRelation::DominanceRelation()
 {
 
 }
-
 
 DominanceRelation::~DominanceRelation()
 {
@@ -58,6 +57,38 @@ void DominanceRelation::defineWeakDom(bool c)
 bool DominanceRelation::weakDom() const
 {
     return m_weakDom;
+}
+
+void DominanceRelation::defineGoalVec(const TVector<double>& g)
+{
+    T_UNUSED(g);
+}
+
+
+void DominanceRelation::defineSetGoals(const TVector<bool> &gSet)
+{
+    T_UNUSED(gSet);
+}
+
+
+void DominanceRelation::definePriorityVec(const TVector<int>& p)
+{
+    T_UNUSED(p);
+}
+
+void DominanceRelation::defineThresholdVec(const TVector<double> &t)
+{
+    T_UNUSED(t);
+}
+
+void DominanceRelation::defineConstraintVecA(const TVector<double> &ag)
+{
+    T_UNUSED(ag);
+}
+
+void DominanceRelation::defineConstraintVecB(const TVector<double> &bg)
+{
+    T_UNUSED(bg);
 }
 
 } // namespace Representation
