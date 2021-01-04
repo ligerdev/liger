@@ -22,7 +22,7 @@
 #include <tigon/Representation/Elements/IElement.h>
 
 namespace Tigon {
-class MatlabEngine;
+class IMatlabEngine;
 
 namespace Representation {
 

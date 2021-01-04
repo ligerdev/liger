@@ -1,7 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2017 The University of Sheffield (www.sheffield.ac.uk)
-**
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -14,7 +13,7 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#include <matlabplugin/Utils/MatlabEngine.h>
+#include <matlabplugin/Utils/MatlabEngineC.h>
 
 namespace Tigon {
 /*!
@@ -24,7 +23,7 @@ namespace Tigon {
  * Lazy initialization is used so the MATLAB engine is not started until a command
  * is run or a variable placed.
  */
-MatlabEngine::MatlabEngine()
+MatlabEngineC::MatlabEngineC()
     : m_engine(nullptr)
 {
     // Lazy initialisation of the MATLAB Engine
@@ -35,14 +34,9 @@ MatlabEngine::MatlabEngine()
  *
  * Destroys the MatlabEngine object and closes the MATLAB engine, stopping the MATLAB process.
  */
-MatlabEngine::~MatlabEngine()
+MatlabEngineC::~MatlabEngineC()
 {
     closeEngine();
-}
-
-TStringList MatlabEngine::commandHistory()
-{
-    return m_commandHist;
 }
 
 /*!
@@ -52,14 +46,14 @@ TStringList MatlabEngine::commandHistory()
  * \param[in] command The string to be evaluated by MATLAB
  * \return True if evaluation succeeded, false if an error was thrown
  */
-bool MatlabEngine::evaluateString(const TString &command, int errorCatch)
+bool MatlabEngineC::evaluateString(const TString &command, bool errorCatch)
 {
     if(!m_engine){
         openEngine();
     }
 
     TString com;
-    if(errorCatch == 1) {
+    if(errorCatch == true) {
         placeVariable("TigonError", 0);
         com += "try\n";
         com += command;
@@ -68,17 +62,19 @@ bool MatlabEngine::evaluateString(const TString &command, int errorCatch)
         com += command;
     }
 
-    m_commandHist.push_back(command);
+    addCommand(command);
     //std::cout <<"Matlab command: "<< command << std::endl;
 
     int errCode = engEvalString(m_engine, com.c_str());
 
     bool error = false;
     if (errCode == 0 ) { // errCode is 1 if the session is dead.
-        if(errorCatch == 1) {
+        if(errorCatch == true) {
             if(getWorkspaceVariable("TigonError", error)) {
                 if(error) {
-                    getWorkspaceVariable("TigonErrorString", m_errorBuff);
+                    TString error_tmp;
+                    getWorkspaceVariable("TigonErrorString", error_tmp);
+                    setErrorMessage(error_tmp);
                     // qDebug() << TString("Error evaluating "
                     //                    + command + ": "
                     //                    + m_errorBuff);
@@ -104,11 +100,11 @@ bool MatlabEngine::evaluateString(const TString &command, int errorCatch)
  * Starts the MATLAB process and sets m_engine to point to the MATLAB engine. By default the engine is
  * invisible or not interactive, this can be changed by calling Interactive(bool visibile). This operation
  * is called once when an instance of MATLAB is first required, each MatlabEngine holds a reference to a
- * MATLAB engine which runs until the MatlabEngine object is destoryed.
+ * MATLAB engine which runs until the MatlabEngine object is destroyed.
  *
  * Parallelisable single instance is only available on Windows system
  */
-void MatlabEngine::openEngine()
+void MatlabEngineC::openEngine()
 {
     if(!m_engine) {
         m_engine = engOpen("");
@@ -121,22 +117,22 @@ void MatlabEngine::openEngine()
  *
  * Stops the MATLAB process, closing the engine. \ref m_engine is reset to NULL.
  */
-void MatlabEngine::closeEngine()
+void MatlabEngineC::closeEngine()
 {
     if(m_engine) {
         engClose(m_engine);
-        m_engine = NULL;
-        m_commandHist.clear();
+        m_engine = nullptr;
+        clearCommandHistory();
     }
 }
 
 /*!
- * \brief Rest the engine to an initial state.
+ * \brief Resets the engine to an initial state.
  *
- * This clears the MATLAB workspace and resets the visibility of the process to invisbile. This operation is
+ * This clears the MATLAB workspace and resets the visibility of the process to invisible. This operation is
  * primarily used by MatlabPool to ensure the pooled engines are in a known initial state.
  */
-void MatlabEngine::resetEngine()
+void MatlabEngineC::resetEngine()
 {
     if(m_engine) {
         ///\note "clear all" was used to reset the engine. However, it sometimes
@@ -145,7 +141,7 @@ void MatlabEngine::resetEngine()
         evaluateString("clearvars", 0);
 
         setInteractive(false);
-        m_commandHist.clear();
+        clearCommandHistory();
     }
 }
 
@@ -156,7 +152,7 @@ void MatlabEngine::resetEngine()
  * any extra created windows should be visible or not.
  * \param[in] visible Boolean for whether the engine should be visible or not.
  */
-void MatlabEngine::setInteractive(bool visible)
+void MatlabEngineC::setInteractive(bool visible)
 {
     if(!m_engine) {
         openEngine();
@@ -172,7 +168,7 @@ void MatlabEngine::setInteractive(bool visible)
  * If no engine is running then the default return value is false.
  * \return MATLAB engine visbility
  */
-bool MatlabEngine::Interactive()
+bool MatlabEngineC::Interactive()
 {
     bool status;
     if(m_engine){
@@ -189,7 +185,7 @@ bool MatlabEngine::Interactive()
  * \param[in] name  The name of the workspace variable.
  * \param[in] value The value of the variable.
  */
-void MatlabEngine::placeVariable(const TString &name, int value)
+void MatlabEngineC::placeVariable(const TString &name, int value)
 {
     mxArray* tmp = mxCreateNumericMatrix(1,1,mxINT32_CLASS, mxREAL); //create a 1x1 matrix of integers
     *(int*)mxGetData(tmp) = value;
@@ -199,7 +195,7 @@ void MatlabEngine::placeVariable(const TString &name, int value)
 }
 
 //! \overload MatlabEngine::placeVariable(const TString &name, int value)
-void MatlabEngine::placeVariable(const TString &name, double value)
+void MatlabEngineC::placeVariable(const TString &name, double value)
 {
     mxArray* tmp = mxCreateDoubleScalar(value);
 
@@ -208,7 +204,7 @@ void MatlabEngine::placeVariable(const TString &name, double value)
 }
 
 //! \overload MatlabEngine::placeVariable(const TString &name, int value)
-void MatlabEngine::placeVariable(const TString &name, bool value)
+void MatlabEngineC::placeVariable(const TString &name, bool value)
 {
     mxArray* tmp = mxCreateLogicalScalar(value);
 
@@ -217,7 +213,7 @@ void MatlabEngine::placeVariable(const TString &name, bool value)
 }
 
 //! \overload MatlabEngine::placeVariable(const TString &name, int value)
-void MatlabEngine::placeVariable(const TString &name, TComplex value)
+void MatlabEngineC::placeVariable(const TString &name, TComplex value)
 {
     mxArray* tmp = mxCreateNumericMatrix_730(1, 1, mxDOUBLE_CLASS, mxCOMPLEX);
     double* pr =  mxGetPr(tmp) ;
@@ -230,7 +226,7 @@ void MatlabEngine::placeVariable(const TString &name, TComplex value)
 }
 
 //! \overload MatlabEngine::placeVariable(const TString &name, int value)
-void MatlabEngine::placeVariable(const TString &name, TString value)
+void MatlabEngineC::placeVariable(const TString &name, TString value)
 {
     mxArray* tmp = mxCreateString(value.c_str());
 
@@ -248,13 +244,13 @@ void MatlabEngine::placeVariable(const TString &name, TString value)
  * \param[in] name  The name of the variable
  * \param[in] value The MATLAB mxArray to be placed into the workspace
  */
-void MatlabEngine::placeVariable(const TString &name, mxArray* value)
+void MatlabEngineC::placeVariable(const TString &name, mxArray* value)
 {
     if(!m_engine) {
         openEngine();
     }
 
-    if(value != NULL) {
+    if(value != nullptr) {
         engPutVariable(m_engine, name.c_str(), value);
     }
 }
@@ -268,7 +264,7 @@ void MatlabEngine::placeVariable(const TString &name, mxArray* value)
  * \param[in] name
  * \param[in] vec
  */
-void MatlabEngine::placeVectorColumn(const TString &name, TVector<int> vec)
+void MatlabEngineC::placeVectorColumn(const TString &name, const TVector<int>& vec)
 {
     setMatrix<int>(name, vec, vec.size(), 1, mxINT32_CLASS);
 }
@@ -282,43 +278,43 @@ void MatlabEngine::placeVectorColumn(const TString &name, TVector<int> vec)
  * \param[in] name
  * \param[in] vec
  */
-void MatlabEngine::placeVectorRow(const TString &name, TVector<int> vec)
+void MatlabEngineC::placeVectorRow(const TString &name, const TVector<int>& vec)
 {
     setMatrix<int>(name, vec, 1, vec.size(), mxINT32_CLASS);
 }
 
 //! \overload MatlabEngine::placeVectorColumn(const TString &name, TVector<int> vec)
-void MatlabEngine::placeVectorColumn(const TString &name, TVector<double> vec)
+void MatlabEngineC::placeVectorColumn(const TString &name, const TVector<double>& vec)
 {
     setMatrix<double>(name, vec, vec.size(), 1, mxDOUBLE_CLASS);
 }
 
 //! \overload MatlabEngine::placeVectorRow(const TString &name, TVector<int> vec)
-void MatlabEngine::placeVectorRow(const TString &name, TVector<double> vec)
+void MatlabEngineC::placeVectorRow(const TString &name, const TVector<double>& vec)
 {
     setMatrix<double>(name, vec, 1, vec.size(), mxDOUBLE_CLASS);
 }
 
 //! \overload MatlabEngine::placeVectorColumn(const TString &name, TVector<int> vec)
-void MatlabEngine::placeVectorColumn(const TString &name, TVector<bool> vec)
+void MatlabEngineC::placeVectorColumn(const TString &name, const TVector<bool>& vec)
 {
     setMatrix<bool>(name, vec, vec.size(), 1, mxLOGICAL_CLASS);
 }
 
 //! \overload MatlabEngine::placeVectorRow(const TString &name, TVector<int> vec)
-void MatlabEngine::placeVectorRow(const TString &name, TVector<bool> vec)
+void MatlabEngineC::placeVectorRow(const TString &name, const TVector<bool>& vec)
 {
     setMatrix<bool>(name, vec, 1, vec.size(), mxLOGICAL_CLASS);
 }
 
 //! \overload MatlabEngine::placeVectorColumn(const TString &name, TVector<int> vec)
-void MatlabEngine::placeVectorColumn(const TString &name, TVector<TComplex> vec)
+void MatlabEngineC::placeVectorColumn(const TString &name, const TVector<TComplex>& vec)
 {
     setMatrix(name, vec, vec.size(), 1, mxDOUBLE_CLASS);
 }
 
 //! \overload MatlabEngine::placeVectorRow(const TString &name, TVector<int> vec)
-void MatlabEngine::placeVectorRow(const TString &name, TVector<TComplex> vec)
+void MatlabEngineC::placeVectorRow(const TString &name, const TVector<TComplex>& vec)
 {
     setMatrix(name, vec, 1, vec.size(), mxDOUBLE_CLASS);
 }
@@ -328,14 +324,14 @@ void MatlabEngine::placeVectorRow(const TString &name, TVector<TComplex> vec)
  *
  * This provides an override of the \ref setMatrix operator for complex numbers.
  */
-void MatlabEngine::setMatrix(const TString &name, TVector<TComplex>& source, int rows, int cols, mxClassID type)
+void MatlabEngineC::setMatrix(const TString &name, const TVector<TComplex>& source, size_t rows, size_t cols, mxClassID type)
 {
     mxArray* tmp = mxCreateNumericMatrix(rows, cols, type, mxCOMPLEX);
 
     double* pr = mxGetPr(tmp);
     double* pi = mxGetPi(tmp);
 
-    for(int i =0; i < source.size(); i++) {
+    for(size_t i =0; i < source.size(); i++) {
         pr[i] = source[i].real();
         pi[i] = source[i].imag();
     }
@@ -350,15 +346,15 @@ void MatlabEngine::setMatrix(const TString &name, TVector<TComplex>& source, int
  *
  * This provides an override of the \ref MatlabEngine::setMatrix operator for complex numbers.
  */
-void MatlabEngine::setMatrix(const TString &name, TVector<TVector<TComplex> >& source, int rows, int cols, mxClassID type)
+void MatlabEngineC::setMatrix(const TString &name, const TVector<TVector<TComplex>>& source, size_t rows, size_t cols, mxClassID type)
 {
     mxArray* tmp = mxCreateNumericMatrix(rows, cols, type, mxCOMPLEX);
 
     double* pr = mxGetPr(tmp);
     double* pi = mxGetPi(tmp);
 
-    for(int c = 0; c < cols; c++) {
-        for(int r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
+        for(size_t r = 0; r < rows; r++) {
             *pr = source[r][c].real();
             *pi = source[r][c].imag();
 
@@ -376,16 +372,16 @@ void MatlabEngine::setMatrix(const TString &name, TVector<TVector<TComplex> >& s
  *
  * This provides a specialization of the \ref getWorkspaceVariable operator for complex numbers.
  */
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<TComplex>& vec)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<TComplex>& vec)
 {
     mxArray* tmp = getVariable(name);
     TVector<int> dimensions(2,0);
 
-    if(tmp != NULL) {
+    if(tmp != nullptr) {
         mwSize rows = mxGetM(tmp);
         mwSize cols = mxGetN(tmp);
-        dimensions[0] = (int)rows;
-        dimensions[1] = (int)cols;
+        dimensions[0] = static_cast<int>(rows);
+        dimensions[1] = static_cast<int>(cols);
 
         mwSize nElem = rows * cols;
         vec.resize((int)nElem);
@@ -426,35 +422,35 @@ TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<TCo
  * The matrix fetch function calls \ref MatlabEngine::getMatrix. These functions hide the template
  * functions so that the handled types are controlled.
  */
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<TVector<int> >& mat)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<TVector<int>>& mat)
 {
     return getMatrix<int>(name, mat);
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<TVector<double> >& mat)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<TVector<double>>& mat)
 {
     return getMatrix<double>(name, mat);
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<TVector<bool> >& mat)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<TVector<bool>>& mat)
 {
     return getMatrix<bool>(name, mat);
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<TVector<TComplex> >& mat)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<TVector<TComplex>>& mat)
 {
     mxArray* tmp = getVariable(name);
     TVector<int> dimensions(2, 0);
     mat.clear();
 
-    if(tmp != NULL) {
+    if(tmp != nullptr) {
         mwSize rows = mxGetM(tmp);
         mwSize cols = mxGetN(tmp);
-        dimensions[0] = (int)rows;
-        dimensions[1] = (int)cols;
+        dimensions[0] = static_cast<int>(rows);
+        dimensions[1] = static_cast<int>(cols);
 
         mat.resize((int)rows);
 
@@ -497,14 +493,14 @@ TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<TVe
  * \param name  Name of the matrix in the workspace.
  * \param mat   A 2D Vector (Vector of Vectors) containing the matrix.
  */
-void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<int> > mat)
+void MatlabEngineC::placeMatrix(const TString &name, const TVector<TVector<int>>& mat)
 {
-    int rows = mat.size();
+    auto rows = mat.size();
     if(rows > 0) {
-        int cols = mat[0].size();
+        auto cols = mat[0].size();
 
         // Check that all columns are the same length
-        for(int r = 1; r < rows; r++) {
+        for(size_t r = 1; r < rows; r++) {
             if(mat[r].size() != cols){
                 // // qDebug() << "MatlabEngine::placeMatrix(): unequal coloumn length";
                 return;
@@ -516,14 +512,14 @@ void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<int> > mat)
 }
 
 //! \overload
-void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<double> > mat)
+void MatlabEngineC::placeMatrix(const TString &name, const TVector<TVector<double>>& mat)
 {
-    int rows = mat.size();
+    auto rows = mat.size();
     if(rows > 0) {
-        int cols = mat[0].size();
+        auto cols = mat[0].size();
 
         // Check that all columns are the same length
-        for(int r = 1; r < rows; r++) {
+        for(size_t r = 1; r < rows; r++) {
             if(mat[r].size() != cols){
                 // qDebug() << "MatlabEngine::placeMatrix(): unequal coloumn length";
                 return;
@@ -535,14 +531,14 @@ void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<double> > ma
 }
 
 //! \overload
-void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<bool> > mat)
+void MatlabEngineC::placeMatrix(const TString &name, const TVector<TVector<bool>>& mat)
 {
-    int rows = mat.size();
+    auto rows = mat.size();
     if(rows > 0) {
-        int cols = mat[0].size();
+        auto cols = mat[0].size();
 
         // Check that all columns are the same length
-        for(int r = 1; r < rows; r++) {
+        for(size_t r = 1; r < rows; r++) {
             if(mat[r].size() != cols){
                 // qDebug() << "MatlabEngine::placeMatrix(): unequal coloumn length";
                 return;
@@ -554,14 +550,14 @@ void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<bool> > mat)
 }
 
 //! \overload
-void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<TComplex> > mat)
+void MatlabEngineC::placeMatrix(const TString &name, const TVector<TVector<TComplex>>& mat)
 {
-    int rows = mat.size();
+    auto rows = mat.size();
     if(rows > 0) {
-        int cols = mat[0].size();
+        auto cols = mat[0].size();
 
         // Check that all columns are the same length
-        for(int r = 1; r < rows; r++) {
+        for(size_t r = 1; r < rows; r++) {
             if(mat[r].size() != cols){
                 // qDebug()"MatlabEngine::placeMatrix(): unequal coloumn length";
                 return;
@@ -580,28 +576,28 @@ void MatlabEngine::placeMatrix(const TString &name, TVector<TVector<TComplex> > 
  * \param[in] name      The name of the function to retreive from the workspace.
  * \param[out] value    A reference to where the workspace variable will be placed.
  */
-bool MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
+bool MatlabEngineC::getWorkspaceVariable(const TString &name, int& value)
 {
     return getValue<int>(name, value);
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-bool MatlabEngine::getWorkspaceVariable(const TString &name, double& value)
+bool MatlabEngineC::getWorkspaceVariable(const TString &name, double& value)
 {
     return getValue<double>(name, value);
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-bool MatlabEngine::getWorkspaceVariable(const TString &name, bool& value)
+bool MatlabEngineC::getWorkspaceVariable(const TString &name, bool& value)
 {
     return getValue<bool>(name, value);
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-bool MatlabEngine::getWorkspaceVariable(const TString &name, TComplex& value)
+bool MatlabEngineC::getWorkspaceVariable(const TString &name, TComplex& value)
 {
     mxArray* tmp = getVariable(name);
-    if(tmp != NULL) {
+    if(tmp != nullptr) {
         if(mxGetNumberOfElements(tmp) == 1) {
             if(mxIsComplex(tmp)) {
 
@@ -629,11 +625,11 @@ bool MatlabEngine::getWorkspaceVariable(const TString &name, TComplex& value)
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-bool MatlabEngine::getWorkspaceVariable(const TString &name, TString& value)
+bool MatlabEngineC::getWorkspaceVariable(const TString &name, TString& value)
 {
     mxArray* tmp = getVariable(name);
 
-    if(tmp != NULL) {
+    if(tmp != nullptr) {
         if(mxIsChar(tmp)) {
             value = TString(mxArrayToString(tmp));
             mxDestroyArray(tmp);
@@ -651,7 +647,7 @@ bool MatlabEngine::getWorkspaceVariable(const TString &name, TString& value)
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-bool MatlabEngine::getWorkspaceVariable(const TString &name, mxArray*& value)
+bool MatlabEngineC::getWorkspaceVariable(const TString &name, mxArray*& value)
 {
     value = getVariable(name);
     if(value) {
@@ -662,17 +658,17 @@ bool MatlabEngine::getWorkspaceVariable(const TString &name, mxArray*& value)
 }
 
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<int>& vec)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<int>& vec)
 {
     return getVector<int>(name, vec);
 }
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<double>& vec)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<double>& vec)
 {
     return getVector<double>(name, vec);
 }
 //! \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
-TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<bool>& vec)
+TVector<int> MatlabEngineC::getWorkspaceVariable(const TString &name, TVector<bool>& vec)
 {
     return getVector<bool>(name, vec);
 }
@@ -685,7 +681,7 @@ TVector<int> MatlabEngine::getWorkspaceVariable(const TString &name, TVector<boo
  * \param name  The name of the variable in the MATLAB workspace
  * \return      A pointer to \p name
  */
-mxArray* MatlabEngine::getVariable(const TString &name)
+mxArray* MatlabEngineC::getVariable(const TString &name)
 {
     if(!m_engine) {
         openEngine();
@@ -697,7 +693,7 @@ mxArray* MatlabEngine::getVariable(const TString &name)
         return tmp;
     } else {
         //ERROR - engine failed to open
-        return NULL;
+        return nullptr;
     }
 }
 

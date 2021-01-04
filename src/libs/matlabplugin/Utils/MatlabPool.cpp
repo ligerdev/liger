@@ -1,7 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2017 The University of Sheffield (www.sheffield.ac.uk)
-**
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -15,7 +14,13 @@
 **
 ****************************************************************************/
 #include <matlabplugin/Utils/MatlabPool.h>
-#include <matlabplugin/Utils/MatlabEngine.h>
+
+#ifdef MATLAB_API_C
+#include <matlabplugin/Utils/MatlabEngineC.h>
+#endif
+#ifdef MATLAB_API_CPP
+#include <matlabplugin/Utils/MatlabEngineX.h>
+#endif
 
 #include <tigon/Utils/TigonUtils.h>
 
@@ -76,20 +81,25 @@ MatlabPool::~MatlabPool()
  *
  * \return A clean MatlabEngine for use
  */
-MatlabEngine* MatlabPool::aquireEngine()
+IMatlabEngine* MatlabPool::aquireEngine()
 {
-    MatlabEngine* eng = NULL;
+    IMatlabEngine* eng = nullptr;
     m_mutex.lock();
 
     if(m_unlocked.size() > 0) {
         // Engines are available, use one of them.
         m_locked.push_back(m_unlocked.front());
         m_unlocked.erase(m_unlocked.begin());
-        eng =  m_locked.back();
+        eng = m_locked.back();
     } else {
         // If I can make a new one do that.
-        m_locked.push_back(new MatlabEngine());
-        eng =  m_locked.back();
+#ifdef MATLAB_API_C
+        m_locked.push_back(new MatlabEngineC());
+#endif
+#ifdef MATLAB_API_CPP
+        m_locked.push_back(new MatlabEngineX());
+#endif
+        eng = m_locked.back();
     }
 
     m_mutex.unlock();
@@ -103,23 +113,23 @@ MatlabEngine* MatlabPool::aquireEngine()
  * deleted depending on the allowed size of the free pool.
  * \param[in] eng   The MatlabEngine being returned.
  */
-void MatlabPool::releaseEngine(MatlabEngine* eng)
+void MatlabPool::releaseEngine(IMatlabEngine* eng)
 {
     m_mutex.lock();
 
     eng->resetEngine(); // Resetting the engine to a clean state
 
     bool found = false;
-    for(int i=0; i < m_locked.size(); i++) {
+    for(size_t i=0; i < m_locked.size(); i++) {
         if(eng == m_locked[i]) {
             found = true;
             if(m_unlocked.size() == m_maxUnlocked) {
                 // Already have enough spare engines
                 delete eng;
-                m_locked.erase(m_locked.begin()+i);
+                m_locked.erase(m_locked.begin()+static_cast<int>(i));
             } else {
                 m_unlocked.push_back(eng);
-                m_locked.erase(m_locked.begin()+i);
+                m_locked.erase(m_locked.begin()+static_cast<int>(i));
             }
         }
     }
@@ -144,12 +154,12 @@ void MatlabPool::releaseEngine(MatlabEngine* eng)
  */
 void MatlabPool::emptyPool()
 {
-    for(int i=0; i<m_unlocked.size(); i++) {
+    for(size_t i=0; i<m_unlocked.size(); i++) {
         m_unlocked.at(i)->closeEngine();
     }
     clearPointerVector(m_unlocked);
 
-    for(int i=0; i<m_locked.size(); i++) {
+    for(size_t i=0; i<m_locked.size(); i++) {
         m_locked.at(i)->closeEngine();
     }
     clearPointerVector(m_locked);

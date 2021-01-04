@@ -15,7 +15,7 @@
 ****************************************************************************/
 #include <matlabplugin/Representation/Functions/Matlab/MatlabFunction.h>
 #include <matlabplugin/Utils/MatlabPool.h>
-#include <matlabplugin/Utils/MatlabEngine.h>
+#include <matlabplugin/Utils/IMatlabEngine.h>
 
 // Tigon
 #include <tigon/Utils/IElementUtils.h>
@@ -24,7 +24,6 @@
 
 // Boost
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 using namespace boost::filesystem;
 
 // Json
@@ -70,8 +69,8 @@ void MatlabFunction::defineOutputPrpts()
 /// Matlab function template contains two parts:
 ///     - "The Header". Start with special characters and end with special characters.
 ///        This should contain all information needed in defineIOPrpts.
-///     - "The Boday". The actual implementation part. This part should contain
-///       a function whcih has the same name as the M-file and this function should
+///     - "The Body". The actual implementation part. This part should contain
+///       a function which has the same name as the M-file and this function should
 ///       be used to perform the function evaluation.
 ///     - Supported element types: real, int, ordinal, nominal
 ///
@@ -228,73 +227,81 @@ void MatlabFunction::defineCommand(const TString &command)
 void MatlabFunction::evaluate(const TVector<IElementSPtr> &inputs,
                               const TVector<IElementSPtr> &outputs)
 {
+    // Check
     if(TP_nOutputs() <= 0) {
-        throw TException(className(),
-                         IncorrectMATLABFormulation);
-    } else if(inputs.size() != TP_nInputs() || outputs.size() != TP_nOutputs()) {
-        throw TException(className(), InputOutputSizeMissMatch);
-    } else {
-
-        MatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
-
-        if(!m_workDir.empty()){
-            eng->evaluateString("cd(\'" + m_workDir + "\');", 0);
-        }
-
-        if(interactive() & !eng->Interactive()) {
-            eng->setInteractive(interactive());
-        }
-
-        TString inputString;
-        for(int i = 0; i < inputs.size(); i++) {
-            TString inputName = "in(" + std::to_string(i+1) + ")";
-            if(i == 0) {
-                inputString += inputName;
-            } else {
-                inputString += (", "+ inputName);
-            }
-        }
-        TVector<double> inVec;
-        inVec.reserve(inputs.size());
-        std::transform(inputs.begin(), inputs.end(), std::back_inserter(inVec),
-                       [](const IElementSPtr& sptr) { return sptr->value<double>();});
-        eng->placeVectorRow("in", inVec);
-
-        TString outputString;
-        for(int o = 0; o < outputs.size(); o++) {
-            TString outputName = "out(" + std::to_string(o+1) + ")";
-            if(o == 0) {
-                outputString += outputName;
-            } else {
-                outputString += (", "+ outputName);
-            }
-        }
-
-        // Runs the matlab command: [out(1), out(1)...] = command(in(1), in(2), in(3)...);
-        eng->evaluateString("[" + outputString + "] = " + command() + "(" + inputString + ");");
-        TVector<double> outVec;
-        eng->getWorkspaceVariable("out", outVec);
-        if(outVec.size() != 0){
-            for(int o = 0; o < outputs.size(); o++) {
-                outputs[o]->defineValue(IElement(outVec[o]));
-            }
-        } else {
-            throw TException(className(), EvaluationFailed);
-        }
-
-        MatlabPool::getInstance().releaseEngine(eng);
+        throw TException(className(), IncorrectMATLABFormulation);
     }
+
+    if(inputs.size() != TP_nInputs() || outputs.size() != TP_nOutputs()) {
+        throw TException(className(), InputOutputSizeMissMatch);
+    }
+
+    IMatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
+
+    if(!m_workDir.empty()){
+        bool status = eng->evaluateString("cd(\'" + m_workDir + "\');", false);
+        if(status==false) {
+            // Print the error message
+            std::cerr << eng->errorMessage() << std::endl;
+        }
+    }
+
+#ifdef MATLAB_API_C
+    if(interactive() & !eng->Interactive()) {
+        eng->setInteractive(interactive());
+    }
+#endif
+
+    TString inputString;
+    for(size_t i = 0; i < inputs.size(); i++) {
+        TString inputName = "in(" + std::to_string(i+1) + ")";
+        if(i == 0) {
+            inputString += inputName;
+        } else {
+            inputString += (", "+ inputName);
+        }
+    }
+    TVector<double> inVec;
+    inVec.reserve(inputs.size());
+    std::transform(inputs.begin(), inputs.end(), std::back_inserter(inVec),
+                   [](const IElementSPtr& sptr) { return sptr->value<double>();});
+    eng->placeVectorRow("in", inVec);
+
+    TString outputString;
+    for(size_t o = 0; o < outputs.size(); o++) {
+        TString outputName = "out(" + std::to_string(o+1) + ")";
+        if(o == 0) {
+            outputString += outputName;
+        } else {
+            outputString += (", "+ outputName);
+        }
+    }
+
+    // Runs the matlab command: [out(1), out(1)...] = command(in(1), in(2), in(3)...);
+    eng->evaluateString("[" + outputString + "] = " + command() + "(" + inputString + ");");
+    TVector<double> outVec;
+    //TVector<double> outVec = eng->evaluateFunction(command(), outputs.size(), inVec);
+    eng->getWorkspaceVariable("out", outVec);
+    if(outVec.size() != 0){
+        for(size_t o = 0; o < outputs.size(); o++) {
+            outputs[o]->defineValue(IElement(outVec[o]));
+        }
+    } else {
+        throw TException(className(), EvaluationFailed);
+    }
+
+    MatlabPool::getInstance().releaseEngine(eng);
 }
 
-void MatlabFunction::batchEvaluate(const TVector<TVector<IElementSPtr> > &inputs,
-                                   const TVector<TVector<IElementSPtr> > &outputs)
+void MatlabFunction::batchEvaluate(const TVector<TVector<IElementSPtr>> &inputs,
+                                   const TVector<TVector<IElementSPtr>> &outputs)
 {
     // Check
     if(TP_nOutputs() <= 0) {
         throw TException(className(), IncorrectMATLABFormulation);
     }
 
-    if(inputs.size() == 0 || outputs.size() ==0) {
+    if(inputs.size() == 0 || outputs.size() == 0) {
         throw TException(className(), InputOutputSizeMissMatch);
     }
 
@@ -302,7 +309,7 @@ void MatlabFunction::batchEvaluate(const TVector<TVector<IElementSPtr> > &inputs
         throw TException(className(), InputOutputSizeMissMatch);
     }
 
-    MatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
+    IMatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
 
     TVector<TVector<double> > X;
     TVector<TVector<double> > Y;
@@ -312,24 +319,25 @@ void MatlabFunction::batchEvaluate(const TVector<TVector<IElementSPtr> > &inputs
     std::transform(inputs.begin(), inputs.end(), std::back_inserter(X),
                    [](const TVector<IElementSPtr>& vec) {return IElementVecToRealVec(vec); });
 
-    eng->evaluateString("cd('" + m_workDir + "');", 0);
+    eng->evaluateString("cd('" + m_workDir + "');", false);
     eng->placeMatrix("X", X);
     eng->evaluateString("Y = " + command() + "(X)");
     eng->getWorkspaceVariable("Y", Y);
 
     if(Y.size() != 0){
-        int row = 0;
-        BOOST_FOREACH(const TVector<double>& vec, Y) {
-            int col = 0;
-            BOOST_FOREACH(double val, vec) {
-                outputs[row][col]->defineValue(val);
-                ++col;
+        size_t row = 0;
+        for(const TVector<double>& y : Y) {
+            size_t col = 0;
+            for(auto val : y) {
+                outputs[row][col++]->defineValue(val);
             }
             ++row;
         }
     } else {
         throw TException(className(), EvaluationFailed);
     }
+
+    MatlabPool::getInstance().releaseEngine(eng);
 }
 
 bool MatlabFunction::interactive() const
