@@ -1,7 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2017 The University of Sheffield (www.sheffield.ac.uk)
-**
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -16,8 +15,10 @@
 ****************************************************************************/
 #pragma once
 
-#include <tigon/tigon_global.h>
-#include <tigon/tigonconstants.h>
+//#include <tigon/tigon_global.h>
+//#include <tigon/tigonconstants.h>
+
+#include <matlabplugin/Utils/IMatlabEngine.h>
 
 #include "engine.h"
 #include "matrix.h"
@@ -59,12 +60,12 @@ namespace Tigon {
  *
  * for more information see http://uk.mathworks.com/help/matlab/matlab_external/building-and-running-engine-applications-on-unix-operating-systems.html
  */
-class LIGER_TIGON_EXPORT MatlabEngine
+class LIGER_TIGON_EXPORT MatlabEngineC : public IMatlabEngine
 {
     friend class MatlabPool;
 
 public:
-    bool evaluateString(const TString& command, int errorCatch = 1);
+    bool evaluateString(const TString& command, bool errorCatch = true);
     void resetEngine();
     void setInteractive(bool visible);
     bool Interactive();
@@ -77,20 +78,21 @@ public:
     void placeVariable(const TString &name, mxArray* value);
 
     // Place a vector into the MATLAB workspace, can be a row or column vector.
-    void placeVectorColumn(const TString &name, TVector<int> vec);
-    void placeVectorColumn(const TString &name, TVector<double> vec);
-    void placeVectorColumn(const TString &name, TVector<bool> vec);
-    void placeVectorColumn(const TString &name, TVector<TComplex> vec);
-    void placeVectorRow(const TString &name, TVector<int> vec);
-    void placeVectorRow(const TString &name, TVector<double> vec);
-    void placeVectorRow(const TString &name, TVector<bool> vec);
-    void placeVectorRow(const TString &name, TVector<TComplex> vec);
+    void placeVectorColumn(const TString &name, const TVector<int>& vec);
+    void placeVectorColumn(const TString &name, const TVector<double>& vec);
+    void placeVectorColumn(const TString &name, const TVector<bool>& vec);
+    void placeVectorColumn(const TString &name, const TVector<TComplex>& vec);
+
+    void placeVectorRow(const TString &name, const TVector<int>& vec);
+    void placeVectorRow(const TString &name, const TVector<double>& vec);
+    void placeVectorRow(const TString &name, const TVector<bool>& vec);
+    void placeVectorRow(const TString &name, const TVector<TComplex>& vec);
 
     // Place a Matrix onto the MATLAB workspace
-    void placeMatrix(const TString &name, TVector< TVector< int> > mat);
-    void placeMatrix(const TString &name, TVector< TVector< double> > mat);
-    void placeMatrix(const TString &name, TVector< TVector< bool> > mat);
-    void placeMatrix(const TString &name, TVector< TVector< TComplex> > mat);
+    void placeMatrix(const TString &name, const TVector<TVector<int>>& mat);
+    void placeMatrix(const TString &name, const TVector<TVector<double>>& mat);
+    void placeMatrix(const TString &name, const TVector<TVector<bool>>& mat);
+    void placeMatrix(const TString &name, const TVector<TVector<TComplex>>& mat);
 
     // Get Variable overides
     bool getWorkspaceVariable(const TString &name, int& value);
@@ -105,17 +107,15 @@ public:
     TVector<int> getWorkspaceVariable(const TString &name, TVector<bool>& vec);
     TVector<int> getWorkspaceVariable(const TString &name, TVector<TComplex>& vec);
 
-    TVector<int> getWorkspaceVariable(const TString &name, TVector< TVector<int> >& mat);
-    TVector<int> getWorkspaceVariable(const TString &name, TVector< TVector<double> >& mat);
-    TVector<int> getWorkspaceVariable(const TString &name, TVector< TVector<bool> >& mat);
+    TVector<int> getWorkspaceVariable(const TString &name, TVector<TVector<int>>& mat);
+    TVector<int> getWorkspaceVariable(const TString &name, TVector<TVector<double>>& mat);
+    TVector<int> getWorkspaceVariable(const TString &name, TVector<TVector<bool>>& mat);
     TVector<int> getWorkspaceVariable(const TString &name, TVector<TVector<TComplex> >& mat);
 
-    ~MatlabEngine();
-
-    TStringList commandHistory();
+    ~MatlabEngineC();
 
 private:
-    MatlabEngine();
+    MatlabEngineC();
     void openEngine();
     void closeEngine();
 
@@ -128,17 +128,15 @@ private:
     bool getValue(const TString &name, T& val);
 
     template<typename T>
-    void setMatrix(const TString &name, TVector<T>& source, int rows, int cols, mxClassID type); // Primarily for vectors but can be used for flattened matrices
+    void setMatrix(const TString &name, const TVector<T>& source, size_t rows, size_t cols, mxClassID type); // Primarily for vectors but can be used for flattened matrices
     // Override
-    void setMatrix(const TString &name, TVector<TComplex>& source, int rows, int cols, mxClassID type);
+    void setMatrix(const TString &name, const TVector<TComplex>& source, size_t rows, size_t cols, mxClassID type);
     template<typename T>
-    void setMatrix(const TString &name, TVector<TVector<T> >& source, int rows, int cols, mxClassID type);
+    void setMatrix(const TString &name, const TVector<TVector<T> >& source, size_t rows, size_t cols, mxClassID type);
     // Override
-    void setMatrix(const TString &name, TVector<TVector<TComplex> >& source, int rows, int cols, mxClassID type);
+    void setMatrix(const TString &name, const TVector<TVector<TComplex> >& source, size_t rows, size_t cols, mxClassID type);
 
     Engine* m_engine; //!< Pointer to the MATLAB engine
-    TString m_errorBuff;
-    TStringList m_commandHist;
 };
 
 /*!
@@ -152,13 +150,13 @@ private:
  * \param type      The MATLAB data type of the created matrix in the workspace.
  */
 template<typename T>
-void MatlabEngine::setMatrix(const TString &name, TVector<T>& source, int rows, int cols, mxClassID type)
+void MatlabEngineC::setMatrix(const TString &name, const TVector<T>& source, size_t rows, size_t cols, mxClassID type)
 {
     // For vectors or a 1D, column wise TVector source matrix.
     mxArray* tmp = mxCreateNumericMatrix(rows, cols, type, mxREAL);
 
     T* data = (T*)mxGetData(tmp);
-    for(int i =0; i < source.size(); i++) {
+    for(size_t i =0; i < source.size(); i++) {
         data[i] = source[i];
     }
     placeVariable(name, tmp);
@@ -177,7 +175,7 @@ void MatlabEngine::setMatrix(const TString &name, TVector<T>& source, int rows, 
  * \param type      The MATLAB data type of the created matrix in the workspace.
  */
 template<typename T>
-void MatlabEngine::setMatrix(const TString &name, TVector<TVector<T> >& source, int rows, int cols, mxClassID type)
+void MatlabEngineC::setMatrix(const TString &name, const TVector<TVector<T>>& source, size_t rows, size_t cols, mxClassID type)
 {
     // For 2D TVector Matrix indexed by [row][column]
     mxArray* tmp = mxCreateNumericMatrix(rows, cols, type, mxREAL);
@@ -204,13 +202,13 @@ void MatlabEngine::setMatrix(const TString &name, TVector<TVector<T> >& source, 
  * \return      Dimensions of the retireved matrix (rows, cols)
  */
 template<typename T>
-TVector<int> MatlabEngine::getVector(const TString &name, TVector<T>& vec)
+TVector<int> MatlabEngineC::getVector(const TString &name, TVector<T>& vec)
 {
     mxArray* tmp = getVariable(name);
     TVector<int> dimensions(2, 0);
     vec.clear();
 
-    if(tmp != NULL) {
+    if(tmp != nullptr) {
 
         mwSize rows = mxGetM(tmp);
         mwSize cols = mxGetN(tmp);
@@ -298,13 +296,14 @@ TVector<int> MatlabEngine::getVector(const TString &name, TVector<T>& vec)
  * \overload MatlabEngine::getWorkspaceVariable(const TString &name, int& value)
  * \brief Retreives a 2D matrix from the MATLAB workspace.
  *
- * Retrieves a 2D matrix from the MATLAB workspace. Any existing value of \p vec is overwritten.
+ * Retrieves a 2D matrix from the MATLAB workspace. Any existing value of \p mat
+ * is overwritten.
  * \param[in]   name    Name of the matrix in the workspace
  * \parma[out]  vec     2D TVector where matrix will be placed
  * \return      Dimensions of the retireved matrix (rows, cols)
  */
 template<typename T>
-TVector<int> MatlabEngine::getMatrix(const TString &name, TVector< TVector<T> >& mat)
+TVector<int> MatlabEngineC::getMatrix(const TString &name, TVector<TVector<T>>& mat)
 {
     TVector<T> flatMat;
     // Get the matrix as a 1D columnwise TVector and convert to a 2D TVector
@@ -325,12 +324,22 @@ TVector<int> MatlabEngine::getMatrix(const TString &name, TVector< TVector<T> >&
     return dimensions;
 }
 
+/*!
+ * \overload getWorkspaceVariable(const TString &name, int& value)
+ * \brief Retrieves a value from the workspace.
+ *
+ * Retrieves a value from the MATLAB workspace. Any existing value of \p val is
+ * overwritten.
+ * \param[in]   name    Name of the variable in the workspace
+ * \parma[out]  val     Where the retrieved value is placed
+ * \return      True if the value could be retrieved successfully, or false otherwise.
+ */
 template<typename T>
-bool MatlabEngine::getValue(const TString &name, T& val)
+bool MatlabEngineC::getValue(const TString &name, T& val)
 {
     mxArray* tmp = getVariable(name);
 
-    if(tmp!= NULL) {
+    if(tmp!= nullptr) {
         if(mxGetNumberOfElements(tmp) == 1) {
 
             switch(mxGetClassID(tmp))

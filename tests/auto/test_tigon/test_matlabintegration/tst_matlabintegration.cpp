@@ -21,9 +21,16 @@
 #include <iostream>
 #include <tigon/Tigon.h>
 
-#include<matlabplugin/Representation/Functions/Matlab/MatlabFunction.h>
-#include<matlabplugin/Utils/MatlabPool.h>
-#include<matlabplugin/Utils/MatlabEngine.h>
+#include <matlabplugin/Representation/Functions/Matlab/MatlabFunction.h>
+#include <matlabplugin/Utils/MatlabPool.h>
+
+#ifdef MATLAB_API_C
+#include <matlabplugin/Utils/MatlabEngineC.h>
+#endif
+
+#ifdef MATLAB_API_CPP
+#include <matlabplugin/Utils/MatlabEngineX.h>
+#endif
 
 using namespace std;
 using namespace Tigon;
@@ -138,10 +145,9 @@ void tst_matlabintegration::test_definePath()
 
 void tst_matlabintegration::test_matlabEngine()
 {
-    MatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
+    IMatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
 
     {
-
         cout << "Testing single value access functions..." << endl;
 
         eng->placeVariable("TestInt", 5);
@@ -159,6 +165,7 @@ void tst_matlabintegration::test_matlabEngine()
         eng->getWorkspaceVariable("TestBool", testbool);
         QCOMPARE(testbool, true);
 
+#ifdef MATLAB_API_C
         eng->placeVariable("TestString", TString("test"));  //Must explicitly type the string literal otherwise the compiler default to the bool version
         TString teststring = "";
         eng->getWorkspaceVariable("TestString", teststring);
@@ -172,6 +179,7 @@ void tst_matlabintegration::test_matlabEngine()
         eng->getWorkspaceVariable("TestComplex", testcomplex);
         QCOMPARE(testcomplex.real(), testin.real());
         QCOMPARE(testcomplex.imag(), testin.imag());
+#endif
     }
 
     {
@@ -200,13 +208,17 @@ void tst_matlabintegration::test_matlabEngine()
         cout << "Testing loosely defined variables..." << endl;
         cout << "Writing: a=1" << endl;
 
-        //        bool engState = eng->evaluateString("a = 1");
-
-        //        QCOMPARE(engState, true);
+#ifdef MATLAB_API_C
+        bool engState = eng->evaluateString("a = 1");
+        QCOMPARE(engState, true);
+#endif
 
         eng->placeVariable("a", 1.0);
-        //mxArray* amx = NULL;
-        //eng->getWorkspaceVariable("a", amx);
+
+#ifdef MATLAB_API_C
+        mxArray* amx = nullptr;
+        static_cast<MatlabEngineC*>(eng)->getWorkspaceVariable("a", amx);
+#endif
 
         double a = 0.0;
         eng->getWorkspaceVariable("a", a);
@@ -229,12 +241,12 @@ void tst_matlabintegration::test_matlabEngine()
 
         QCOMPARE(boola, true);
 
+#ifdef MATLAB_API_C
         TComplex cmplxa(0,0);
         eng->getWorkspaceVariable("a", cmplxa);
-
         cout << "Reading as a complex: a = " << cmplxa.real() << "+" << cmplxa.imag() << "j" << endl;
-
         QCOMPARE(cmplxa, TComplex(1,0));
+#endif
     }
 
     {
@@ -246,7 +258,9 @@ void tst_matlabintegration::test_matlabEngine()
         TVector<double> vecReal;
         TVector<int> vecInt;
         TVector<bool> vecBool;
+#ifdef MATLAB_API_C
         TVector<TComplex> vecComplex;
+#endif
 
         TVector<double> testReal;
         testReal << 0 << 1 << 2 << 3 << 4 << 5;
@@ -254,8 +268,11 @@ void tst_matlabintegration::test_matlabEngine()
         testInt << 0 << 1 << 2 << 3 << 4 << 5;
         TVector<bool> testBool;
         testBool << false << true << true << true << true << true;
+
+#ifdef MATLAB_API_C
         TVector<TComplex> testComplex;
         testComplex << TComplex(1,1) << TComplex(2,2) << TComplex(3,3);
+#endif
 
         eng->getWorkspaceVariable("testVec", vecReal);
         QCOMPARE(vecReal, testReal);
@@ -296,12 +313,14 @@ void tst_matlabintegration::test_matlabEngine()
         eng->getWorkspaceVariable("vecBoolRow", vecBool);
         QCOMPARE(vecBool, testBool);
 
+#ifdef MATLAB_API_C
         eng->placeVectorColumn("vecComplexCol", testComplex);
         eng->getWorkspaceVariable("vecComplexCol", vecComplex);
         QCOMPARE(vecComplex, testComplex);
         eng->placeVectorRow("vecComplexRow", testComplex);
         eng->getWorkspaceVariable("vecComplexRow", vecComplex);
         QCOMPARE(vecComplex, testComplex);
+#endif
 
         eng->resetEngine();
     }
@@ -376,6 +395,7 @@ void tst_matlabintegration::test_matlabEngine()
         eng->getWorkspaceVariable("testMatInput", matBoolOut);
         QCOMPARE(matBoolIn, matBoolOut);
 
+#ifdef MATLAB_API_C
         TVector<TVector<TComplex>> matComplexIn;
         TVector<TVector<TComplex>> matComplexOut;
         matComplexIn.resize(2);
@@ -385,6 +405,7 @@ void tst_matlabintegration::test_matlabEngine()
         eng->placeMatrix("testComplexMat", matComplexIn);
         eng->getWorkspaceVariable("testComplexMat", matComplexOut);
         QCOMPARE(matComplexIn, matComplexOut);
+#endif
         eng->resetEngine();
     }
 
@@ -415,7 +436,7 @@ void tst_matlabintegration::test_matlabWrapper1()
     QCOMPARE(outputProperties.size() == 2, true);
 
     cout << "Input Properties: " << endl;
-    for(int i = 0; i < inputProperties.size(); i++) {
+    for(size_t i = 0; i < inputProperties.size(); i++) {
         cout << "Variable " << std::to_string(i) << endl;
         cout << "Name: " << inputProperties[i].name() << endl;
         cout << "Description: " << inputProperties[i].description() << endl;
@@ -423,7 +444,7 @@ void tst_matlabintegration::test_matlabWrapper1()
     }
 
     cout << endl << "Output Properties: " << endl;
-    for(int i = 0; i < outputProperties.size(); i++) {
+    for(size_t i = 0; i < outputProperties.size(); i++) {
         cout << "Variable " << std::to_string(i) << endl;
         cout << "Name: " << outputProperties[i].name() << endl;
         cout << "Description: " << outputProperties[i].description() << endl;
@@ -497,7 +518,7 @@ void tst_matlabintegration::test_matlabProperties()
 
         // Write the properties to the console
         cout << "Input Properties: " << endl;
-        for(int i = 0; i < inputProperties.size(); i++) {
+        for(size_t i = 0; i < inputProperties.size(); i++) {
             cout << "Variable " << std::to_string(i) << endl;
             cout << "Name: " << inputProperties[i].name() << endl;
             cout << "Description: " << inputProperties[i].description() << endl;
@@ -507,7 +528,7 @@ void tst_matlabintegration::test_matlabProperties()
         }
 
         cout << endl << "Output Properties: " << endl;
-        for(int i = 0; i < outputProperties.size(); i++) {
+        for(size_t i = 0; i < outputProperties.size(); i++) {
             cout << "Variable " << std::to_string(i) << endl;
             cout << "Name: " << outputProperties[i].name() << endl;
             cout << "Description: " << outputProperties[i].description() << endl;
@@ -567,7 +588,7 @@ void tst_matlabintegration::test_matlabProperties()
 
         // Write the properties to the console
         cout << "Input Properties: " << endl;
-        for(int i = 0; i < inputProperties.size(); i++) {
+        for(size_t i = 0; i < inputProperties.size(); i++) {
             cout << "Variable " << std::to_string(i) << endl;
             cout << "Name: " << inputProperties[i].name() << endl;
             cout << "Description: " << inputProperties[i].description() << endl;
@@ -575,7 +596,7 @@ void tst_matlabintegration::test_matlabProperties()
         }
 
         cout << endl << "Output Properties: " << endl;
-        for(int i = 0; i < outputProperties.size(); i++) {
+        for(size_t i = 0; i < outputProperties.size(); i++) {
             cout << "Variable " << std::to_string(i) << endl;
             cout << "Name: " << outputProperties[i].name() << endl;
             cout << "Description: " << outputProperties[i].description() << endl;
@@ -890,17 +911,18 @@ void tst_matlabintegration::test_loadMatlabFunctionFromProblemGenerator()
     QCOMPARE(matFunc->outputPrpts().size() == 2, true);
     QCOMPARE(matFunc->functionProperties().name(), TString("DTLZ1"));
     QCOMPARE(matFunc->functionProperties().description(), TString("DTLZ1 Matlab Version"));
-    for(int i=0; i<matFunc->boxConstraints()->lowerBounds().size(); i++) {
-        QCOMPARE(matFunc->boxConstraints()->lowerBound(i).value(), 0.0);
+    for(auto lb : matFunc->boxConstraints()->lowerBounds()) {
+        QCOMPARE(lb.value(), 0.0);
     }
 
-    for(int i=0; i<matFunc->boxConstraints()->upperBounds().size(); i++) {
-        QCOMPARE(matFunc->boxConstraints()->upperBound(i).value(), 1.0);
+    for(auto ub : matFunc->boxConstraints()->upperBounds()) {
+        QCOMPARE(ub.value(), 1.0);
     }
 }
 
 void tst_matlabintegration::test_loadMatlabFunctionFromWorkflow()
 {
+
     TigonEngine* eng = TigonEngine::instance();
     TString workflowFile =  m_testBinPath+ "/test_matlabfunction_workflow.lgr";
 
@@ -971,7 +993,7 @@ void tst_matlabintegration::test_matlabFunctionEvaluation()
     outputs.push_back(IElementSPtr(new IElement(Tigon::RealType)));
     outputs.push_back(IElementSPtr(new IElement(Tigon::RealType)));
 
-    for(int i=0; i<pfunc->inputPrpts().size(); i++) {
+    for(auto elem : pfunc->inputPrpts()) {
         inputs.push_back(IElementSPtr(new IElement(TRAND.randUni())));
     }
     pfunc->evaluate(inputs, outputs);
@@ -986,7 +1008,7 @@ void tst_matlabintegration::test_matlabFunctionBatchEvaluation()
     MatlabFunction* pfunc = new MatlabFunction();
     pfunc->definePath(m_testBinPath + "/DTLZ1.m");
 
-    int setSize = 3;
+    size_t setSize = 3;
     TVector<TVector<double> > in(setSize);
     TVector<TVector<double> > out(setSize);
     in[0] << 0.582249164527227 << 0.264779026475630 << 0.939829470344921 << 0.639316961040108 << 0.543885933999639;
@@ -1002,21 +1024,21 @@ void tst_matlabintegration::test_matlabFunctionBatchEvaluation()
 
     inputs.resize(setSize);
     outputs.resize(setSize);
-    for(int i=0; i<setSize; i++) {
+    for(size_t i=0; i<setSize; i++) {
         inputs[i].reserve(pfunc->inputPrpts().size());
-        for(int j=0; j<pfunc->inputPrpts().size(); j++) {
+        for(size_t j=0; j<pfunc->inputPrpts().size(); j++) {
             inputs[i].push_back(IElementSPtr(new IElement(in[i][j])));
         }
 
         outputs[i].reserve(pfunc->outputPrpts().size());
-        for(int j=0; j<pfunc->outputPrpts().size(); j++) {
+        for(size_t j=0; j<pfunc->outputPrpts().size(); j++) {
             outputs[i].push_back(IElementSPtr(new IElement(Tigon::RealType)));
         }
     }
 
     pfunc->batchEvaluate(inputs, outputs);
-    for(int i=0; i<out.size(); i++) {
-        for(int j=0; j<out[i].size(); j++) {
+    for(size_t i=0; i<out.size(); i++) {
+        for(size_t j=0; j<out[i].size(); j++) {
             QCOMPARE(areDoublesEqual(out[i][j], outputs[i][j]->value<double>()), true);
         }
         cout <<  copyIElementVecFromPointers(outputs[i]);
@@ -1108,7 +1130,7 @@ void tst_matlabintegration::test_cleanup()
 {
     //Release any resources used in the test
     cout << "Reset Matlab to previous status" << endl;
-    MatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
+    IMatlabEngine* eng = MatlabPool::getInstance().aquireEngine();
     QCOMPARE(eng != nullptr, true);
 
     MatlabPool::getInstance().releaseEngine(eng);

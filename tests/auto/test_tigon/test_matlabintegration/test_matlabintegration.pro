@@ -27,6 +27,7 @@ MATLAB_TEST_FILES += \
     test_mfunctions/test7_tigonBadStruct.m \
     test_mfunctions/test8_tigonBadStruct.m \
     test_mfunctions/test_matlabfunction_workflow.lgr \
-    test_mfunctions/DTLZ1.m
+    test_mfunctions/DTLZ1.m \
+    test_mfunctions/DTLZ2.m
 
 copyToDir($$MATLAB_TEST_FILES, $$TEST_BIN_PATH)

@@ -2,6 +2,7 @@
 **
 ** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
+**
 ** This file is part of Liger.
 **
 ** GNU Lesser General Public License Usage
@@ -13,19 +14,43 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#ifndef QOPERATORDIAGTABITEM_H
-#define QOPERATORDIAGTABITEM_H
+#include <matlabplugin/Utils/IMatlabEngine.h>
 
-#include <QWidget>
+namespace Tigon {
 
-class QOperatorDiagTabItem : public QWidget
+IMatlabEngine::IMatlabEngine()
 {
-    Q_OBJECT
 
-public:
-    explicit QOperatorDiagTabItem(QWidget *parent = 0);
-    virtual void reset() = 0;
-    virtual void save()  = 0;
-};
+}
 
-#endif // QOPERATORDIAGTABITEM_H
+IMatlabEngine::~IMatlabEngine()
+{
+
+}
+
+void IMatlabEngine::setErrorMessage(TString msg)
+{
+    m_errorBuff = msg;
+}
+
+TString IMatlabEngine::errorMessage()
+{
+    return m_errorBuff;
+}
+
+TStringList IMatlabEngine::commandHistory()
+{
+    return m_commandHist;
+}
+
+void IMatlabEngine::addCommand(TString cmd)
+{
+    m_commandHist.push_back(cmd);
+}
+
+void IMatlabEngine::clearCommandHistory()
+{
+    m_commandHist.clear();
+}
+
+} //namespace Tigon

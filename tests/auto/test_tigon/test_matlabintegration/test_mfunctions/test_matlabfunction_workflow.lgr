@@ -5,8 +5,10 @@
       <NodeId>08a4b561-0d5e-48a0-84a2-4f2d525ab8b9</NodeId>
       <xpos>-607</xpos>
       <ypos>-125</ypos>
+      <isUserDefinedSeed>false</isUserDefinedSeed>
+      <userDefinedSeed>0</userDefinedSeed>
     </GUIProperties>
-    <Properties/>
+    <Properties ProcessType="MASTER_START_NODE"/>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpProbGeneratorNode">
     <GUIProperties>
@@ -25,7 +27,10 @@
       <ubounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1}]</ubounds>
       <paramValueVec>[]</paramValueVec>
       <externalParam>[]</externalParam>
+      <externalParamGroups>[]</externalParamGroups>
+      <setGoals>[false,false]</setGoals>
       <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307}]</goals>
+      <priorities>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1}]</priorities>
       <thresholds>[]</thresholds>
       <dVecUncertainties>[{},{},{},{},{}]</dVecUncertainties>
       <funcOutUncertainties>[[{},{}]]</funcOutUncertainties>
@@ -33,6 +38,7 @@
       <f2pMap>[[]]</f2pMap>
       <f2oMap>[[0,1]]</f2oMap>
       <f2cMap>[[]]</f2cMap>
+      <f2uMap>[[]]</f2uMap>
     </Properties>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpRandomInitNode">
@@ -45,11 +51,6 @@
       <TigonOperator>Tigon::Operators::RandomInit</TigonOperator>
       <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
       <OptimizationSetSize>100</OptimizationSetSize>
-      <InitialSet>{
-    &quot;Single Population&quot;: [
-    ]
-}
-</InitialSet>
     </Properties>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpEvaluatorNode">
@@ -76,9 +77,20 @@
     <Properties ProcessType="ALGORITHM_NODE">
       <TigonAlgorithm>Tigon::Algorithms::NSGAII</TigonAlgorithm>
       <TigonOperator>
+        <Name>Tigon::Operators::StrategyVariablesInit</Name>
+        <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
+        <OptimizationSetSize>0</OptimizationSetSize>
+        <UseStrategyVariables>false</UseStrategyVariables>
+        <WidthPercentReal>0.1</WidthPercentReal>
+        <WidthPercentInteger>0.33</WidthPercentInteger>
+      </TigonOperator>
+      <TigonOperator>
         <Name>Tigon::Operators::NonDominanceRanking</Name>
         <OutputTags>FOR_SELECTION;FITNESS</OutputTags>
-        <InputTags>MAIN_OPTIMIZATION_SET</InputTags>
+	<InputTags>MAIN_OPTIMIZATION_SET</InputTags>
+	<IsConstrainedHandlingUsed>true</IsConstrainedHandlingUsed>
+        <IsPreferabilityUsed>true</IsPreferabilityUsed>
+        <IsWeakDom>true</IsWeakDom>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::NSGAIICrowding</Name>
@@ -100,25 +112,39 @@
         <Name>Tigon::Operators::SBXCrossOver</Name>
         <OutputTags>FOR_DIRECTION</OutputTags>
         <SupportedElementTypes>Real Type;Integer Type</SupportedElementTypes>
-        <SolutionCrossoverProbability>0.90000000000000002</SolutionCrossoverProbability>
+        <SolutionCrossoverProbability>0.9</SolutionCrossoverProbability>
         <VariableCrossoverProbability>0.5</VariableCrossoverProbability>
         <VariableSwapCrossoverProbability>0.5</VariableSwapCrossoverProbability>
         <CrossoverDistributionIndex>15</CrossoverDistributionIndex>
+      </TigonOperator>
+      <TigonOperator>
+        <Name>Tigon::Operators::DiscreteCrossover</Name>
+        <OutputTags>FOR_DIRECTION</OutputTags>
+        <SolutionCrossoverProbability>0.9</SolutionCrossoverProbability>
+        <VariableCrossoverProbability>0.5</VariableCrossoverProbability>
+        <VariableSwapCrossoverProbability>0.5</VariableSwapCrossoverProbability>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::PolynomialMutation</Name>
         <OutputTags>FOR_PERTURBATION</OutputTags>
         <SupportedElementTypes>Real Type;Integer Type</SupportedElementTypes>
         <SolutionMutationProbability>1</SolutionMutationProbability>
-        <VariableMutationProbability>0.10000000000000001</VariableMutationProbability>
+        <VariableMutationProbability>0.1</VariableMutationProbability>
         <MutationDistributionIndex>20</MutationDistributionIndex>
+      </TigonOperator>
+      <TigonOperator>
+        <Name>Tigon::Operators::IntegerMutation</Name>
+        <OutputTags>FOR_PERTURBATION</OutputTags>
+        <SolutionMutationProbability>1</SolutionMutationProbability>
+        <VariableMutationProbability>0.1</VariableMutationProbability>
+        <WidthPercent>0.1</WidthPercent>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::CategoricalPerturpation</Name>
         <OutputTags>FOR_PERTURBATION</OutputTags>
         <SupportedElementTypes>Nominal Type;Ordinal Type</SupportedElementTypes>
         <SolutionMutationProbability>1</SolutionMutationProbability>
-        <VariableMutationProbability>0.10000000000000001</VariableMutationProbability>
+        <VariableMutationProbability>0.1</VariableMutationProbability>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::MergeForNextIteration</Name>

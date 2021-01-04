@@ -1,7 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2017 The University of Sheffield (www.sheffield.ac.uk)
-**
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -22,7 +21,15 @@
 #include <mutex>
 
 namespace Tigon {
-class MatlabEngine;
+class IMatlabEngine;
+
+#ifdef MATLAB_API_C
+class MatlabEngineC;
+#endif
+
+#ifdef MATLAB_API_CPP
+class MatlabEngineX;
+#endif
 /*!
  * \brief A resource pool of <MatlabEngine>'s
  *
@@ -45,8 +52,8 @@ public:
     void defineMaxPoolSize(int size);
     static MatlabPool& getInstance(); // Meyers singleton
     static bool useMatlab();
-    MatlabEngine* aquireEngine();
-    void releaseEngine(MatlabEngine* eng);
+    IMatlabEngine* aquireEngine();
+    void releaseEngine(IMatlabEngine* eng);
     void emptyPool();
 
     ~MatlabPool();
@@ -54,10 +61,10 @@ public:
 private:
     MatlabPool();
 
-    TVector<MatlabEngine* > m_unlocked; //!< Holds free <MatlabEngine>s to be used.
-    TVector<MatlabEngine* > m_locked;  //!< Holds <MatlabEngine>s currently being used.
+    TVector<IMatlabEngine*> m_unlocked; //!< Holds free <MatlabEngine>s to be used.
+    TVector<IMatlabEngine*> m_locked;  //!< Holds <MatlabEngine>s currently being used.
     std::mutex m_mutex;
-    int m_maxUnlocked;
+    size_t m_maxUnlocked;
 };
 
 } // Tigon
