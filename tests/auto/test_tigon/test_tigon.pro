@@ -20,7 +20,8 @@ SUBDIRS = \
     test_smsemoa \
     test_fann \
     test_statistics \
-    test_moga
+    test_moga \
+    test_nsgaiii
 
 # Include matlab plugin
 include(../../../matlabcheck.pri)

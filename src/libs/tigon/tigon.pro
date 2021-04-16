@@ -49,17 +49,118 @@ contains(CONFIG, coverage) {
 
 SOURCES += \
     Core/TObject.cpp \
+    Core/PluginManager.cpp \
     Algorithms/IAlgorithm.cpp \
+    Algorithms/NSGAIIPSA.cpp \
+    Algorithms/ACROMUSE.cpp \
+    Algorithms/NSGAII.cpp \
+    Algorithms/MOEAD.cpp \
+    Algorithms/ParEGO.cpp \
+    Algorithms/SMSEMOA.cpp \
+    Algorithms/sParEGO.cpp \
+    Algorithms/MOGA.cpp \
+    Algorithms/NSGAIII.cpp \
+    Engine/TigonEngine.cpp \
+    Engine/OptimizationLinearFlow.cpp \
+    Engine/TigonFunctionFactory.cpp \
+    Engine/TigonOperatorFactory.cpp \
+    ExceptionHandling/TException.cpp \
+    Factories/RobustnessIndicatorFactory.cpp \
+    Factories/DistributionFactory.cpp \
+    Factories/DominanceRelationFactory.cpp \
+    Log/LogEntry.cpp \
+    Log/EvaluationEntry.cpp \
+    Log/LogManager.cpp \
+    Log/PopulationEntry.cpp \
+    Operators/EmptyOperator.cpp \
+    Operators/IOperator.cpp \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.cpp \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForDirection.cpp \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForPerturbation.cpp \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseMutation.cpp \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseEliteFiltration.cpp \
+    Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.cpp \
+    Operators/AlgorithmSpecific/ParEGO/ConstraintDirectionFitnessFiltration.cpp \
+    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.cpp \
+    Operators/AlgorithmSpecific/sParEGO/sParEGOInit.cpp \
+    Operators/AlgorithmSpecific/sParEGO/SparegoValidation.cpp \
     Operators/Archives/IArchive.cpp \
+    Operators/Composites/IComposite.cpp \
+    Operators/Composites/SurrogateBasedOptimizer.cpp \
+    Operators/Composites/ConstrainedSurrogateBasedOptimizer.cpp \
+    Operators/Composites/SurrogateBasedOptimizerWithPerturbation.cpp \
+    Operators/Convergence/IConvergence.cpp \
+    Operators/Convergence/RandomHypervolume.cpp \
+    Operators/Convergence/Hypervolume.cpp \
+    Operators/Convergence/ScalarisingSpace.cpp \
+    Operators/Convergence/RobustScalarisingSpace.cpp \
+    Operators/Directions/DiscreteCrossover.cpp \
+    Operators/Directions/SBXCrossOver.cpp \
+    Operators/Directions/SinglePointCrossOver.cpp \
+    Operators/Directions/SimplexLatticeDirectionIterator.cpp \
     Operators/Directions/IDirection.cpp \
+    Operators/Directions/OrderedCrossOver.cpp \
+    Operators/Evaluators/BatchEvaluator.cpp \
+    Operators/Evaluators/ValidationWithScalarisation.cpp \
     Operators/Evaluators/IEvaluator.cpp \
+    Operators/Evaluators/Evaluator.cpp \
+    Operators/Evaluators/Validation.cpp \
+    Operators/Filtrations/PSAClustering.cpp \
+    Operators/Filtrations/RandFiltrationForDirection.cpp \
+    Operators/Filtrations/RandFiltrationForModification.cpp \
+    Operators/Filtrations/PSAEliteSelection.cpp \
+    Operators/Filtrations/TournamentFiltrationForModification.cpp \
+    Operators/Filtrations/RandFiltrationForPerturbation.cpp \
+    Operators/Filtrations/FreezeOperatorOutput.cpp \
+    Operators/Filtrations/MergeForNextIteration.cpp \
+    Operators/Filtrations/NeighbourhoodFiltration.cpp \
+    Operators/Filtrations/FitnessEliteSelection.cpp \
+    Operators/Filtrations/MultiMemberTournamentForDirection.cpp \
+    Operators/Filtrations/MultiMemberTournamentForPerturbation.cpp \
+    Operators/Filtrations/NSGAIIEliteSelection.cpp \
+    Operators/Filtrations/FiltrationForDirection.cpp \
+    Operators/Filtrations/RandSetReplacement.cpp \
+    Operators/Filtrations/TruncateSets.cpp \
+    Operators/Filtrations/TournamentFiltrationForDirection.cpp \
+    Operators/Filtrations/SMSEMOAReduce.cpp \
+    Operators/Filtrations/StochasticUniversalSampling.cpp \
+    Operators/Filtrations/RouletteWheelSelection.cpp \
     Operators/Filtrations/IFiltration.cpp \
     Operators/Fitness/IFitness.cpp \
+    Operators/Fitness/NonDominanceRanking.cpp \
+    Operators/Fitness/PSACrowding.cpp \
+    Operators/Fitness/GeneralizedDecomposition.cpp \
+    Operators/Fitness/RobustnessAssignment.cpp \
+    Operators/Fitness/UncertainConfidenceRobustness.cpp \
+    Operators/Fitness/UncertainMonteCarloRobustness.cpp \
+    Operators/Fitness/Scalarization.cpp \
+    Operators/Fitness/NonDominanceRankingParametric.cpp \
+    Operators/Fitness/AverageFitness.cpp \
+    Operators/Fitness/MOGANonDominanceRanking.cpp \
+    Operators/Fitness/SharedFitness.cpp \
+    Operators/Fitness/NSGAIICrowding.cpp \
+    Operators/Fitness/ConstraintPenalty.cpp \
+    Operators/Fitness/NSGAIIINiching.cpp \
+    Operators/Formulations/IFormulation.cpp \
+    Operators/Formulations/ProblemGenerator/ProblemGenerator.cpp \
+    Operators/Initialisation/UserDefinedInit.cpp \
+    Operators/Initialisation/WeightVectorInit.cpp \
+    Operators/Initialisation/TSPOrderedInit.cpp \
+    Operators/Initialisation/FitnessBasedInit.cpp \
     Operators/Initialisation/IInitialisation.cpp \
     Operators/Initialisation/LHSInit.cpp \
     Operators/Initialisation/RandomInit.cpp \
     Operators/Perturbations/IPerturbation.cpp \
-    Operators/IOperator.cpp \
+    Operators/Perturbations/IntegerMutation.cpp \
+    Operators/Perturbations/PolynomialMutation.cpp \
+    Operators/Perturbations/BoundedPerturbation.cpp \
+    Operators/Perturbations/CategoricalPerturpation.cpp \
+    Operators/Perturbations/SwapMutation.cpp \
+    Operators/Transformations/ITransformation.cpp \
+    Operators/Transformations/Normalisation.cpp \
+    Operators/Transformations/Denormalisation.cpp \
+    Operators/Terminations/ITermination.cpp \
+    Random/RandomGenerator.cpp \
     Representation/Constraints/BoxConstraintsData.cpp \
     Representation/Elements/IElement.cpp \
     Representation/Mappings/IMapping.cpp \
@@ -69,43 +170,14 @@ SOURCES += \
     Representation/Constraints/LinearConstraintsData.cpp \
     Representation/Constraints/NonLinearConstraintsData.cpp \
     Representation/PSets/PSetBase.cpp \
-    Operators/Transformations/ITransformation.cpp \
-    Operators/Filtrations/PSAClustering.cpp \
-    Operators/Directions/SBXCrossOver.cpp \
-    Operators/Filtrations/RandFiltrationForDirection.cpp \
-    Operators/Filtrations/RandFiltrationForModification.cpp \
     Representation/Mappings/IMappingPrivate.cpp \
     Representation/Properties/ElementProperties.cpp \
     Representation/Properties/ElementPropertiesFactory.cpp \
     Representation/Properties/ProblemProperties.cpp \
     Representation/Properties/ProblemPropertiesFactory.cpp \
-    Operators/Formulations/ProblemGenerator/ProblemGenerator.cpp \
-    Operators/Fitness/NonDominanceRanking.cpp \
-    Operators/Fitness/PSACrowding.cpp \
     Representation/Sets/ISet.cpp \
     Representation/Properties/ElementPropertiesData.cpp \
     Representation/Properties/ProblemPropertiesData.cpp \
-    Utils/TigonUtils.cpp \
-    Engine/TigonEngine.cpp \
-    Engine/OptimizationLinearFlow.cpp \
-    Utils/AbstractInterpolator.cpp \
-    Utils/LinearInterpolator.cpp \
-    Utils/SplineInterpolator.cpp \
-    Utils/ZeroOrderInterpolator.cpp \
-    Utils/RBFInterpolator.cpp \
-    Utils/RBFMultiQuadric.cpp \
-    Utils/RBFThinPlate.cpp \
-    Utils/RBFGauss.cpp \
-    Utils/RBFInverseMultiQuadric.cpp \
-    Utils/RBFBasis.cpp \
-    Utils/RBFInterpolatorCascade.cpp \
-    Utils/Kriging/DACE.cpp \
-    Utils/Kriging/IKriging.cpp \
-    Utils/Kriging/KrigingCascade.cpp \
-    Utils/Kriging/KrigingVariogram.cpp \
-    Utils/Kriging/OrdinaryKriging.cpp \
-    Utils/Kriging/PowerVariogram.cpp \
-    Utils/Kriging/SphericalVariogram.cpp \
     Representation/Distributions/IDistribution.cpp \
     Representation/Distributions/UniformDistribution.cpp \
     Representation/Distributions/LinearDistribution.cpp \
@@ -156,28 +228,8 @@ SOURCES += \
     Representation/Functions/SingleObjective/CBranin.cpp \
     Representation/Functions/SingleObjective/CBraninM1.cpp \
     Representation/Functions/SingleObjective/Poly1.cpp \
-    Utils/ScalarisingFunctions.cpp \
-    Utils/ProjectionUtils.cpp \
-    Utils/NormalisationUtils.cpp \
-    Utils/SimplexLattice.cpp \
     Representation/Distributions/SampledDistribution.cpp \
     Representation/Distributions/NormalDistribution.cpp \
-    Operators/Filtrations/PSAEliteSelection.cpp \
-    Operators/Filtrations/TournamentFiltrationForModification.cpp \
-    Utils/BoxConstraintViolationCorrections.cpp \
-    Operators/Perturbations/PolynomialMutation.cpp \
-    Operators/Filtrations/RandFiltrationForPerturbation.cpp \
-    Operators/Filtrations/FreezeOperatorOutput.cpp \
-    Operators/Filtrations/MergeForNextIteration.cpp \
-    Algorithms/NSGAIIPSA.cpp \
-    Operators/Directions/SinglePointCrossOver.cpp \
-    Operators/Directions/SimplexLatticeDirectionIterator.cpp \
-    Operators/Fitness/GeneralizedDecomposition.cpp \
-    Operators/Filtrations/NeighbourhoodFiltration.cpp \
-    Operators/Fitness/RobustnessAssignment.cpp \
-    Operators/Filtrations/FitnessEliteSelection.cpp \
-    Operators/Evaluators/Evaluator.cpp \
-    Operators/Formulations/IFormulation.cpp \
     Representation/Problems/Problem.cpp \
     Representation/Properties/FunctionPropertiesData.cpp \
     Representation/Properties/FunctionProperties.cpp \
@@ -185,92 +237,13 @@ SOURCES += \
     Representation/Indicators/IRobustnessIndicator.cpp \
     Representation/Indicators/ConfidenceIndicator.cpp \
     Representation/Indicators/ThresholdIndicator.cpp \
-    Operators/Composites/IComposite.cpp \
-    Operators/Composites/SurrogateBasedOptimizer.cpp \
-    Operators/Composites/ConstrainedSurrogateBasedOptimizer.cpp \
-    Operators/Transformations/Normalisation.cpp \
-    Operators/Initialisation/FitnessBasedInit.cpp \
-    Operators/Filtrations/MultiMemberTournamentForDirection.cpp \
-    Operators/Filtrations/MultiMemberTournamentForPerturbation.cpp \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.cpp \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForDirection.cpp \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForPerturbation.cpp \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseMutation.cpp \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseEliteFiltration.cpp \
-    Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.cpp \
-    Operators/AlgorithmSpecific/ParEGO/ConstraintDirectionFitnessFiltration.cpp \
-    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.cpp \
-    Operators/AlgorithmSpecific/sParEGO/sParEGOInit.cpp \
-    Operators/AlgorithmSpecific/sParEGO/SparegoValidation.cpp \
-    Operators/Transformations/Denormalisation.cpp \
-    Algorithms/ACROMUSE.cpp \
-    Operators/Initialisation/UserDefinedInit.cpp \
     Representation/Distributions/ChiSquaredDistribution.cpp \
-    Operators/Evaluators/Validation.cpp \
-    Operators/Convergence/IConvergence.cpp \
-    Utils/Hypervolume/hv.c \
-    Operators/EmptyOperator.cpp \
-    Operators/Convergence/RandomHypervolume.cpp \
-    Utils/KernelDensityEstimation.cpp \
-    Algorithms/NSGAII.cpp \
-    Operators/Fitness/NSGAIICrowding.cpp \
-    Operators/Filtrations/NSGAIIEliteSelection.cpp \
-    Operators/Filtrations/FiltrationForDirection.cpp \
-    Algorithms/MOEAD.cpp \
-    Operators/Initialisation/WeightVectorInit.cpp \
-    Operators/Filtrations/RandSetReplacement.cpp \
-    Operators/Fitness/UncertainConfidenceRobustness.cpp \
-    Operators/Fitness/UncertainMonteCarloRobustness.cpp \
-    Random/RandomGenerator.cpp \
-    Engine/TigonOperatorFactory.cpp \
-    Utils/DominanceUtils.cpp \
-    Operators/Perturbations/BoundedPerturbation.cpp \
-    Operators/Fitness/Scalarization.cpp \
     Representation/Elements/IElementOperations.cpp \
     Representation/Mappings/IMappingOperations.cpp \
-    Utils/IElementUtils.cpp \
-    Engine/TigonFunctionFactory.cpp \
-    Operators/Filtrations/TruncateSets.cpp \
-    Operators/Filtrations/TournamentFiltrationForDirection.cpp \
     Representation/Mappings/UncertaintyMapping.cpp \
-    Factories/RobustnessIndicatorFactory.cpp \
-    Factories/DistributionFactory.cpp \
-    Operators/Fitness/ConstraintPenalty.cpp \
-    ExceptionHandling/TException.cpp \
-    Operators/Perturbations/CategoricalPerturpation.cpp \
-    Log/LogEntry.cpp \
-    Log/EvaluationEntry.cpp \
-    Log/LogManager.cpp \
-    Log/PopulationEntry.cpp \
-    Utils/JsonUtils.cpp \
-    Utils/HypervolumeUtils.cpp \
-    Operators/Convergence/Hypervolume.cpp \
-    Algorithms/ParEGO.cpp \
-    Operators/Composites/SurrogateBasedOptimizerWithPerturbation.cpp \
-    Operators/Evaluators/BatchEvaluator.cpp \
-    Utils/BatchSolveRegister.cpp \
-    Operators/Perturbations/SwapMutation.cpp \
-    Operators/Directions/OrderedCrossOver.cpp \
-    Utils/ScalarisingSpaceUtils.cpp \
-    Operators/Convergence/ScalarisingSpace.cpp \
-    Operators/Convergence/RobustScalarisingSpace.cpp \
-    Utils/TigonIOUtils.cpp \
-    Utils/PolynomialRegression.cpp \
-    Utils/MultiPolynomialRegression.cpp \
-    Utils/HypercubeGrid.cpp \
     Representation/Container/SampleVectors.cpp \
     Representation/Container/TimeSeriesContainer.cpp \
-    Operators/Initialisation/TSPOrderedInit.cpp \
-    Core/PluginManager.cpp \
-    Operators/Terminations/ITermination.cpp \
-    Algorithms/SMSEMOA.cpp \
-    Operators/Filtrations/SMSEMOAReduce.cpp \
-    Operators/Fitness/NonDominanceRankingParametric.cpp \
     Representation/Functions/TF1.cpp \
-    Utils/CorrelationMatrix.cpp \
-    Utils/ObjectiveReduction.cpp \
-    Algorithms/sParEGO.cpp \
-    Operators/Evaluators/ValidationWithScalarisation.cpp \
     Representation/Functions/CODeM/CODeMDistribution.cpp \
     Representation/Functions/CODeM/CODeMOperators.cpp \
     Representation/Functions/CODeM/CODeMProblems.cpp \
@@ -278,26 +251,91 @@ SOURCES += \
     Representation/Functions/CODeM/EMO2019P2.cpp \
     Representation/Functions/CODeM/GECCO2016.cpp \
     Representation/Functions/CODeM/UncertaintyKernel.cpp \
+    Representation/Functions/MinEx.cpp \
+    Utils/TigonUtils.cpp \
+    Utils/AbstractInterpolator.cpp \
+    Utils/LinearInterpolator.cpp \
+    Utils/SplineInterpolator.cpp \
+    Utils/ZeroOrderInterpolator.cpp \
+    Utils/RBFInterpolator.cpp \
+    Utils/RBFMultiQuadric.cpp \
+    Utils/RBFThinPlate.cpp \
+    Utils/RBFGauss.cpp \
+    Utils/RBFInverseMultiQuadric.cpp \
+    Utils/RBFBasis.cpp \
+    Utils/RBFInterpolatorCascade.cpp \
+    Utils/Kriging/DACE.cpp \
+    Utils/Kriging/IKriging.cpp \
+    Utils/Kriging/KrigingCascade.cpp \
+    Utils/Kriging/KrigingVariogram.cpp \
+    Utils/Kriging/OrdinaryKriging.cpp \
+    Utils/Kriging/PowerVariogram.cpp \
+    Utils/Kriging/SphericalVariogram.cpp \
+    Utils/ScalarisingFunctions.cpp \
+    Utils/ProjectionUtils.cpp \
+    Utils/NormalisationUtils.cpp \
+    Utils/SimplexLattice.cpp \
+    Utils/BoxConstraintViolationCorrections.cpp \
+    Utils/Hypervolume/hv.c \
+    Utils/KernelDensityEstimation.cpp \
+    Utils/DominanceUtils.cpp \
+    Utils/IElementUtils.cpp \
+    Utils/JsonUtils.cpp \
+    Utils/HypervolumeUtils.cpp \
+    Utils/BatchSolveRegister.cpp \
+    Utils/ScalarisingSpaceUtils.cpp \
+    Utils/TigonIOUtils.cpp \
+    Utils/PolynomialRegression.cpp \
+    Utils/MultiPolynomialRegression.cpp \
+    Utils/HypercubeGrid.cpp \
+    Utils/CorrelationMatrix.cpp \
+    Utils/ObjectiveReduction.cpp \
     Utils/Dominance/ConstrDomRelation.cpp \
     Utils/Dominance/DominanceRelation.cpp \
     Utils/Dominance/Preferability.cpp \
-    Utils/Dominance/PreferabilityConstraintHandling.cpp \
-    Algorithms/MOGA.cpp \
-    Operators/Fitness/AverageFitness.cpp \
-    Operators/Fitness/MOGANonDominanceRanking.cpp \
-    Operators/Fitness/SharedFitness.cpp \
-    Operators/Filtrations/StochasticUniversalSampling.cpp \
-    Operators/Filtrations/RouletteWheelSelection.cpp \
-    Factories/DominanceRelationFactory.cpp \
-    Representation/Functions/MinEx.cpp
+    Utils/Dominance/PreferabilityConstraintHandling.cpp
 
 HEADERS += \
+    Tigon.h \
+    tigon_global.h \
+    tigonconstants.h \
+    tigonengineregistry.h \
+    Algorithms/IAlgorithm.h \
+    Algorithms/ACROMUSE.h \
+    Algorithms/NSGAIIPSA.h \
+    Algorithms/NSGAII.h \
+    Algorithms/MOEAD.h \
+    Algorithms/ParEGO.h \
+    Algorithms/SMSEMOA.h \
+    Algorithms/sParEGO.h \
+    Algorithms/MOGA.h \
+    Algorithms/NSGAIII.h \
     Core/TSharedPointer.h \
     Core/TVector.h \
     Core/TString.h \
     Core/TMap.h \
     Core/TObject.h \
-    Algorithms/IAlgorithm.h \
+    Core/TSharedPointer.h \
+    Core/TVector.h \
+    Core/TString.h \
+    Core/TMap.h \
+    Core/IPlugin.h \
+    Core/PluginManager.h \
+    Engine/TigonEngine.h \
+    Engine/OptimizationLinearFlow.h \
+    Engine/TigonOperatorFactory.h \
+    Engine/IPSetFactory.h \
+    Engine/IFunctionFactory.h \
+    Engine/TigonFunctionFactory.h \
+    Engine/TigonEngineConstants.h \
+    ExceptionHandling/TException.h \
+    Factories/DominanceRelationFactory.h \
+    Factories/RobustnessIndicatorFactory.h  \
+    Factories/DistributionFactory.h \
+    Log/LogEntry.h \
+    Log/EvaluationEntry.h \
+    Log/LogManager.h \
+    Log/PopulationEntry.h \
     Operators/Archives/IArchive.h \
     Operators/Directions/IDirection.h \
     Operators/Evaluators/IEvaluator.h \
@@ -308,6 +346,84 @@ HEADERS += \
     Operators/Initialisation/RandomInit.h \
     Operators/Perturbations/IPerturbation.h \
     Operators/IOperator.h \
+    Operators/Transformations/ITransformation.h \
+    Operators/Filtrations/PSAClustering.h \
+    Operators/Directions/SBXCrossOver.h \
+    Operators/Directions/DiscreteCrossover.h \
+    Operators/Filtrations/RandFiltrationForDirection.h \
+    Operators/Filtrations/RandFiltrationForModification.h \
+    Operators/Formulations/ProblemGenerator/ProblemGenerator.h \
+    Operators/Fitness/NonDominanceRanking.h \
+    Operators/Fitness/PSACrowding.h \
+    Operators/Filtrations/PSAEliteSelection.h \
+    Operators/Filtrations/TournamentFiltrationForModification.h \
+    Operators/Perturbations/PolynomialMutation.h \
+    Operators/Filtrations/RandFiltrationForPerturbation.h \
+    Operators/Filtrations/FreezeOperatorOutput.h \
+    Operators/Filtrations/MergeForNextIteration.h \
+    Operators/Directions/SinglePointCrossOver.h \
+    Operators/Directions/SimplexLatticeDirectionIterator.h \
+    Operators/Fitness/GeneralizedDecomposition.h \
+    Operators/Filtrations/NeighbourhoodFiltration.h \
+    Operators/Fitness/RobustnessAssignment.h \
+    Operators/Filtrations/FitnessEliteSelection.h \
+    Operators/Evaluators/Evaluator.h \
+    Operators/Formulations/IFormulation.h \
+    Operators/Composites/IComposite.h \
+    Operators/Composites/SurrogateBasedOptimizer.h \
+    Operators/Transformations/Normalisation.h \
+    Operators/Initialisation/FitnessBasedInit.h \
+    Operators/Filtrations/MultiMemberTournamentForDirection.h \
+    Operators/Filtrations/MultiMemberTournamentForPerturbation.h \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.h \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForDirection.h \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForPerturbation.h \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseMutation.h \
+    Operators/AlgorithmSpecific/ACROMUSE/AcromuseEliteFiltration.h \
+    Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.h \
+    Operators/AlgorithmSpecific/ParEGO/ConstraintDirectionFitnessFiltration.h \
+    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.h \
+    Operators/AlgorithmSpecific/sParEGO/sParEGOInit.h \
+    Operators/AlgorithmSpecific/sParEGO/SparegoValidation.h \
+    Operators/EmptyOperator.h \
+    Operators/Convergence/IConvergence.h \
+    Operators/Convergence/RandomHypervolume.h \
+    Operators/Convergence/Hypervolume.h \
+    Operators/Convergence/ScalarisingSpace.h \
+    Operators/Convergence/RobustScalarisingSpace.h \
+    Operators/Composites/SurrogateBasedOptimizerWithPerturbation.h \
+    Operators/Directions/OrderedCrossOver.h \
+    Operators/Evaluators/BatchEvaluator.h \
+    Operators/Evaluators/Validation.h \
+    Operators/Evaluators/ValidationWithScalarisation.h \
+    Operators/Filtrations/NSGAIIEliteSelection.h \
+    Operators/Filtrations/FiltrationForDirection.h \
+    Operators/Filtrations/RandSetReplacement.h \
+    Operators/Filtrations/TruncateSets.h \
+    Operators/Filtrations/TournamentFiltrationForDirection.h \
+    Operators/Filtrations/StochasticUniversalSampling.h \
+    Operators/Filtrations/RouletteWheelSelection.h \
+    Operators/Filtrations/SMSEMOAReduce.h \
+    Operators/Fitness/NSGAIICrowding.h \
+    Operators/Fitness/UncertainConfidenceRobustness.h \
+    Operators/Fitness/UncertainMonteCarloRobustness.h \
+    Operators/Fitness/Scalarization.h \
+    Operators/Fitness/ConstraintPenalty.h \
+    Operators/Fitness/NonDominanceRankingParametric.h \
+    Operators/Fitness/AverageFitness.h \
+    Operators/Fitness/MOGANonDominanceRanking.h \
+    Operators/Fitness/SharedFitness.h \
+    Operators/Fitness/NSGAIIINiching.h \
+    Operators/Initialisation/UserDefinedInit.h \
+    Operators/Initialisation/TSPOrderedInit.h \
+    Operators/Initialisation/WeightVectorInit.h \
+    Operators/Perturbations/BoundedPerturbation.h \
+    Operators/Perturbations/CategoricalPerturpation.h \
+    Operators/Perturbations/IntegerMutation.h \
+    Operators/Perturbations/SwapMutation.h \
+    Operators/Terminations/ITermination.h \
+    Operators/Transformations/Denormalisation.h \
+    Random/RandomGenerator.h  \
     Representation/Constraints/BoxConstraintsData.h \
     Representation/Elements/IElement.h \
     Representation/Mappings/IMapping.h \
@@ -317,73 +433,22 @@ HEADERS += \
     Representation/Constraints/LinearConstraintsData.h \
     Representation/Constraints/NonLinearConstraintsData.h \
     Representation/PSets/PSetBase.h \
-    Tigon.h \
-    tigon_global.h \
-    tigonconstants.h \
-    Operators/Transformations/ITransformation.h \
-    Operators/Filtrations/PSAClustering.h \
-    Operators/Directions/SBXCrossOver.h \
-    Operators/Filtrations/RandFiltrationForDirection.h \
-    Operators/Filtrations/RandFiltrationForModification.h \
+    Representation/Sets/ISet.h \
     Representation/Mappings/IMappingPrivate.h \
     Representation/Properties/ElementProperties.h \
     Representation/Properties/ProblemProperties.h \
     Representation/Properties/ProblemPropertiesFactory.h \
     Representation/Properties/ElementPropertiesFactory.h \
-    Operators/Formulations/ProblemGenerator/ProblemGenerator.h \
-    Operators/Fitness/NonDominanceRanking.h \
-    Operators/Fitness/PSACrowding.h \
-    Representation/Sets/ISet.h \
     Representation/Properties/ElementPropertiesData.h \
     Representation/Properties/ProblemPropertiesData.h \
-    Utils/TigonUtils.h \
-    Engine/TigonEngine.h \
-    Engine/OptimizationLinearFlow.h \
-    Utils/AbstractInterpolator.h \
-    Utils/LinearInterpolator.h \
-    Utils/SplineInterpolator.h \
-    Utils/ZeroOrderInterpolator.h \
-    Utils/RBFInterpolator.h \
-    Utils/RBFMultiQuadric.h \
-    Utils/RBFThinPlate.h \
-    Utils/RBFGauss.h \
-    Utils/RBFInverseMultiQuadric.h \
-    Utils/RBFBasis.h \
-    Utils/RBFInterpolatorCascade.h \
-    Utils/Kriging/DACE.h \
-    Utils/Kriging/IKriging.h \
-    Utils/Kriging/KrigingCascade.h \
-    Utils/Kriging/KrigingVariogram.h \
-    Utils/Kriging/OrdinaryKriging.h \
-    Utils/Kriging/PowerVariogram.h \
-    Utils/Kriging/SphericalVariogram.h \
     Representation/Distributions/IDistribution.h \
     Representation/Distributions/UniformDistribution.h \
     Representation/Distributions/LinearDistribution.h \
     Representation/Distributions/MergedDistribution.h \
     Representation/Distributions/NonParaDistribution.h \
     Representation/Distributions/PeakDistribution.h \
-    Utils/ScalarisingFunctions.h \
-    Utils/ProjectionUtils.h \
-    Utils/NormalisationUtils.h \
-    Utils/SimplexLattice.h \
     Representation/Distributions/SampledDistribution.h \
     Representation/Distributions/NormalDistribution.h \
-    Operators/Filtrations/PSAEliteSelection.h \
-    Operators/Filtrations/TournamentFiltrationForModification.h \
-    Utils/BoxConstraintViolationCorrections.h \
-    Operators/Perturbations/PolynomialMutation.h \
-    Operators/Filtrations/RandFiltrationForPerturbation.h \
-    Operators/Filtrations/FreezeOperatorOutput.h \
-    Operators/Filtrations/MergeForNextIteration.h \
-    Algorithms/NSGAIIPSA.h \
-    Operators/Directions/SinglePointCrossOver.h \
-    Operators/Directions/SimplexLatticeDirectionIterator.h \
-    Operators/Fitness/GeneralizedDecomposition.h \
-    Operators/Filtrations/NeighbourhoodFiltration.h \
-    Operators/Fitness/RobustnessAssignment.h \
-    Operators/Filtrations/FitnessEliteSelection.h \
-    Operators/Evaluators/Evaluator.h \
     Representation/Functions/IFunction.h \
     Representation/Functions/WFG/wfg_toolkit/ExampleProblems.h \
     Representation/Functions/WFG/wfg_toolkit/ExampleShapes.h \
@@ -428,7 +493,6 @@ HEADERS += \
     Representation/Functions/SingleObjective/CBranin.h \
     Representation/Functions/SingleObjective/CBraninM1.h \
     Representation/Functions/SingleObjective/Poly1.h \
-    Operators/Formulations/IFormulation.h \
     Representation/Problems/Problem.h \
     Representation/Properties/FunctionPropertiesData.h \
     Representation/Properties/FunctionProperties.h \
@@ -436,101 +500,13 @@ HEADERS += \
     Representation/Indicators/IRobustnessIndicator.h \
     Representation/Indicators/ConfidenceIndicator.h \
     Representation/Indicators/ThresholdIndicator.h \
-    Operators/Composites/IComposite.h \
-    Operators/Composites/SurrogateBasedOptimizer.h \
-    Operators/Transformations/Normalisation.h \
-    Operators/Initialisation/FitnessBasedInit.h \
-    Operators/Filtrations/MultiMemberTournamentForDirection.h \
-    Operators/Filtrations/MultiMemberTournamentForPerturbation.h \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseDiversity.h \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForDirection.h \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseFiltrationForPerturbation.h \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseMutation.h \
-    Operators/AlgorithmSpecific/ACROMUSE/AcromuseEliteFiltration.h \
-    Operators/AlgorithmSpecific/ParEGO/DirectionFitnessFiltration.h \
-    Operators/AlgorithmSpecific/ParEGO/ConstraintDirectionFitnessFiltration.h \
-    Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.h \
-    Operators/AlgorithmSpecific/sParEGO/sParEGOInit.h \
-    Operators/AlgorithmSpecific/sParEGO/SparegoValidation.h \
-    Operators/Transformations/Denormalisation.h \
-    Algorithms/ACROMUSE.h \
-    Operators/Initialisation/UserDefinedInit.h \
     Representation/Distributions/ChiSquaredDistribution.h \
-    Operators/Evaluators/Validation.h \
-    Operators/Convergence/IConvergence.h \
-    Utils/Hypervolume/hv.h \
-    Algorithms/NSGAII.h \
-    Operators/Fitness/NSGAIICrowding.h \
-    Operators/Filtrations/NSGAIIEliteSelection.h \
-    Operators/Filtrations/FiltrationForDirection.h \
-    Operators/EmptyOperator.h \
-    Operators/Convergence/RandomHypervolume.h \
-    Utils/KernelDensityEstimation.h \
-    Operators/Fitness/UncertainConfidenceRobustness.h \
-    Operators/Fitness/UncertainMonteCarloRobustness.h \
-    Random/RandomGenerator.h  \
-    Engine/TigonOperatorFactory.h \
-    Engine/IPSetFactory.h \
-    tigonengineregistry.h \
-    Algorithms/MOEAD.h \
-    Operators/Initialisation/WeightVectorInit.h \
-    Operators/Filtrations/RandSetReplacement.h \
-    Utils/DominanceUtils.h \
-    Operators/Perturbations/BoundedPerturbation.h \
-    Operators/Fitness/Scalarization.h \
     Representation/Elements/IElementOperations.h \
     Representation/Mappings/IMappingOperations.h \
     Representation/Mappings/UncertaintyMapping.h \
-    Utils/IElementUtils.h \
-    Operators/Filtrations/TruncateSets.h \
-    Operators/Filtrations/TournamentFiltrationForDirection.h \
-    Factories/RobustnessIndicatorFactory.h  \
-    Engine/IFunctionFactory.h \
-    Engine/TigonFunctionFactory.h \
-    Engine/TigonEngineConstants.h \
-    Factories/DistributionFactory.h \
-    Operators/Fitness/ConstraintPenalty.h \
-    ExceptionHandling/TException.h \
-    Operators/Perturbations/CategoricalPerturpation.h \
-    Log/LogEntry.h \
-    Log/EvaluationEntry.h \
-    Log/LogManager.h \
-    Log/PopulationEntry.h \
-    Utils/JsonUtils.h \
-    Utils/HypervolumeUtils.h \
-    Operators/Convergence/Hypervolume.h \
-    Algorithms/ParEGO.h \
-    Operators/Composites/SurrogateBasedOptimizerWithPerturbation.h \
-    Operators/Evaluators/BatchEvaluator.h \
-    Utils/BatchSolveRegister.h \
-    Operators/Perturbations/SwapMutation.h \
-    Operators/Directions/OrderedCrossOver.h \
-    Core/TSharedPointer.h \
-    Core/TVector.h \
-    Core/TString.h \
-    Core/TMap.h \
-    Utils/TigonIOUtils.h \
-    Utils/ScalarisingSpaceUtils.h \
-    Operators/Convergence/ScalarisingSpace.h \
-    Operators/Convergence/RobustScalarisingSpace.h \
-    Utils/TigonIOUtils.h \
-    Utils/PolynomialRegression.h \
-    Utils/MultiPolynomialRegression.h \
-    Utils/HypercubeGrid.h \
     Representation/Container/SampleVectors.h \
     Representation/Container/TimeSeriesContainer.h \
-    Operators/Initialisation/TSPOrderedInit.h \
-    Core/IPlugin.h \
-    Core/PluginManager.h \
-    Operators/Terminations/ITermination.h \
-    Algorithms/SMSEMOA.h \
-    Operators/Filtrations/SMSEMOAReduce.h \
-    Operators/Fitness/NonDominanceRankingParametric.h \
     Representation/Functions/TF1.h \
-    Utils/CorrelationMatrix.h \
-    Utils/ObjectiveReduction.h \
-    Algorithms/sParEGO.h \
-    Operators/Evaluators/ValidationWithScalarisation.h \
     Representation/Functions/CODeM/CODeMDistribution.h \
     Representation/Functions/CODeM/CODeMOperators.h \
     Representation/Functions/CODeM/CODeMProblems.h \
@@ -538,18 +514,50 @@ HEADERS += \
     Representation/Functions/CODeM/EMO2019P2.h \
     Representation/Functions/CODeM/GECCO2016.h \
     Representation/Functions/CODeM/UncertaintyKernel.h \
+    Representation/Functions/MinEx.h \
+    Utils/TigonUtils.h \
+    Utils/AbstractInterpolator.h \
+    Utils/LinearInterpolator.h \
+    Utils/SplineInterpolator.h \
+    Utils/ZeroOrderInterpolator.h \
+    Utils/RBFInterpolator.h \
+    Utils/RBFMultiQuadric.h \
+    Utils/RBFThinPlate.h \
+    Utils/RBFGauss.h \
+    Utils/RBFInverseMultiQuadric.h \
+    Utils/RBFBasis.h \
+    Utils/RBFInterpolatorCascade.h \
+    Utils/Kriging/DACE.h \
+    Utils/Kriging/IKriging.h \
+    Utils/Kriging/KrigingCascade.h \
+    Utils/Kriging/KrigingVariogram.h \
+    Utils/Kriging/OrdinaryKriging.h \
+    Utils/Kriging/PowerVariogram.h \
+    Utils/Kriging/SphericalVariogram.h \
+    Utils/ScalarisingFunctions.h \
+    Utils/ProjectionUtils.h \
+    Utils/NormalisationUtils.h \
+    Utils/SimplexLattice.h \
+    Utils/BoxConstraintViolationCorrections.h \
+    Utils/Hypervolume/hv.h \
+    Utils/KernelDensityEstimation.h \
+    Utils/DominanceUtils.h \
+    Utils/IElementUtils.h \
+    Utils/JsonUtils.h \
+    Utils/HypervolumeUtils.h \
+    Utils/BatchSolveRegister.h \
+    Utils/TigonIOUtils.h \
+    Utils/ScalarisingSpaceUtils.h \
+    Utils/TigonIOUtils.h \
+    Utils/PolynomialRegression.h \
+    Utils/MultiPolynomialRegression.h \
+    Utils/HypercubeGrid.h \
+    Utils/CorrelationMatrix.h \
+    Utils/ObjectiveReduction.h \
     Utils/Dominance/ConstrDomRelation.h \
     Utils/Dominance/DominanceRelation.h \
     Utils/Dominance/Preferability.h \
-    Utils/Dominance/PreferabilityConstraintHandling.h \
-    Algorithms/MOGA.h \
-    Operators/Fitness/AverageFitness.h \
-    Operators/Fitness/MOGANonDominanceRanking.h \
-    Operators/Fitness/SharedFitness.h \
-    Operators/Filtrations/StochasticUniversalSampling.h \
-    Operators/Filtrations/RouletteWheelSelection.h \
-    Factories/DominanceRelationFactory.h \
-    Representation/Functions/MinEx.h
+    Utils/Dominance/PreferabilityConstraintHandling.h
 
 # Python support
 contains(HAVE_PYTHON, yes) {

@@ -216,6 +216,7 @@
 #include <tigon/Operators/Fitness/AverageFitness.h>
 #include <tigon/Operators/Fitness/MOGANonDominanceRanking.h>
 #include <tigon/Operators/Fitness/SharedFitness.h>
+#include <tigon/Operators/Fitness/NSGAIIINiching.h>
 
 // Operators - Formulations
 #include <tigon/Operators/Formulations/IFormulation.h>
@@ -251,6 +252,7 @@
 #include <tigon/Algorithms/MOEAD.h>
 #include <tigon/Algorithms/SMSEMOA.h>
 #include <tigon/Algorithms/MOGA.h>
+#include <tigon/Algorithms/NSGAIII.h>
 
 // Engine
 #include <tigon/Engine/OptimizationLinearFlow.h>
