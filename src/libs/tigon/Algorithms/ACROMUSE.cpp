@@ -23,6 +23,7 @@
 #include <tigon/Operators/AlgorithmSpecific/ACROMUSE/AcromuseMutation.h>
 #include <tigon/Operators/Directions/SinglePointCrossOver.h>
 #include <tigon/Operators/Perturbations/PolynomialMutation.h>
+#include <tigon/Operators/Perturbations/IntegerMutation.h>
 #include <tigon/Operators/Perturbations/CategoricalPerturpation.h>
 #include <tigon/Operators/Filtrations/MergeForNextIteration.h>
 #include <tigon/Representation/Sets/ISet.h>
@@ -65,13 +66,9 @@ void ACROMUSE::initialise()
     AcromuseMutation*          mutat  = new AcromuseMutation(this);
     SinglePointCrossOver*      co     = new SinglePointCrossOver(this);
     PolynomialMutation*        pm     = new PolynomialMutation(this);
+    IntegerMutation*           im     = new IntegerMutation(this);
     CategoricalPerturpation*   cPert  = new CategoricalPerturpation(this);
     MergeForNextIteration*     merge  = new MergeForNextIteration(this);
-
-    //eval->TP_defineSingleObjective(true);
-    pm->defineOutputTags(co->outputTags());
-    pm->TP_defineMutationDistributionIndex(50);
-    cPert->defineOutputTags(co->outputTags());
 
     appendOperator(elite);
     appendOperator(div);
@@ -80,8 +77,14 @@ void ACROMUSE::initialise()
     appendOperator(mutat);
     appendOperator(co);
     appendOperator(pm);
+    appendOperator(im);
     appendOperator(cPert);
     appendOperator(merge);
+
+    //eval->TP_defineSingleObjective(true);
+    pm->defineOutputTags(co->outputTags());
+    pm->TP_defineMutationDistributionIndex(50);
+    cPert->defineOutputTags(co->outputTags());
 }
 
 TString ACROMUSE::name()

@@ -23,7 +23,9 @@
 #include <tigon/Operators/Filtrations/StochasticUniversalSampling.h>
 #include <tigon/Operators/Filtrations/RandFiltrationForDirection.h>
 #include <tigon/Operators/Directions/SBXCrossOver.h>
+#include <tigon/Operators/Directions/DiscreteCrossover.h>
 #include <tigon/Operators/Perturbations/PolynomialMutation.h>
+#include <tigon/Operators/Perturbations/IntegerMutation.h>
 #include <tigon/Operators/Perturbations/CategoricalPerturpation.h>
 #include <tigon/Operators/Filtrations/MergeForNextIteration.h>
 #include <tigon/Operators/Filtrations/FreezeOperatorOutput.h>
@@ -59,8 +61,10 @@ void MOGA::initialise()
     RandFiltrationForDirection*
                          filtered = new RandFiltrationForDirection(elite);
     SBXCrossOver*       crossOver = new SBXCrossOver(filtered);
-    PolynomialMutation*        pm = new PolynomialMutation(crossOver);
-    CategoricalPerturpation* cPert = new CategoricalPerturpation(pm);
+    DiscreteCrossover*    disOver = new DiscreteCrossover(crossOver);
+    PolynomialMutation*        pm = new PolynomialMutation(disOver);
+    IntegerMutation*           im = new IntegerMutation(pm);
+    CategoricalPerturpation* cPert = new CategoricalPerturpation(im);
     MergeForNextIteration*    nxt = new MergeForNextIteration(cPert);
 
     appendOperator(rank);
@@ -69,7 +73,9 @@ void MOGA::initialise()
     appendOperator(elite);
     appendOperator(filtered);
     appendOperator(crossOver);
+    appendOperator(disOver);
     appendOperator(pm);
+    appendOperator(im);
     appendOperator(cPert);
     appendOperator(nxt);
 
