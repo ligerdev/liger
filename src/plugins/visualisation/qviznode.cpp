@@ -715,9 +715,9 @@ void QVizNode::filterBrushedSolutions()
 void QVizNode::applyFilters()
 {
     displaySet(m_selectedSet);
-    if (!m_toggleDominatedButton->isChecked()) filterNonDominated();
-    if (m_toggleInFeasibleButton->isChecked()) filterFeasible();
+    if (!m_toggleInFeasibleButton->isChecked()) filterFeasible();
     if (!m_toggleNonPertinentButton->isChecked()) filterPertinent();
+    if (!m_toggleDominatedButton->isChecked()) filterNonDominated();
 }
 
 void QVizNode::filterNonDominated()
