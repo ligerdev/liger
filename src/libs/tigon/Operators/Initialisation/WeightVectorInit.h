@@ -1,3 +1,18 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+**
+** This file is part of Liger.
+**
+** GNU Lesser General Public License Usage
+** This file may be used under the terms of the GNU Lesser General
+** Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+****************************************************************************/
 #ifndef WEIGHTVECTORINIT_H
 #define WEIGHTVECTORINIT_H
 #include <tigon/tigon_global.h>
@@ -8,8 +23,6 @@ namespace Operators {
 
 class LIGER_TIGON_EXPORT WeightVectorInit : public IInitialisation
 {
-    //Q_PROPERTY(Tigon::RegularisationApproach RegularisationMethod READ TP_regularisationMethod WRITE TP_defineRegularisationMethod)
-
     HANDLE_READ_PROPERTIES_BEGIN(IInitialisation)
     READ(NumberPointsPerDimension, TP_numberPointsPerDimension)
     HANDLE_READ_PROPERTIES_END
@@ -48,15 +61,10 @@ public:
     DistanceMeasure TP_distanceMeasure() const;
 
 private:
-    bool isNewGoalVec();
-    void updateGoalVec();
-
-    bool                         m_determineWeightVectors;
     int                        m_numberPointsPerDimension;
     int                             m_fixedPopulationSize;
     Tigon::RegularisationApproach  m_regularisationMethod;
     TVector<TVector<double>>                     m_refSet;
-    TVector<double>                         m_normGoalVec;
     DistanceMeasure                     m_distanceMeasure;
 };
 

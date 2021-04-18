@@ -267,8 +267,8 @@ void QVizNode::initializeWidgetDisplay()
     extractGoalsAndThresholds();
     setAvailableIterationList();
     setSelectSetsList();
-    resetSelectedVariablesToDisplay();
     customiseWidget(m_widget);
+    resetSelectedVariablesToDisplay();
 }
 
 void QVizNode::setupTimedTracking()

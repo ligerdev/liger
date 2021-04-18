@@ -105,16 +105,19 @@ void SimplexLatticeDirectionIterator::createReferenceSet()
     // Create a simplex lattice and remove vectors that are non-dominated
     // with the goal vector (normalised according to the ideal and nadir vectors)
 
-    TVector<bool> essentialObs = problem()->essentialObjectives();
-    bool isThereRedundantObjs = vectorContains(essentialObs,false);
+//    TVector<bool> essentialObs = problem()->essentialObjectives();
+//    bool isThereRedundantObjs = vectorContains(essentialObs,false);
 
-    if(!isThereRedundantObjs) {
-        m_referenceSet = preferredSimplexLattice(h, k, m_normGoalVec);
-    } else {
-        m_referenceSet = preferredSimplexLatticeRedundantComponents(h, k,
-                                                                m_normGoalVec,
-                                                                essentialObs);
-    }
+//    if(!isThereRedundantObjs) {
+//        m_referenceSet = preferredSimplexLattice(h, k, m_normGoalVec);
+//    } else {
+//        m_referenceSet = preferredSimplexLatticeRedundantComponents(h, k,
+//                                                                m_normGoalVec,
+//                                                                essentialObs);
+//    }
+
+    m_referenceSet = preferredSimplexLattice(h, k, m_normGoalVec);
+
     m_actualRefSetSize = m_referenceSet.size();
 
     m_referenceSet = Tigon::shuffle(m_referenceSet);
