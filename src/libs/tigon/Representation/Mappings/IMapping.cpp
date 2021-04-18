@@ -750,8 +750,9 @@ bool IMapping::isFeasible() const
 bool IMapping::isPertinent() const
 {
     TVector<IElementSPtr> goals = m_problem->goalVector();
-    for(int i = 0; i < goals.size(); i++) {
-        if(isGoalDefined(goals[i]) && (*objectiveVar(i) > *goals[i])) {
+    TVector<bool> isGoalUsed = m_problem->setGoalVector();
+    for(size_t i = 0; i < goals.size(); i++) {
+        if(isGoalUsed[i] && (*objectiveVec()[i] > *goals[i]) ) {
             return false;
         }
     }

@@ -40,14 +40,14 @@ ExampleFunctionFromPlugin::ExampleFunctionFromPlugin(const ExampleFunctionFromPl
 }
 
 void ExampleFunctionFromPlugin::evaluate(const TVector<IElementSPtr> &inputs,
-                               const TVector<IElementSPtr> &outputs)
+                                         const TVector<IElementSPtr> &outputs)
 {
     if((inputs.size() == TP_nInputs()) && (outputs.size() == TP_nOutputs()) &&
             (TP_nInputs() > TP_nOutputs())) {
         TVector<double> iReal = Tigon::IElementVecToRealVec(inputs);
         TVector<double> oReal = DTLZ::DTLZ2(iReal, TP_nOutputs());
 
-        for(int i=0; i<outputs.size(); i++) {
+        for(size_t i=0; i<outputs.size(); i++) {
             outputs[i]->defineValue(oReal[i]);
         }
     } else {

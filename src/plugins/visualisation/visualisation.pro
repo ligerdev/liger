@@ -72,6 +72,8 @@ HEADERS +=  \
 RESOURCES += \
     visualisation.qrc
 
+QTQUICK_COMPILER_SKIPPED_RESOURCES += visualisation.qrc
+
 FORMS += \
     core/selectplotvarsform.ui \
     core/visualisationwidget.ui

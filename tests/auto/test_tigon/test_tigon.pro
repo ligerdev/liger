@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS = \
     test_baseoperations \
     test_interpolators  \
+    test_problemgenerator \
     test_tigonutilities \
     test_uncertainties \
     test_tigonengine \

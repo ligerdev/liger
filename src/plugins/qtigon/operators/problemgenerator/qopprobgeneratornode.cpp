@@ -105,7 +105,7 @@ void QOpProbGeneratorNode::readDataProperties(QXmlStreamReader &xmlReader)
         }
     }
     ProblemGenerator* pg = static_cast<ProblemGenerator*>(data());
-    ProblemDefinitionStatus status = pg->processFormualtion();
+    ProblemDefinitionStatus status = pg->processFormulation();
     if(status != FullyDefined) {
         // Error. Throw exception: probelm not fully defined
         qDebug() << "\n\n\n\n ================= \n "  << "Not fully defined" << "\n ================= \n\n\n\n ";

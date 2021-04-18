@@ -49,7 +49,7 @@ void SearchResultTreeItemDelegate::paint(QPainter *painter, const QStyleOptionVi
 
     painter->save();
 
-    QStyleOptionViewItemV3 opt = setOptions(index, option);
+    QStyleOptionViewItem opt = setOptions(index, option);
     painter->setFont(opt.font);
 
     QItemDelegate::drawBackground(painter, opt, index);
@@ -104,7 +104,7 @@ void SearchResultTreeItemDelegate::paint(QPainter *painter, const QStyleOptionVi
 }
 
 // returns the width of the line number area
-int SearchResultTreeItemDelegate::drawLineNumber(QPainter *painter, const QStyleOptionViewItemV3 &option,
+int SearchResultTreeItemDelegate::drawLineNumber(QPainter *painter, const QStyleOptionViewItem &option,
                                                  const QRect &rect,
                                                  const QModelIndex &index) const
 {
@@ -130,7 +130,7 @@ int SearchResultTreeItemDelegate::drawLineNumber(QPainter *painter, const QStyle
         option.palette.brush(cg, QPalette::Highlight) :
         option.palette.color(cg, QPalette::Base).darker(111)));
 
-    QStyleOptionViewItemV3 opt = option;
+    QStyleOptionViewItem opt = option;
     opt.displayAlignment = Qt::AlignRight | Qt::AlignVCenter;
     opt.palette.setColor(cg, QPalette::Text, Qt::darkGray);
 

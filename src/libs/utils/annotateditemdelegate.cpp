@@ -64,7 +64,7 @@ void AnnotatedItemDelegate::paint(QPainter *painter,
                                   const QStyleOptionViewItem &option,
                                   const QModelIndex &index) const
 {
-    QStyleOptionViewItemV4 opt = option;
+    QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 
     QStyle *style = QApplication::style();
@@ -107,7 +107,7 @@ void AnnotatedItemDelegate::paint(QPainter *painter,
 QSize AnnotatedItemDelegate::sizeHint(const QStyleOptionViewItem &option,
                                       const QModelIndex &index) const
 {
-    QStyleOptionViewItemV4 opt = option;
+    QStyleOptionViewItem opt = option;
     initStyleOption(&opt, index);
 
     const QString &annotation = index.data(m_annotationRole).toString();

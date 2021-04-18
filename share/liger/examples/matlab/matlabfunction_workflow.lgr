@@ -24,7 +24,9 @@
       <paramValueVec>[]</paramValueVec>
       <externalParam>[]</externalParam>
       <externalParamGroups>[]</externalParamGroups>
+      <setGoals>[]</setGoals>
       <goals>[]</goals>
+      <priorities>[]</priorities>
       <thresholds>[]</thresholds>
       <dVecUncertainties>[]</dVecUncertainties>
       <funcOutUncertainties>[]</funcOutUncertainties>

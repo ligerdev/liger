@@ -72,21 +72,23 @@ void OutputPropertiesDialog::setData(const OutputPrivateData &data)
         break;
     }
 
-    /// [4] Define Optimization Type, goal and threshold
+    /// [4] Define Optimization Type, goal, priority and threshold
     OptimizationType optType = data.prts.optimizationType();
     ui->optTypeComboBox->setCurrentIndex(optType);
     switch(optType) {
     case Minimization:
-        ui->goalLineEdit->setText(QString::number(data.goal.value()));
+        ui->goalValueEdit->setText(QString::number(data.goal.value()));
         ui->thresholdLineEdit->setText(QString::number(data.threshold.value()));
         break;
     case Maximization:
-        ui->goalLineEdit->setText(QString::number(-data.goal.value()));
+        ui->goalValueEdit->setText(QString::number(-data.goal.value()));
         ui->thresholdLineEdit->setText(QString::number(-data.threshold.value()));
         break;
     default:
         break;
     }
+    ui->setGoalcheckBox->setChecked(data.setGoal);
+    ui->prioritySpinBox->setValue(data.priority);
 
     /// [5] Define scopes
     if(data.scopes.contains(Constants::OBJECTIVE)) {
@@ -179,6 +181,7 @@ void OutputPropertiesDialog::initialise()
     /// [1] set default visibility
     ui->goalFrame->setVisible(false);
     ui->thresholdFrame->setVisible(false);
+    ui->goalSetFrame->setVisible(false);
     ui->uncertainGroupBox->setVisible(false);
 
     /// [2] Uncertainty Parameter view
@@ -200,7 +203,7 @@ void OutputPropertiesDialog::initialise()
     ui->distributionComboBox->insertItems(0, keys);
 
     /// LineEdit validator
-    ui->goalLineEdit->setValidator(new QDoubleValidator);
+    ui->goalValueEdit->setValidator(new QDoubleValidator);
     ui->thresholdLineEdit->setValidator(new QDoubleValidator);
 }
 
@@ -208,6 +211,7 @@ void OutputPropertiesDialog::setupSignals()
 {
     connect(ui->objectiveCheckBox, SIGNAL(toggled(bool)), ui->goalFrame, SLOT(setVisible(bool)));
     connect(ui->constraintCheckBox, SIGNAL(toggled(bool)), ui->thresholdFrame, SLOT(setVisible(bool)));
+    connect(ui->setGoalcheckBox, SIGNAL(toggled(bool)), ui->goalSetFrame, SLOT(setVisible(bool)));
     connect(ui->uncertainRadioButton, SIGNAL(toggled(bool)), ui->uncertainGroupBox, SLOT(setVisible(bool)));
 }
 
@@ -305,20 +309,25 @@ void OutputPropertiesDialog::on_buttonBox_accepted()
     }
     qDebug() << "OptType  : "<< m_d.prts.optimizationType();
 
-    /// [] Define Goals and threholds
+    /// [] Define goal, priority and threshold
     switch(m_d.prts.optimizationType()) {
     case Minimization:
-        m_d.goal.defineValue(ui->goalLineEdit->text().toDouble());
+        m_d.goal.defineValue(ui->goalValueEdit->text().toDouble());
         m_d.threshold.defineValue(ui->thresholdLineEdit->text().toDouble());
         break;
     case Maximization:
-        m_d.goal.defineValue(-ui->goalLineEdit->text().toDouble());
+        m_d.goal.defineValue(-ui->goalValueEdit->text().toDouble());
         m_d.threshold.defineValue(-ui->thresholdLineEdit->text().toDouble());
         break;
     default:
         break;
     }
+    m_d.priority = ui->prioritySpinBox->value();
+    m_d.setGoal = ui->setGoalcheckBox->isChecked();
+
+    qDebug() << "setGoal  : "<< m_d.setGoal;
     qDebug() << "goal     : "<< m_d.goal.value<qreal>();
+    qDebug() << "priority : "<< m_d.priority;
     qDebug() << "threshold: "<< m_d.threshold.value<qreal>();
 
     emit updateData(m_d);
@@ -384,20 +393,20 @@ void QTigon::OutputPropertiesDialog::on_optTypeComboBox_currentIndexChanged(cons
 {
     if(arg1 == Constants::MIN) {
         if(ui->objectiveCheckBox->isChecked()) {
-            ui->goalLineEdit->setText(QString::number(Tigon::Lowest));
+            ui->goalValueEdit->setText(QString::number(Tigon::Lowest));
         }
         if(ui->constraintCheckBox->isChecked()) {
             ui->thresholdLineEdit->setText(QString::number(Tigon::Lowest));
         }
     } else if(arg1 == Constants::MAX) {
         if(ui->objectiveCheckBox->isChecked()) {
-            ui->goalLineEdit->setText(QString::number(Tigon::Highest));
+            ui->goalValueEdit->setText(QString::number(Tigon::Highest));
         }
         if(ui->constraintCheckBox->isChecked()) {
             ui->thresholdLineEdit->setText(QString::number(Tigon::Highest));
         }
     } else {
-        ui->goalLineEdit->setText(QVariant().toString());
+        ui->goalValueEdit->setText(QVariant().toString());
         ui->thresholdLineEdit->setText(QVariant().toString());
     }
 }

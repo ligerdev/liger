@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Problem>
+  <probName>TestProb</probName>
+  <probDescription>This is a test prolbem that loads from shared library</probDescription>
+  <problemID></problemID>
+  <nFunctions>1</nFunctions>
+  <nVars>3</nVars>
+  <nParams>0</nParams>
+  <nObjs>2</nObjs>
+  <Functions>
+    <Function funcType="SharedLib" idx="0">
+      <funcPath>testprob</funcPath>
+      <funcDescription>Test function from shared lib</funcDescription>
+      <funcID></funcID>
+      <nInputs>3</nInputs>
+      <nOutputs>2</nOutputs>
+    </Function>
+  </Functions>
+  <Variables>
+    <variable idx="0">
+      <variableName></variableName>
+      <variableDescription></variableDescription>
+      <variableID></variableID>
+      <variableType></variableType>
+      <variableUnit></variableUnit>
+      <lbound></lbound>
+      <ubound></ubound>
+      <functionMap>
+        <funcIdx>0</funcIdx>
+        <inputIdx>0</inputIdx>
+      </functionMap>
+    </variable>
+    <variable ID="" idx="1">
+      <variableName></variableName>
+      <variableDescription></variableDescription>
+      <variableID></variableID>
+      <variableType></variableType>
+      <variableUnit></variableUnit>
+      <lbound></lbound>
+      <ubound></ubound>
+      <functionMap>
+        <funcIdx>0</funcIdx>
+        <inputIdx>1</inputIdx>
+      </functionMap>
+    </variable>
+    <variable ID="" idx="2">
+      <variableName></variableName>
+      <variableDescription></variableDescription>
+      <variableID></variableID>
+      <variableType></variableType>
+      <variableUnit></variableUnit>
+      <lbound></lbound>
+      <ubound></ubound>
+      <functionMap>
+        <funcIdx>0</funcIdx>
+        <inputIdx>2</inputIdx>
+      </functionMap>
+    </variable>
+  </Variables>
+  <Objectives>
+    <objective idx="0">
+      <objectiveName></objectiveName>
+      <objectiveDescription></objectiveDescription>
+      <objectiveID></objectiveID>
+      <objectiveType></objectiveType>
+      <objectiveUnit></objectiveUnit>
+      <functionMap>
+        <funcIdx>0</funcIdx>
+        <outputIdx>0</outputIdx>
+      </functionMap>
+    </objective>
+    <objective idx="1">
+      <objectiveName></objectiveName>
+      <objectiveDescription></objectiveDescription>
+      <objectiveID></objectiveID>
+      <objectiveType></objectiveType>
+      <objectiveUnit></objectiveUnit>
+      <functionMap>
+        <funcIdx>0</funcIdx>
+        <outputIdx>1</outputIdx>
+      </functionMap>
+    </objective>
+  </Objectives>
+</Problem>

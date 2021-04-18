@@ -13,10 +13,10 @@
 %#      "ubounds": [10.0, 10.0]
 %#  },
 %#  "output": {
-%#      "name": ["CloseLoopStability", "GainMargin", "PhaseMargin", "RiseTime", "PeakTime", "Overshoot", "Undershoot", "SettlingTime", "SteadyStateError"],
-%#      "description": ["CloseLoopStability", "GainMargin", "PhaseMargin", "RiseTime", "PeakTime", "Overshoot", "Undershoot", "SettlingTime", "SteadyStateError"],
-%#      "type": ["real", "real", "real", "real", "real", "real", "real", "real", "real"],
-%#      "unit": ["", "", "", "", "", "", "", "", ""]
+%#      "name": ["CloseLoopStability", "GainMargin", "PhaseMarginMin", "PhaseMarginMax", "RiseTime", "PeakTime", "Overshoot", "Undershoot", "SettlingTime", "SteadyStateError"],
+%#      "description": ["CloseLoopStability", "GainMargin", "PhaseMarginMin", "PhaseMarginMax", "RiseTime", "PeakTime", "Overshoot", "Undershoot", "SettlingTime", "SteadyStateError"],
+%#      "type": ["real", "real", "real", "real", "real", "real", "real", "real", "real", "real"],
+%#      "unit": ["", "", "", "", "", "", "", "", "", ""]
 %#  }
 %# }
 %#<TIGON_MATLAB_FUNC_HEADER_END>
@@ -33,13 +33,14 @@
 %              criteria are...
 %              1: maximum closed-loop pole magnitude
 %              2: gain margin
-%              3: phase margin
-%              4: 10-90% rise time
-%              5. peak time
-%              6. overshoot (% points)
-%              7. undershoot (% points)
-%              8. 2% settling time
-%              9. steady-state error (% points))
+%              3: phase margin (minimization)
+%              4: phase margin (maximization)
+%              5: 10-90% rise time
+%              6. peak time
+%              7. overshoot (% points)
+%              8. undershoot (% points)
+%              9. 2% settling time
+%             10. steady-state error (% points))
 %
 
 function varargout = evaluateControlSystem( varargin )
@@ -57,7 +58,7 @@ end
 function Z = ogata_function(X);
 
 [noInds, noVar] = size(X);
-Z = NaN * ones(noInds,9);
+Z = NaN * ones(noInds,10);
 
 warning off
 
@@ -112,14 +113,15 @@ for ind = 1:noInds
   
   % Assign to output variable.
   Z(ind,1) = clStable;
-  Z(ind,2) = -gainMargin;   %-1* for minimisation
-  Z(ind,3) = -phaseMargin;  %-1* for minimisation
-  Z(ind,4) = riseTime;
-  Z(ind,5) = overTime;
-  Z(ind,6) = 100*overshoot;
-  Z(ind,7) = 100*undershoot;
-  Z(ind,8) = settleTime;
-  Z(ind,9) = 100*ssError;
+  Z(ind,2) = min(20*log10(gainMargin),100);
+  Z(ind,3) = min(phaseMargin,180);
+  Z(ind,4) = min(phaseMargin,180);
+  Z(ind,5) = min(riseTime,1000);
+  Z(ind,6) = min(overTime,1000);
+  Z(ind,7) = min(100*overshoot,1000);
+  Z(ind,8) = min(100*undershoot,1000);
+  Z(ind,9) = min(settleTime,1000);
+  Z(ind,10) = min(100*ssError,1000);
 
   warning on
 

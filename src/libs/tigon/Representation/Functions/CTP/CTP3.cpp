@@ -74,13 +74,14 @@ CTP3::~CTP3()
 
 }
 
-void CTP3::evaluate(const TVector<IElementSPtr> &inputs, const TVector<IElementSPtr>& outputs)
+void CTP3::evaluate(const TVector<IElementSPtr> &inputs,
+                    const TVector<IElementSPtr> &outputs)
 {
     if((inputs.size() == TP_nInputs()) && (outputs.size() == TP_nOutputs())) {
         TVector<double> x = IElementVecToRealVec(inputs);
         TVector<double> y = CTP::CTP3(x);
 
-        for(int i=0; i<outputs.size(); i++) {
+        for(size_t i=0; i<outputs.size(); i++) {
             outputs[i]->defineValue(y[i]);
         }
     } else {

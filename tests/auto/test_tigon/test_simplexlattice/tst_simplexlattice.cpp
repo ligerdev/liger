@@ -50,7 +50,7 @@ private slots:
 void dispVector(const TVector<double>& vec, string sep = "\t",
                 string endLine = "\n")
 {
-    for(int i=0; i<vec.size(); i++) {
+    for(size_t i=0; i<vec.size(); i++) {
         cout << vec[i];
         if(i<vec.size()-1) {
             cout << sep;
@@ -441,7 +441,7 @@ void tst_simplexlattice::test_preferredSimplexLatticeWP4Data()
     base->defineKeepArchive(true);
     base->defineNadirVec(front.at(0)->objectiveVec());
     base->defineIdealVec(front.at(0)->objectiveVec());
-    for(int i=1; i<front.size(); i++) {
+    for(size_t i=1; i<front.size(); i++) {
         base->updateIdealNadirVec(front.at(i));
     }
     TVector<double> rsNadir = IElementVecToRealVec(base->nadirVec());
@@ -451,7 +451,7 @@ void tst_simplexlattice::test_preferredSimplexLatticeWP4Data()
 
     TVector<double> nadir = front.at(0)->doubleObjectiveVec();
     TVector<double> ideal = front.at(0)->doubleObjectiveVec();
-    for(int i=1; i<front.size(); i++) {
+    for(size_t i=1; i<front.size(); i++) {
         TVector<double> solution = front.at(i)->doubleObjectiveVec();
         for(int j=0; j<oN; j++) {
             if(solution[j]>nadir[j]) {

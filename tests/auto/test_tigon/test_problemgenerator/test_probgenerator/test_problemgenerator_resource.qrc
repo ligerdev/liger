@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/test_tigon/test_problemgenerator">
+        <file>simpleSharedLib.lpg</file>
+        <file>tst_grouped_data.xml</file>
+    </qresource>
+</RCC>

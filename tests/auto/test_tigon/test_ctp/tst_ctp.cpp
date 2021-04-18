@@ -65,7 +65,7 @@ private slots:
 
 void dispVector(TVector<double> vec, string sep = "\t", string endLine = "\n")
 {
-    for(int i=0; i<vec.size(); i++) {
+    for(size_t i=0; i<vec.size(); i++) {
         cout << vec[i];
         if(i<vec.size()-1) {
             cout << sep;
@@ -200,9 +200,9 @@ void tst_ctp::test_check_solutions_CTP2()
     }
 
     /// Pareto-optimal solutions
-    for(int i=0; i<pof.size(); i++) {
-        x1=pof[i].at(0);
-        x2=pof[i].at(1);
+    for(auto sol : pof) {
+        x1=sol.at(0);
+        x2=sol.at(1);
 
         imap->defineDecisionVar(0,IElement(x1));
         imap->defineDecisionVar(1,IElement(x2));
@@ -312,9 +312,9 @@ void tst_ctp::test_check_solutions_CTP3()
 
 
     /// Pareto-optimal solutions
-    for(int i=0; i<pof.size(); i++) {
-        x1=pof[i].at(0);
-        x2=pof[i].at(1);
+    for(auto sol : pof) {
+        x1=sol.at(0);
+        x2=sol.at(1);
 
         imap->defineDecisionVar(0,IElement(x1));
         imap->defineDecisionVar(1,IElement(x2));
@@ -535,9 +535,9 @@ void tst_ctp::test_check_solutions_CTP5()
     */
 
     /// Pareto-optimal solutions
-    for(int i=0; i<pof.size(); i++) {
-        x1=pof[i].at(0);
-        x2=pof[i].at(1);
+    for(auto sol : pof) {
+        x1=sol.at(0);
+        x2=sol.at(1);
 
         imap->defineDecisionVar(0,IElement(x1));
         imap->defineDecisionVar(1,IElement(x2));
@@ -611,9 +611,9 @@ void tst_ctp::test_check_solutions_CTP6()
     pof[15] << 0.96869  << 0.93792;
 
     /// "Good" approximation of the Pareto-optimal solutions
-    for(int i=0; i<pof.size(); i++) {
-        x1=pof[i].at(0);
-        x2=pof[i].at(1);
+    for(auto sol : pof) {
+        x1=sol.at(0);
+        x2=sol.at(1);
 
         imap->defineDecisionVar(0,IElement(x1));
         imap->defineDecisionVar(1,IElement(x2));
@@ -688,9 +688,9 @@ void tst_ctp::test_check_solutions_CTP7()
     pof[15]  << 0.63359    << 8.983e-17;
 
     /// "Good" approximation of the Pareto-optimal solutions
-    for(int i=0; i<pof.size(); i++) {
-        x1=pof[i].at(0);
-        x2=pof[i].at(1);
+    for(auto sol : pof) {
+        x1=sol.at(0);
+        x2=sol.at(1);
 
         imap->defineDecisionVar(0,IElement(x1));
         imap->defineDecisionVar(1,IElement(x2));

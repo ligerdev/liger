@@ -376,7 +376,7 @@ void tst_moga::test_SharedFitnessExample()
     int nranks = ranks.size();
     QCOMPARE(nranks, 3);
 
-    cout << "x1\tx2\tf1\tf2\scaled fitness" << endl;
+    cout << "x1\tx2\tf1\tf2\tscaled fitness" << endl;
     for(int i=0; i<nranks; i++) {
         ISet* rank = ranks[i];
         for(IMappingSPtr sol : rank->all()) {
