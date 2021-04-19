@@ -19,37 +19,38 @@
     <Properties ProcessType="PROBLEM_NODE">
       <TigonOperator>Tigon::Operators::ProblemGenerator</TigonOperator>
       <funcTypes>Internal</funcTypes>
-      <funcPathes>Tigon::Representation::PseudoBattery</funcPathes>
-      <funcPrpts>[{&quot;NumberOfInputs&quot;:&quot;13&quot;,&quot;NumberOfOutputs&quot;:&quot;5&quot;}]</funcPrpts>
-      <iprts>[[{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Package Tab Location&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Ordinal Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Package Tab Thickness&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Battery Skirting Thickness&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:3,&quot;name&quot;:&quot;Cartridge Slot Inner Width&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:4,&quot;name&quot;:&quot;Cartridge Slot Height&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:5,&quot;name&quot;:&quot;Battery Skirting Material&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Nominal Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:6,&quot;name&quot;:&quot;Configuration Cooling&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Nominal Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:7,&quot;name&quot;:&quot;Cell Integration&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Nominal Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:8,&quot;name&quot;:&quot;Pressure&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:9,&quot;name&quot;:&quot;Load Curve&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Nominal Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:10,&quot;name&quot;:&quot;Load Axis&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Nominal Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:11,&quot;name&quot;:&quot;Load Ang&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Ordinal Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:12,&quot;name&quot;:&quot;Temperature&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</iprts>
-      <oprts>[[{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Pressure Load (Max amongst all Cells)&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Max Y Cell Regional Displacement&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Max Y Delta between Cells&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:3,&quot;name&quot;:&quot;Left Tab Max Axial&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;&quot;,&quot;idx&quot;:4,&quot;name&quot;:&quot;Right Tab Max Axial&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</oprts>
-      <lbounds>[{&quot;type&quot;:&quot;Ordinal Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0.75148000000000004},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0.64000000000000001},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-0.099675},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:5.0026669999999998},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0.18642500000000001},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Ordinal Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:16.499573000000002}]</lbounds>
-      <ubounds>[{&quot;type&quot;:&quot;Ordinal Type&quot;,&quot;value&quot;:3},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1.4824889999999999},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0.80000000000000004},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0.74945399999999995},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:7.9989340000000002},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:3},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:2},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:2},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0.81592299999999995},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:3},{&quot;type&quot;:&quot;Nominal Type&quot;,&quot;value&quot;:2},{&quot;type&quot;:&quot;Ordinal Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:23.138038000000002}]</ubounds>
+      <funcPathes>Tigon::Representation::GECCO2016</funcPathes>
+      <funcPrpts>[{&quot;NumberOfInputs&quot;:&quot;10&quot;,&quot;NumberOfOutputs&quot;:&quot;3&quot;}]</funcPrpts>
+      <iprts>[[{&quot;description&quot;:&quot;Direction variable&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Input_Var_0&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Input_Var_1&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Input_Var_2&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:3,&quot;name&quot;:&quot;Input_Var_3&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:4,&quot;name&quot;:&quot;Input_Var_4&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:5,&quot;name&quot;:&quot;Input_Var_5&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:6,&quot;name&quot;:&quot;Input_Var_6&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:7,&quot;name&quot;:&quot;Input_Var_7&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:8,&quot;name&quot;:&quot;Input_Var_8&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Distance variable&quot;,&quot;idx&quot;:9,&quot;name&quot;:&quot;Input_Var_9&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</iprts>
+      <oprts>[[{&quot;description&quot;:&quot;Output_VarDesc_0&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;Output_Var_0&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Output_VarDesc_1&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;Output_Var_1&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;Output_VarDesc_2&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;Output_Var_2&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</oprts>
+      <lbounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0}]</lbounds>
+      <ubounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1}]</ubounds>
       <paramValueVec>[]</paramValueVec>
       <externalParam>[]</externalParam>
       <externalParamGroups>[]</externalParamGroups>
-      <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1}]</goals>
-      <thresholds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:0}]</thresholds>
-      <dVecUncertainties>[{},{},{},{},{},{},{},{},{},{},{},{},{}]</dVecUncertainties>
-      <funcOutUncertainties>[[{},{},{},{},{}]]</funcOutUncertainties>
-      <f2dMap>[[0,1,2,3,4,5,6,7,8,9,10,11,12]]</f2dMap>
+      <setGoals>[false,false,false]</setGoals>
+      <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307}]</goals>
+      <priorities>[1,1,1]</priorities>
+      <thresholds>[]</thresholds>
+      <dVecUncertainties>[{},{},{},{},{},{},{},{},{},{}]</dVecUncertainties>
+      <funcOutUncertainties>[[{},{},{}]]</funcOutUncertainties>
+      <f2dMap>[[0,1,2,3,4,5,6,7,8,9]]</f2dMap>
       <f2pMap>[[]]</f2pMap>
-      <f2oMap>[[0,3]]</f2oMap>
-      <f2cMap>[[1,2]]</f2cMap>
-      <f2uMap>[[4]]</f2uMap>
+      <f2oMap>[[0,1,2]]</f2oMap>
+      <f2cMap>[[]]</f2cMap>
+      <f2uMap>[[]]</f2uMap>
     </Properties>
   </ProcessNode>
-  <ProcessNode ClassName="QTigon::QOpUserDefinedInitNode">
+  <ProcessNode ClassName="QTigon::QOpRandomInitNode">
     <GUIProperties>
-      <NodeId>6a5a2103-dfe2-4b37-a58f-60d66f630afd</NodeId>
-      <xpos>-177</xpos>
-      <ypos>-315</ypos>
-      <filePath>/Users/yimingyan/brushed.txt</filePath>
+      <NodeId>4f3bf132-37ce-4776-98c9-d58015d3b561</NodeId>
+      <xpos>-165</xpos>
+      <ypos>-316</ypos>
     </GUIProperties>
     <Properties ProcessType="OPERATOR_NODE">
-      <TigonOperator>Tigon::Operators::UserDefinedInit</TigonOperator>
+      <TigonOperator>Tigon::Operators::RandomInit</TigonOperator>
       <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
-      <OptimizationSetSize>14</OptimizationSetSize>
+      <OptimizationSetSize>100</OptimizationSetSize>
     </Properties>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpValidationNode">
@@ -68,6 +69,7 @@
       <SingleObjective>false</SingleObjective>
       <NEvaluations>100</NEvaluations>
       <OperateOnFinal>true</OperateOnFinal>
+      <DefineEvaluated>true</DefineEvaluated>
     </Properties>
   </ProcessNode>
   <ProcessNode ClassName="Visualisation::QvizParallelCoordinatesNode">
@@ -120,27 +122,9 @@
     </Properties>
   </ProcessNode>
   <Link>
-    <FromNode>0d595407-2154-4b50-96bf-87f53ec86bd5</FromNode>
+    <FromNode>d1da39e2-7a67-4070-997f-d1b444984aba</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>6a5a2103-dfe2-4b37-a58f-60d66f630afd</ToNode>
-    <ToPort>0</ToPort>
-  </Link>
-  <Link>
-    <FromNode>d8d29baa-8685-4a53-a2b6-1b9afa18df3f</FromNode>
-    <FromPort>0</FromPort>
-    <ToNode>0d595407-2154-4b50-96bf-87f53ec86bd5</ToNode>
-    <ToPort>0</ToPort>
-  </Link>
-  <Link>
-    <FromNode>9078b745-5b15-4a21-9e8c-1987d11975dd</FromNode>
-    <FromPort>0</FromPort>
-    <ToNode>22c131ba-f4a6-4f9f-a30d-48b774e00168</ToNode>
-    <ToPort>0</ToPort>
-  </Link>
-  <Link>
-    <FromNode>22c131ba-f4a6-4f9f-a30d-48b774e00168</FromNode>
-    <FromPort>0</FromPort>
-    <ToNode>fc8c83ee-d6fd-44a3-a36b-4c376efe9d26</ToNode>
+    <ToNode>9078b745-5b15-4a21-9e8c-1987d11975dd</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
@@ -150,15 +134,33 @@
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>6a5a2103-dfe2-4b37-a58f-60d66f630afd</FromNode>
+    <FromNode>22c131ba-f4a6-4f9f-a30d-48b774e00168</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>d1da39e2-7a67-4070-997f-d1b444984aba</ToNode>
+    <ToNode>fc8c83ee-d6fd-44a3-a36b-4c376efe9d26</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>d1da39e2-7a67-4070-997f-d1b444984aba</FromNode>
+    <FromNode>9078b745-5b15-4a21-9e8c-1987d11975dd</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>9078b745-5b15-4a21-9e8c-1987d11975dd</ToNode>
+    <ToNode>22c131ba-f4a6-4f9f-a30d-48b774e00168</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>d8d29baa-8685-4a53-a2b6-1b9afa18df3f</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>0d595407-2154-4b50-96bf-87f53ec86bd5</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>0d595407-2154-4b50-96bf-87f53ec86bd5</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>4f3bf132-37ce-4776-98c9-d58015d3b561</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>4f3bf132-37ce-4776-98c9-d58015d3b561</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>d1da39e2-7a67-4070-997f-d1b444984aba</ToNode>
     <ToPort>0</ToPort>
   </Link>
 </LigerData>

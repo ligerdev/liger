@@ -544,19 +544,56 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="goalLineEdit">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>30</height>
-           </size>
+         <widget class="QCheckBox" name="setGoalcheckBox">
+          <property name="toolTip">
+           <string>Enable to set a goal and priority</string>
           </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>30</height>
-           </size>
+          <property name="text">
+           <string/>
           </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QFrame" name="goalSetFrame">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>8</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLineEdit" name="goalValueEdit"/>
+           </item>
+           <item>
+            <widget class="QSpinBox" name="prioritySpinBox">
+             <property name="toolTip">
+              <string>Define priority level</string>
+             </property>
+             <property name="minimum">
+              <number>1</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>

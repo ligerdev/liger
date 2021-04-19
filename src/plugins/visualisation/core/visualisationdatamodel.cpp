@@ -216,8 +216,8 @@ void VisualisationDataModel::generateScaleJsonDcoument()
         // account for zero scale
         for(int i = 0; i < n; ++i) {
             if(minVec[i] == maxVec[i]) {
-                minVec[i] -= 1e-3;
-                maxVec[i] += 1e-3;
+                minVec[i] -= 1;
+                maxVec[i] += 1;
             }
         }
     }

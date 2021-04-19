@@ -59,13 +59,14 @@ CTP6::~CTP6()
 
 }
 
-void CTP6::evaluate(const TVector<IElementSPtr> &inputs, const TVector<IElementSPtr>& outputs)
+void CTP6::evaluate(const TVector<IElementSPtr> &inputs,
+                    const TVector<IElementSPtr> &outputs)
 {
     if((inputs.size() == TP_nInputs()) && (outputs.size() == TP_nOutputs())) {
         TVector<double> x = IElementVecToRealVec(inputs);
         TVector<double> y = CTP::CTP6(x);
 
-        for(int i=0; i<outputs.size(); i++) {
+        for(size_t i=0; i<outputs.size(); i++) {
             outputs[i]->defineValue(y[i]);
         }
     } else {

@@ -28,10 +28,6 @@
 #include <tigon/Utils/DominanceUtils.h>
 #include <tigon/ExceptionHandling/TException.h>
 
-// Boost includes
-#include <boost/math/special_functions/factorials.hpp>
-using namespace boost::math;
-
 namespace Tigon {
 namespace Operators {
 
@@ -88,9 +84,6 @@ void WeightVectorInit::initialise()
     TP_defineRegularisationMethod(Tigon::CentroidBasedOrder);
     TP_defineDistanceMeasure(Tigon::AngleDistance);
 
-    defineKeepArchive(true);  // to enable calculation of the nadir vector
-
-    m_determineWeightVectors = true;
     m_fixedPopulationSize = -1;
 }
 
@@ -101,34 +94,14 @@ WeightVectorInit::~WeightVectorInit()
 
 void WeightVectorInit::evaluateNode()
 {    
-    TVector<IElementSPtr> goals = goalVec();
-    TVector<IElementSPtr>::iterator iter =
-            std::find_if(goals.begin(),goals.end(),
-            [](IElementSPtr g){
-                tribool rs = *g==g->minValue();
-                return (rs.value == false);
-            });
-
-    // indicates if goals have been specified
-    bool isGoalVectorUsed = iter != goals.end();
-
-    if(isGoalVectorUsed) {
-        if(m_normGoalVec.empty()) { // first time here
-            m_normGoalVec.resize(objectiveVecSize());
-            m_determineWeightVectors = true;
-            updateGoalVec();
-        }
-
-        if(isNewGoalVec()) {    // check if goal vector has changed
-            m_determineWeightVectors = true;
-            updateGoalVec();
-        }
-    }
-
-    if(m_determineWeightVectors) {
+    if(m_refSet.empty()) {
 
         while( hasNextOutputSet() ) {
             ISet* oSet = nextOutputSet();
+
+            // *******************************
+            // 1. Determine the weight vectors
+            // *******************************
 
             if(m_fixedPopulationSize==-1) {
                 m_fixedPopulationSize = oSet->size();
@@ -136,7 +109,6 @@ void WeightVectorInit::evaluateNode()
 
             if(m_fixedPopulationSize < 3) return;   // it should not happen
 
-            // read lattice resolution
             int H = TP_numberPointsPerDimension();  // read current value
 
             /// 1. if H==-1
@@ -151,7 +123,7 @@ void WeightVectorInit::evaluateNode()
             // find the closest H which is equal or bigger than
             // the given initialPopSize
             if(H==-1) {
-                while(completeLatticeSetSize<m_fixedPopulationSize) {
+                while(completeLatticeSetSize < m_fixedPopulationSize) {
                     h++;
                     completeLatticeSetSize = simplexLatticeSize(h,M);
                 }
@@ -162,53 +134,11 @@ void WeightVectorInit::evaluateNode()
                 completeLatticeSetSize = simplexLatticeSize(H,M);
             }
 
-            // ****************************************************************
-            // 2. generate a simplex lattice design
-            //    remove vectors that are non-dominated with the goal vector
-            //    (normalised according to the ideal and nadir vectors)
-            //    increase the lattice resolution until the number of solutions
-            //    reaches the desired size
-            // ****************************************************************
-
-            int finalPopSize = 0;
-
-            if(isGoalVectorUsed) {
-
-                TVector<bool> essentialObs = problem()->essentialObjectives();
-                bool isThereRedundantObjs = vectorContains(essentialObs,false);
-                if(!isThereRedundantObjs) {
-                    m_refSet = preferredSimplexLattice(H, M,
-                                                       m_normGoalVec);
-                } else {
-                    m_refSet = preferredSimplexLatticeRedundantComponents(H, M,
-                                                                  m_normGoalVec,
-                                                                  essentialObs);
-                }
-
-            } else {
-                m_refSet = simplexLatticeIterative(H, M);
-            }
-
-            // add the extreme weight vectors
-//            for(int i=0; i<M; i++) {
-//                TVector<double> wvObj(M,0.0);
-//                wvObj[i]=1.0;
-
-//                bool addVector=true;
-//                for(auto row : m_refSet) {
-//                    if(areVectorsEqual(row,wvObj)) {
-//                        addVector=false;
-//                        break;
-//                    }
-//                }
-//                if(addVector) {
-//                    m_refSet.push_back(wvObj);
-//                }
-//            }
-            finalPopSize = m_refSet.size();
+            m_refSet = simplexLatticeIterative(H, M);
+            int finalPopSize = m_refSet.size();
 
             // *****************************************
-            // 3. Resize the MainSet size (if necessary)
+            // 2. Resize the MainSet size (if necessary)
             // *****************************************
 
             int sizeDiff = oSet->size() - finalPopSize;
@@ -238,7 +168,7 @@ void WeightVectorInit::evaluateNode()
             }
 
             // *********************************************
-            // 4. Attribute to each solution a weight vector
+            // 3. Attribute to each solution a weight vector
             // *********************************************
 
             // map between a solution and a weight vector.
@@ -270,33 +200,6 @@ void WeightVectorInit::evaluateNode()
             solMap.clear();
         }
     }
-    m_determineWeightVectors = false;
-}
-
-bool WeightVectorInit::isNewGoalVec()
-{
-    TVector<double> ideal = IElementVecToRealVec(idealVec());
-    TVector<double> nadir = IElementVecToRealVec(nadirVec());
-    TVector<double> goalVector = normaliseForSimplexLattice(
-                                    IElementVecToRealVec(goalVec()),
-                                    ideal, nadir);
-
-    if(areVectorsEqual(goalVector, m_normGoalVec)) {
-        return false;
-    }
-    return true;
-}
-
-void WeightVectorInit::updateGoalVec() {
-
-    TVector<double> ideal = IElementVecToRealVec(idealVec());
-    TVector<double> nadir = IElementVecToRealVec(nadirVec());
-    TVector<double> goalVector = normaliseForSimplexLattice(
-                                    IElementVecToRealVec(goalVec()),
-                                    ideal, nadir);
-
-    // update the goal vector
-    m_normGoalVec = goalVector;
 }
 
 // Define number of points per dimension (H)
@@ -356,10 +259,7 @@ TString WeightVectorInit::description()
 {
     return TString("Creates a set of reference direction vectors"
                    "(or weight vectors) using Simplex Lattice method.\n"
-                   "The weight vectors that are dominated by a goal vector are"
-                   " removed from the set.\n"
-                   "The number of weight vectors is given by C^{H+M-1}_{M-1}"
-                   " if no weight vectors are dominated by the goal vector.\n"
+                   "The number of weight vectors is given by C^{H+M-1}_{M-1}."
                    "Attributes a weight vector to each solution in the MainSet\n"
                    "If necessary, resizes the MainSet to correspond to the size"
                    " of the number of weight vectors.");

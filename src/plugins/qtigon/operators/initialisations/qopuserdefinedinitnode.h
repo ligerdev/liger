@@ -13,7 +13,7 @@
 ** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
 **
 ****************************************************************************/
-#pragma once 
+#pragma once
 
 #include <qtigon/qtigon_global.h>
 #include <qtigon/qtigonconstants.h>
@@ -21,7 +21,9 @@
 #include <designer/iengine/iprocessnode.h>
 
 #include <QObject>
+#include <QJsonArray>
 
+class PopulationViewer;
 class QOperatorDiag;
 
 namespace QTigon {
@@ -29,19 +31,30 @@ namespace QTigon {
 class QTIGON_EXPORT QOpUserDefinedInitNode : public Designer::IProcessNode
 {
     Q_OBJECT
+    Q_PROPERTY(QString filePath READ filePath WRITE setFilePath)
 
 public:
     QOpUserDefinedInitNode();
     ~QOpUserDefinedInitNode();
+
+    QString filePath() const;
+    void setFilePath(QString path);
     void updateProcessState(Designer::ProcessState state);
 
 protected:
-	void readDataProperties(QXmlStreamReader &xmlReader);
-	void writeDataProperties(QXmlStreamWriter &xmlWriter);
+    void readDataProperties(QXmlStreamReader &xmlReader);
+    void writeDataProperties(QXmlStreamWriter &xmlWriter);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-private: 
-	QOperatorDiag* m_dialog;
+private slots:
+    void updateDVec(const QVector<QVector<qreal> >& dVecData);
+    void updateFromJson(const QJsonObject& json);
+    void updateFilePath(QString filePath);
+
+private:
+    QOperatorDiag* m_dialog;
+    PopulationViewer* m_viwer;
+    QString m_filePath;
 };
 
 } // namespace QTigon

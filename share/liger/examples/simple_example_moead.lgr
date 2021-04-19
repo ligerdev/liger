@@ -28,7 +28,9 @@
       <paramValueVec>[]</paramValueVec>
       <externalParam>[]</externalParam>
       <externalParamGroups>[]</externalParamGroups>
+      <setGoals>[false,false]</setGoals>
       <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307}]</goals>
+      <priorities>[1,1]</priorities>
       <thresholds>[]</thresholds>
       <dVecUncertainties>[{},{},{},{},{}]</dVecUncertainties>
       <funcOutUncertainties>[[{},{}]]</funcOutUncertainties>

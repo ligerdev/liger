@@ -1,0 +1,9 @@
+<GroupData>
+  <Group index="0" >
+    <RealVector>1,2,3,4,5</RealVector>
+    <RealVector>9,8,7,10,12</RealVector>
+    <RealVector>6,5,4,4,5</RealVector>
+    <RealVector>7,5,9,3,5</RealVector>
+    <RealVector>8,10,12,3,5</RealVector>
+  </Group>
+</GroupData>

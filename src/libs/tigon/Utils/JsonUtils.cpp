@@ -55,8 +55,7 @@ void fromJsonArrayDoubleValue(JsonArray array, TVector<IElementSPtr> &elems)
 JsonArray toJsonArrayFullInfo(const TVector<IElementSPtr> &vec)
 {
     JsonArray array;
-    for(int i=0; i<vec.size(); i++) {
-        IElementSPtr elem = vec[i];
+    for(auto elem : vec) {
         JsonObject jobj;
         jobj["type"]  = elemTypeToString(elem->type());
         jobj["value"] = JsonValue(elem->value());
@@ -71,8 +70,7 @@ JsonArray toJsonArrayFullInfo(const TVector<IElementSPtr> &vec)
 JsonArray toJsonArrayFullInfo(const TVector<IElement>& vec)
 {
     JsonArray array;
-    for(int i=0; i<vec.size(); i++) {
-        IElement elem = vec[i];
+    for(auto elem : vec) {
         JsonObject jobj;
         jobj["type"]  = elemTypeToString(elem.type());
         jobj["value"] = JsonValue(elem.value());
@@ -125,7 +123,7 @@ JsonObject toJsonObjWithNames(const TVector<ElementProperties> &prpts,
                               const TVector<IElementSPtr> &vec)
 {
     JsonObject jObj;
-    for(int i = 0; i < vec.size(); i++) {
+    for(size_t i = 0; i < vec.size(); i++) {
         jObj[prpts[i].name()] = vec[i]->value();
     }
 
@@ -201,14 +199,14 @@ bool fromJSonObj(IMappingSPtr imap, const JsonObject &jObj)
         JsonObject varsObject = jObj[Log::LInputs].toObject();
         TVector<ElementProperties> varsProps = imap->problem()->dPrpts();
 
-        for(int i = 0; i < varsProps.size(); ++i) {
+        for(size_t i = 0; i < varsProps.size(); ++i) {
             imap->decisionVar(i)->
                     defineValue(varsObject[varsProps[i].name()].toDouble());
         }
 
         varsProps  = imap->problem()->pPrpts();
 
-        for(int i = 0; i < varsProps.size(); ++i) {
+        for(size_t i = 0; i < varsProps.size(); ++i) {
             imap->parameterVar(i)->
                     defineValue(varsObject[varsProps[i].name()].toDouble());
         }
@@ -219,14 +217,14 @@ bool fromJSonObj(IMappingSPtr imap, const JsonObject &jObj)
         }
         varsObject = jObj[Log::LOutputs].toObject();
         varsProps  = imap->problem()->oPrpts();
-        for(int i = 0; i < varsProps.size(); ++i) {
+        for(size_t i = 0; i < varsProps.size(); ++i) {
             imap->objectiveVar(i)->
                     defineValue(varsObject[varsProps[i].name()].toDouble());
         }
 
         varsProps = imap->problem()->cPrpts();
 
-        for(int i = 0; i < varsProps.size(); ++i) {
+        for(size_t i = 0; i < varsProps.size(); ++i) {
             imap->constraintVar(i)->
                     defineValue(varsObject[varsProps[i].name()].toDouble());
         }
@@ -234,7 +232,7 @@ bool fromJSonObj(IMappingSPtr imap, const JsonObject &jObj)
 
         varsProps = imap->problem()->uPrpts();
 
-        for(int i = 0; i < varsProps.size(); ++i) {
+        for(size_t i = 0; i < varsProps.size(); ++i) {
             imap->unusedVar(i)->
                     defineValue(varsObject[varsProps[i].name()].toDouble());
         }
@@ -357,8 +355,7 @@ JsonObject problemToJsonObject(const ProblemSPtr prob)
 
     TVector<IFunctionSPtr> funcs = prob->functionVec();
     JsonArray jarrayI, jarrayO, funcTypes, funcPathes;
-    for(int i=0; i<funcs.size(); i++) {
-        IFunctionSPtr func = funcs[i];
+    for(IFunctionSPtr func : funcs) {
         funcTypes.push_back(func->typeStr());
         if(func->type() == FunctionType::Internal) {
             /// Using the className() method returns always Tigon::Representation::IFunction
@@ -430,7 +427,7 @@ JsonObject problemToJsonObject(const ProblemSPtr prob)
 JsonArray toJsonArray(const TVector<ElementProperties> &prts)
 {
     JsonArray array;
-    for(int i=0; i<prts.size(); i++) {
+    for(size_t i=0; i<prts.size(); i++) {
         JsonObject jobj;
         jobj["idx"]  = prts[i].idx();
         jobj["name"] = prts[i].name();
@@ -539,14 +536,12 @@ JsonArray toJsonArray(const TVector<TVector<int> > &vec)
 JsonArray functionsToJsonArray(const TVector<IFunctionSPtr> &funcs)
 {
     JsonArray jarray;
-    for(int i=0; i<funcs.size(); i++) {
-        JsonObject jobj;
-        TObject* object = funcs[i].get();
+    for(IFunctionSPtr func : funcs) {
+        TObject* object = func.get();
 
+        JsonObject jobj;
         TStringList propertyNames = object->propertyNames();
-        int nProperties = propertyNames.size();
-        for(int i=0; i<nProperties; i++) {
-            TString name = propertyNames[i];
+        for(TString name : propertyNames) {
             TString var = object->propertyValue(name);
             jobj[name] = JsonValue(var);
         }
@@ -602,20 +597,20 @@ JsonObject distToJsonObject(const IDistribution& dist)
     if(dist.parameterNames().size() > 0) {
         // Parametric
         JsonArray paramsjson;
-        for(int i=0; i<dist.parameters().size(); i++) {
-            paramsjson.push_back(dist.parameters()[i]);
+        for(double param : dist.parameters()) {
+            paramsjson.push_back(param);
         }
         obj["parameters"] = paramsjson;
     } else {
         // Non-Parametric
         JsonArray samplesjson;
-        JsonArray weightsjson;
-
-        for(int i=0; i<dist.sampledVec().size(); i++) {
-            samplesjson.push_back(dist.sampledVec()[i]);
+        for(double svec : dist.sampledVec()) {
+            samplesjson.push_back(svec);
         }
-        for(int i=0; i<dist.weights().size(); i++) {
-            weightsjson.push_back(dist.weights()[i]);
+
+        JsonArray weightsjson;
+        for(double w : dist.weights()) {
+            weightsjson.push_back(w);
         }
         obj["samples"] = samplesjson;
         obj["weights"] = weightsjson;
@@ -797,12 +792,12 @@ void fromJsonArray(const JsonArray& jarray, TVector<UncertaintyMapping *> &vec)
             JsonArray jlinTerm   = jobj["linearTerms"].toArray();
 
             TVector<double> constTerm;
-            for(int j=0; j<jconstTerm.size(); j++) {
-                constTerm.push_back(jconstTerm[j].toDouble());
+            for(JsonValue elem : jconstTerm) {
+                constTerm.push_back(elem.toDouble());
             }
             TVector<double> linTerm;
-            for(int j=0; j<jlinTerm.size(); j++) {
-                linTerm.push_back(jlinTerm[j].toDouble());
+            for(JsonValue elem : jlinTerm) {
+                linTerm.push_back(elem.toDouble());
             }
 
             cmapping->defineDistributionType(type);
@@ -813,26 +808,24 @@ void fromJsonArray(const JsonArray& jarray, TVector<UncertaintyMapping *> &vec)
     }
 }
 
-JsonArray toJsonArray(const TVector<TVector<UncertaintyMapping *> > &mapping)
+JsonArray toJsonArray(const TVector<TVector<UncertaintyMapping*>> &mapping)
 {
     JsonArray jArray;
-    int n = mapping.size();
-    for(int i=0; i<n; i++) {
+
+    for(TVector<UncertaintyMapping*> map : mapping) {
         JsonArray jinnerArray;
-        for(int j=0; j<mapping[i].size(); j++) {
+        for(UncertaintyMapping* currentMap : map) {
             JsonObject jsonObj;
-            UncertaintyMapping* currentMap = mapping[i][j];
             if(currentMap!=nullptr) {
-                jsonObj["distributionType"] = distributionTypeToString(currentMap->distributionType());
+                jsonObj["distributionType"] =
+                        distributionTypeToString(currentMap->distributionType());
                 JsonArray ct;
-                TVector<double> ctV = currentMap->constTerms();
-                for(int k=0; k<ctV.size(); k++) {
-                    ct.push_back(JsonValue(ctV[k]));
+                for(double c : currentMap->constTerms()) {
+                    ct.push_back(JsonValue(c));
                 }
                 JsonArray ln;
-                TVector<double> lnV = currentMap->linearTerms();
-                for(int k=0; k<lnV.size(); k++) {
-                    ln.push_back(JsonValue(lnV[k]));
+                for(double v : currentMap->linearTerms()) {
+                    ln.push_back(JsonValue(v));
                 }
                 jsonObj["constTerms"]  =  ct;
                 jsonObj["linearTerms"] =  ln;
@@ -845,7 +838,7 @@ JsonArray toJsonArray(const TVector<TVector<UncertaintyMapping *> > &mapping)
 }
 
 void fromJsonArray(const JsonArray& jarray,
-                   TVector<TVector<UncertaintyMapping *> > &vec)
+                   TVector<TVector<UncertaintyMapping*>> &vec)
 {
     int m = jarray.size();
     vec.resize(m);
@@ -864,12 +857,12 @@ void fromJsonArray(const JsonArray& jarray,
                 JsonArray jlinTerm = jobj["linearTerms"].toArray();
 
                 TVector<double> constTerm;
-                for(int k=0; k<jconstTerm.size(); k++) {
-                    constTerm.push_back(jconstTerm[k].toDouble());
+                for(JsonValue elem : jconstTerm) {
+                    constTerm.push_back(elem.toDouble());
                 }
                 TVector<double> linTerm;
-                for(int k=0; k<jlinTerm.size(); k++) {
-                    linTerm.push_back(jlinTerm[k].toDouble());
+                for(JsonValue elem : jlinTerm) {
+                    linTerm.push_back(elem.toDouble());
                 }
                 mapping->defineDistributionType(type);
                 mapping->defineConstTerms(constTerm);
@@ -899,8 +892,7 @@ void assignFunctionProperties(IFunctionSPtr func, const JsonObject &prptsObj)
 {
     TObject* object = func.get();
     TStringList keys = prptsObj.keys();
-    for(int j=0; j<keys.size(); j++) {
-        TString name =  keys[j];
+    for(TString name : keys) {
         TString valueStr = prptsObj[name].toString();
         object->setProperty(name, valueStr);
     }

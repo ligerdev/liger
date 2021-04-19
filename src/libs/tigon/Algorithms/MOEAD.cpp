@@ -26,8 +26,10 @@
 #include <tigon/Operators/Filtrations/RandFiltrationForDirection.h>
 #include <tigon/Operators/Evaluators/Evaluator.h>
 #include <tigon/Operators/Directions/SBXCrossOver.h>
+#include <tigon/Operators/Directions/DiscreteCrossover.h>
 #include <tigon/Operators/Filtrations/TruncateSets.h>
 #include <tigon/Operators/Perturbations/PolynomialMutation.h>
+#include <tigon/Operators/Perturbations/IntegerMutation.h>
 #include <tigon/Operators/Perturbations/CategoricalPerturpation.h>
 #include <tigon/Operators/AlgorithmSpecific/MOEADNeighbourhoodUpdate.h>
 #include <tigon/ExceptionHandling/TException.h>
@@ -71,17 +73,19 @@ void MOEAD::evaluateNode()
 
 void MOEAD::initialise()
 {
-    /*0*/   WeightVectorInit*           wvector          = new WeightVectorInit(this);
-    /*1*///   Scalarization*              scalarization    = new Scalarization(wvector); // comment for generalised decomposition
-    /*1*/   GeneralizedDecomposition*   scalarization    = new GeneralizedDecomposition(wvector); // uncomment for generalised decomposition
-    /*2*/   NeighbourhoodFiltration*    neighbourhood    = new NeighbourhoodFiltration(scalarization);
-    /*3*/   MOEADNeighbourhoodUpdate*   updateOperator   = new MOEADNeighbourhoodUpdate(neighbourhood);
-    /*4*/   RandSetReplacement*         randreplacement  = new RandSetReplacement(updateOperator);
-    /*5*/   RandFiltrationForDirection* filtForDirection = new RandFiltrationForDirection(randreplacement);
-    /*6*/   SBXCrossOver*               crossOver        = new SBXCrossOver(filtForDirection);
-    /*7*/   TruncateSets*               truncateSets     = new TruncateSets(crossOver);
-    /*8*/   PolynomialMutation*         pm               = new PolynomialMutation(truncateSets);
-    /*9*/   CategoricalPerturpation*    cPert            = new CategoricalPerturpation(pm);
+    WeightVectorInit*           wvector          = new WeightVectorInit(this);
+//    Scalarization*              scalarization    = new Scalarization(wvector); // comment for generalised decomposition
+    GeneralizedDecomposition*   scalarization    = new GeneralizedDecomposition(wvector); // uncomment for generalised decomposition
+    NeighbourhoodFiltration*    neighbourhood    = new NeighbourhoodFiltration(scalarization);
+    MOEADNeighbourhoodUpdate*   updateOperator   = new MOEADNeighbourhoodUpdate(neighbourhood);
+    RandSetReplacement*         randreplacement  = new RandSetReplacement(updateOperator);
+    RandFiltrationForDirection* filtForDirection = new RandFiltrationForDirection(randreplacement);
+    SBXCrossOver*               crossOver        = new SBXCrossOver(filtForDirection);
+    DiscreteCrossover*          disOver          = new DiscreteCrossover(crossOver);
+    TruncateSets*               truncateSets     = new TruncateSets(disOver);
+    PolynomialMutation*         pm               = new PolynomialMutation(truncateSets);
+    IntegerMutation*            im               = new IntegerMutation(pm);
+    CategoricalPerturpation*    cPert            = new CategoricalPerturpation(im);
 
     appendOperator(wvector);
     appendOperator(scalarization);
@@ -90,8 +94,10 @@ void MOEAD::initialise()
     appendOperator(randreplacement);
     appendOperator(filtForDirection);
     appendOperator(crossOver);
+    appendOperator(disOver);
     appendOperator(truncateSets); // remove second child
     appendOperator(pm);
+    appendOperator(im);
     appendOperator(cPert);
 
     wvector->TP_defineRegularisationMethod(Tigon::CentroidBasedOrder);

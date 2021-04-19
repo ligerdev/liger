@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Problem>
+  <probName>DTLZ1</probName>
+  <probDescription></probDescription>
+  <problemID></problemID>
+  <Functions>
+    <Function Source="Internal">
+      <funcName>DTLZ1</funcName>
+      <funcDescription></funcDescription>
+      <funcID></funcID>
+      <funcType></funcType>
+      <nInputs>3</nInputs>
+      <nOutputs>2</nOutputs>
+    </Function>
+  </Functions>
+  <Inputs nInputs="">
+    <Input idx="0">
+      <inputName></inputName>
+      <inputDescription></inputDescription>
+      <inputID></inputID>
+      <inputType></inputType>
+      <inputUnit></inputUnit>
+      <isParameter>False</isParameter>
+      <functionIdx>0</functionIdx>
+    </Input>
+    <Input ID="" idx="1">
+      <inputName></inputName>
+      <inputDescription></inputDescription>
+      <inputID></inputID>
+      <inputType></inputType>
+      <inputUnit></inputUnit>
+      <isParameter>False</isParameter>
+      <functionIdx>0</functionIdx>
+    </Input>
+    <Input ID="" idx="2">
+      <inputName></inputName>
+      <inputDescription></inputDescription>
+      <inputID></inputID>
+      <inputType></inputType>
+      <inputUnit></inputUnit>
+      <isParameter>True</isParameter>
+      <functionIdx>0</functionIdx>
+    </Input>
+  </Inputs>
+  <Outputs nOutputs="">
+    <Output idx="">
+      <outputName></outputName>
+      <outputDescription></outputDescription>
+      <outputID></outputID>
+      <outputType></outputType>
+      <outputUnit></outputUnit>
+    </Output>
+    <Output idx="">
+      <outputName></outputName>
+      <outputDescription></outputDescription>
+      <outputID></outputID>
+      <outputType></outputType>
+      <outputUnit></outputUnit>
+    </Output>
+  </Outputs>
+</Problem>

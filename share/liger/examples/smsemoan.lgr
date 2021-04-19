@@ -13,7 +13,7 @@
   <ProcessNode ClassName="QTigon::QOpProbGeneratorNode">
     <GUIProperties>
       <NodeId>1c33b955-ee6f-49f4-9b08-38af1776f2ca</NodeId>
-      <xpos>-195</xpos>
+      <xpos>-194</xpos>
       <ypos>-143</ypos>
     </GUIProperties>
     <Properties ProcessType="PROBLEM_NODE">
@@ -28,7 +28,9 @@
       <paramValueVec>[]</paramValueVec>
       <externalParam>[]</externalParam>
       <externalParamGroups>[]</externalParamGroups>
+      <setGoals>[false,false,false]</setGoals>
       <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307}]</goals>
+      <priorities>[1,1,1]</priorities>
       <thresholds>[]</thresholds>
       <dVecUncertainties>[{},{},{},{},{},{},{},{},{},{},{},{}]</dVecUncertainties>
       <funcOutUncertainties>[[{},{},{}]]</funcOutUncertainties>
@@ -39,10 +41,22 @@
       <f2uMap>[[]]</f2uMap>
     </Properties>
   </ProcessNode>
+  <ProcessNode ClassName="QTigon::QOpRandomInitNode">
+    <GUIProperties>
+      <NodeId>4a5dac92-b6e7-4ee4-8b00-79ad6f1924b2</NodeId>
+      <xpos>-105</xpos>
+      <ypos>-144</ypos>
+    </GUIProperties>
+    <Properties ProcessType="OPERATOR_NODE">
+      <TigonOperator>Tigon::Operators::RandomInit</TigonOperator>
+      <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
+      <OptimizationSetSize>100</OptimizationSetSize>
+    </Properties>
+  </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpEvaluatorNode">
     <GUIProperties>
       <NodeId>7ee5e24e-040f-4bec-a12c-9730a66bd6ec</NodeId>
-      <xpos>-97</xpos>
+      <xpos>0</xpos>
       <ypos>-146</ypos>
     </GUIProperties>
     <Properties ProcessType="OPERATOR_NODE">
@@ -54,23 +68,11 @@
       <SingleObjective>false</SingleObjective>
     </Properties>
   </ProcessNode>
-  <ProcessNode ClassName="QTigon::QOpRandomInitNode">
-    <GUIProperties>
-      <NodeId>4a5dac92-b6e7-4ee4-8b00-79ad6f1924b2</NodeId>
-      <xpos>-5</xpos>
-      <ypos>-146</ypos>
-    </GUIProperties>
-    <Properties ProcessType="OPERATOR_NODE">
-      <TigonOperator>Tigon::Operators::RandomInit</TigonOperator>
-      <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
-      <OptimizationSetSize>100</OptimizationSetSize>
-    </Properties>
-  </ProcessNode>
   <ProcessNode ClassName="QTigon::QAlgoSMSEMOANode">
     <GUIProperties>
-      <NodeId>640924be-b4d1-4430-8b5e-34f9ecf9e290</NodeId>
-      <xpos>90</xpos>
-      <ypos>-146</ypos>
+      <NodeId>356050f1-d77d-440e-8f7c-86c07550bf44</NodeId>
+      <xpos>88</xpos>
+      <ypos>-147</ypos>
     </GUIProperties>
     <Properties ProcessType="ALGORITHM_NODE">
       <TigonAlgorithm>Tigon::Algorithms::SMSEMOA</TigonAlgorithm>
@@ -78,11 +80,14 @@
         <Name>Tigon::Operators::NonDominanceRanking</Name>
         <OutputTags>FOR_REDUCE_POPULATION</OutputTags>
         <InputTags>MAIN_OPTIMIZATION_SET</InputTags>
+        <IsConstrainedHandlingUsed>true</IsConstrainedHandlingUsed>
+        <IsPreferabilityUsed>true</IsPreferabilityUsed>
+        <IsWeakDom>true</IsWeakDom>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::SMSEMOAReduce</Name>
-        <OutputTags>FOR_NEXT_ITERATION;FOR_SELECTION;FITNESS</OutputTags>
-        <InputTags>For SMSEmoa_Reduce</InputTags>
+        <OutputTags>FOR_NEXT_ITERATION;FOR_SELECTION</OutputTags>
+        <InputTags>FOR_REDUCE_POPULATION</InputTags>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::TournamentFiltrationForDirection</Name>
@@ -100,6 +105,13 @@
         <CrossoverDistributionIndex>15</CrossoverDistributionIndex>
       </TigonOperator>
       <TigonOperator>
+        <Name>Tigon::Operators::DiscreteCrossover</Name>
+        <OutputTags>FOR_DIRECTION</OutputTags>
+        <SolutionCrossoverProbability>1</SolutionCrossoverProbability>
+        <VariableCrossoverProbability>0.5</VariableCrossoverProbability>
+        <VariableSwapCrossoverProbability>0.5</VariableSwapCrossoverProbability>
+      </TigonOperator>
+      <TigonOperator>
         <Name>Tigon::Operators::TruncateSets</Name>
         <OutputTags>FOR_RESIZE</OutputTags>
         <SetSize>1</SetSize>
@@ -110,6 +122,19 @@
         <SolutionMutationProbability>1</SolutionMutationProbability>
         <VariableMutationProbability>0.1</VariableMutationProbability>
         <MutationDistributionIndex>20</MutationDistributionIndex>
+      </TigonOperator>
+      <TigonOperator>
+        <Name>Tigon::Operators::IntegerMutation</Name>
+        <OutputTags>FOR_PERTURBATION</OutputTags>
+        <SolutionMutationProbability>1</SolutionMutationProbability>
+        <VariableMutationProbability>0.1</VariableMutationProbability>
+        <WidthPercent>0.1</WidthPercent>
+      </TigonOperator>
+      <TigonOperator>
+        <Name>Tigon::Operators::CategoricalPerturpation</Name>
+        <OutputTags>FOR_PERTURBATION</OutputTags>
+        <SolutionMutationProbability>1</SolutionMutationProbability>
+        <VariableMutationProbability>0.1</VariableMutationProbability>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::MergeForNextIteration</Name>
@@ -147,10 +172,22 @@
     </GUIProperties>
     <Properties ProcessType="OPERATOR_NODE">
       <TigonOperator>Tigon::Operators::ITermination</TigonOperator>
-      <maxIter>30000</maxIter>
+      <maxIter>1000</maxIter>
       <budget>0</budget>
     </Properties>
   </ProcessNode>
+  <Link>
+    <FromNode>356050f1-d77d-440e-8f7c-86c07550bf44</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>8d7bce66-bae0-48fd-b48c-3eb6a03ded8c</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>7ee5e24e-040f-4bec-a12c-9730a66bd6ec</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>356050f1-d77d-440e-8f7c-86c07550bf44</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
   <Link>
     <FromNode>61d7b2e8-a8bf-4e14-9ce1-06a2b0aa65cb</FromNode>
     <FromPort>0</FromPort>
@@ -158,13 +195,13 @@
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>1c33b955-ee6f-49f4-9b08-38af1776f2ca</FromNode>
+    <FromNode>8d7bce66-bae0-48fd-b48c-3eb6a03ded8c</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>7ee5e24e-040f-4bec-a12c-9730a66bd6ec</ToNode>
+    <ToNode>6e62969b-a564-4dd6-b888-d5c78c3cd55e</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>7ee5e24e-040f-4bec-a12c-9730a66bd6ec</FromNode>
+    <FromNode>1c33b955-ee6f-49f4-9b08-38af1776f2ca</FromNode>
     <FromPort>0</FromPort>
     <ToNode>4a5dac92-b6e7-4ee4-8b00-79ad6f1924b2</ToNode>
     <ToPort>0</ToPort>
@@ -172,19 +209,7 @@
   <Link>
     <FromNode>4a5dac92-b6e7-4ee4-8b00-79ad6f1924b2</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>640924be-b4d1-4430-8b5e-34f9ecf9e290</ToNode>
-    <ToPort>0</ToPort>
-  </Link>
-  <Link>
-    <FromNode>640924be-b4d1-4430-8b5e-34f9ecf9e290</FromNode>
-    <FromPort>0</FromPort>
-    <ToNode>8d7bce66-bae0-48fd-b48c-3eb6a03ded8c</ToNode>
-    <ToPort>0</ToPort>
-  </Link>
-  <Link>
-    <FromNode>8d7bce66-bae0-48fd-b48c-3eb6a03ded8c</FromNode>
-    <FromPort>0</FromPort>
-    <ToNode>6e62969b-a564-4dd6-b888-d5c78c3cd55e</ToNode>
+    <ToNode>7ee5e24e-040f-4bec-a12c-9730a66bd6ec</ToNode>
     <ToPort>0</ToPort>
   </Link>
 </LigerData>

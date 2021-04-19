@@ -68,7 +68,7 @@ void DTLZ5_2::evaluate(const TVector<IElementSPtr> &inputs,
         TVector<double> x = IElementVecToRealVec(inputs);
         TVector<double> y = DTLZ::DTLZ5_I(x, I, TP_nOutputs());
 
-        for(int i=0; i<outputs.size(); i++) {
+        for(size_t i=0; i<outputs.size(); i++) {
             outputs[i]->defineValue(y[i]);
         }
     } else {

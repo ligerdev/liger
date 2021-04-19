@@ -23,7 +23,9 @@
 #include <tigon/Operators/Filtrations/TournamentFiltrationForModification.h>
 #include <tigon/Operators/Filtrations/TournamentFiltrationForDirection.h>
 #include <tigon/Operators/Directions/SBXCrossOver.h>
+#include <tigon/Operators/Directions/DiscreteCrossover.h>
 #include <tigon/Operators/Perturbations/PolynomialMutation.h>
+#include <tigon/Operators/Perturbations/IntegerMutation.h>
 #include <tigon/Operators/Perturbations/CategoricalPerturpation.h>
 #include <tigon/Operators/Filtrations/MergeForNextIteration.h>
 #include <tigon/tigonengineregistry.h>
@@ -56,8 +58,10 @@ void NSGAII::initialise()
     TournamentFiltrationForDirection*
                          children = new TournamentFiltrationForDirection(elite);
     SBXCrossOver*       crossOver = new SBXCrossOver(children);
-    PolynomialMutation*        pm = new PolynomialMutation(crossOver);
-    CategoricalPerturpation* cPert = new CategoricalPerturpation(pm);
+    DiscreteCrossover*    disOver = new DiscreteCrossover(crossOver);
+    PolynomialMutation*        pm = new PolynomialMutation(disOver);
+    IntegerMutation*           im = new IntegerMutation(pm);
+    CategoricalPerturpation* cPert = new CategoricalPerturpation(im);
     MergeForNextIteration*    nxt = new MergeForNextIteration(cPert);
 
     appendOperator(ranking);
@@ -65,7 +69,9 @@ void NSGAII::initialise()
     appendOperator(elite);
     appendOperator(children);
     appendOperator(crossOver);
+    appendOperator(disOver);
     appendOperator(pm);
+    appendOperator(im);
     appendOperator(cPert);
     appendOperator(nxt);
 

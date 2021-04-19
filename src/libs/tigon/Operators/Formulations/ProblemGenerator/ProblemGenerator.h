@@ -46,7 +46,9 @@ class LIGER_TIGON_EXPORT ProblemGenerator : public IFormulation
     READ(externalParam, externalParam)
     READ(externalParamGroups, externalParamGroups)
     READ(externalParamGroupDataPathes, externalParamGroupDataPathes)
+    READ(setGoals, setGoals)
     READ(goals, goals)
+    READ(priorities, priorities)
     READ(thresholds, thresholds)
     READ(dVecUncertainties, dVecUncertaintiesJson)
     READ(funcOutUncertainties, funcOutUncertaintiesJson)
@@ -69,7 +71,9 @@ class LIGER_TIGON_EXPORT ProblemGenerator : public IFormulation
     WRITE(externalParam, TString, defineExternalParam)
     WRITE(externalParamGroups, TString, defineExternalParamGroups)
     WRITE(externalParamGroupDataPathes, TString, defineExternalParamGroupDataPathes)
+    WRITE(setGoals, TString, defineSetGoals)
     WRITE(goals, TString, defineGoals)
+    WRITE(priorities, TString, definePriorities)
     WRITE(thresholds, TString, defineThresholds)
     WRITE(dVecUncertainties, TString, defineDVecUncertaintiesFromJson)
     WRITE(funcOutUncertainties, TString, defineFuncOutVecUncertaintiesFromJson)
@@ -113,7 +117,7 @@ public:
      * \brief processFormualtion must be called after the problem is configured
      * \return Problem definition status.
      */
-    Tigon::ProblemDefinitionStatus processFormualtion();
+    Tigon::ProblemDefinitionStatus processFormulation();
 
     /*!
      * \brief Create a function for given the type and path.
@@ -172,6 +176,14 @@ public:
      */
     void processExternalParamGroupData();
 
+    /// Set Goals
+    TString setGoals() const;
+    void defineSetGoals(const TString& setGoalString);
+
+    /// Priorities
+    TString priorities() const;
+    void definePriorities(const TString& priorityString);
+
     /// Goals
     TString goals() const;
     void defineGoals(const TString& goalString);
@@ -212,7 +224,9 @@ private:
     TVector<bool>          m_isExternalParams;
     TVector<TVector<int>>  m_externalParamGroups;
     TStringList            m_groupDataPathes;
+    TVector<bool>          m_setGoalVec;
     TVector<IElementSPtr>  m_goalVec;
+    TVector<int>           m_priorityVec;
     TVector<IElementSPtr>  m_threholdVec;
 
     TVector<UncertaintyMapping*>           m_dVecUncertainties;
@@ -227,9 +241,13 @@ private:
     TVector<TVector<int> > stringToMap(const TString& mapString);
 
     TString elementVecToJsonString(const TVector<Representation::IElement> &vec) const;
+    TString boolVecToJsonString(const TVector<bool> &vec) const;
+    TString intVecToJsonString(const TVector<int> &vec) const;
     TString elementVecToJsonString(const TVector<Representation::IElementSPtr> &vec) const;
     TVector<IElement> JsonStringToElementVec(const TString &JsonString);
     TVector<IElementSPtr> JsonStringToElementSPtrVec(const TString &JsonString);
+    TVector<bool> JsonStringToBoolVec(const TString &JsonString);
+    TVector<int> JsonStringToIntVec(const TString &JsonString);
 
     TString uncertainMappingsToJsonString(TVector<UncertaintyMapping*> mapping);
     TString uncertainMappingsToJsonString2D(TVector<TVector<UncertaintyMapping*> > mapping);

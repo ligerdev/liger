@@ -164,7 +164,9 @@ private:
 class OutputPrivateData
 {
 public:
-    OutputPrivateData() : goal(-Tigon::Highest), threshold(Tigon::Highest) { m_uncertainMapping = Q_NULLPTR; }
+    OutputPrivateData() : setGoal(false), goal(-Tigon::Highest), priority(1),
+                          threshold(Tigon::Highest) {
+                                m_uncertainMapping = Q_NULLPTR; }
     OutputPrivateData(const OutputPrivateData& data)
     {
         if(data.m_uncertainMapping != Q_NULLPTR) {
@@ -172,9 +174,11 @@ public:
         } else {
             this->m_uncertainMapping = Q_NULLPTR;
         }
-        this->prts   = data.prts;
-        this->scopes = data.scopes;
-        this->goal   = data.goal;
+        this->prts     = data.prts;
+        this->scopes   = data.scopes;
+        this->setGoal  = data.setGoal;
+        this->goal     = data.goal;
+        this->priority = data.priority;
         this->threshold       = data.threshold;
         this->objViewIndex    = data.objViewIndex;
         this->cnstrViewIndex  = data.cnstrViewIndex;
@@ -191,9 +195,11 @@ public:
             } else {
                 m_uncertainMapping = Q_NULLPTR;
             }
-            prts    = other.prts;
-            scopes  = other.scopes;
-            goal    = other.goal;
+            prts     = other.prts;
+            scopes   = other.scopes;
+            setGoal  = other.setGoal;
+            goal     = other.goal;
+            priority = other.priority;
             threshold = other.threshold;
             objViewIndex    = other.objViewIndex;
             cnstrViewIndex  = other.cnstrViewIndex;
@@ -242,7 +248,9 @@ public:
 
     Tigon::Representation::ElementProperties prts;
     QStringList scopes;
+    bool setGoal;
     Tigon::Representation::IElement goal;
+    int priority;
     Tigon::Representation::IElement threshold;
     QModelIndex objViewIndex;
     QModelIndex cnstrViewIndex;

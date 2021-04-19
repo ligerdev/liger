@@ -326,7 +326,7 @@ void TigonEngine::loadTigonProblem(OptimizationLinearFlow *workflow,
     }
 
     /// Process problem
-    ProblemDefinitionStatus status = pg->processFormualtion();
+    ProblemDefinitionStatus status = pg->processFormulation();
     if(status != FullyDefined) {
         throw TException("Tigon::TigonEngine",
                          Tigon::IncorrectProblemFormatException);

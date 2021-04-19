@@ -37,6 +37,7 @@
 #include <qtigon/operators/initialisations/qopsparegoinitnodefactory.h>
 #include <qtigon/operators/initialisations/qopuserdefinedinitnodefactory.h>
 #include <qtigon/algorithms/smsemoa/qalgosmsemoanodefactory.h>
+#include <qtigon/algorithms/nsgaiii/qalgonsgaiiinodefactory.h>
 
 #include <coreplugin/icore.h>
 #include <coreplugin/icontext.h>
@@ -107,6 +108,7 @@ bool QTigonPlugin::initialize(const QStringList &arguments, QString *errorString
     addAutoReleasedObject(new QAlgoMOEADNodeFactory);
     addAutoReleasedObject(new QAlgoSMSEMOANodeFactory);
     addAutoReleasedObject(new QAlgoMOGANodeFactory);
+    addAutoReleasedObject(new QAlgoNSGAIIINodeFactory);
 
     ///[] Load Tigon plugins
     QDir cpath = QCoreApplication::applicationDirPath();

@@ -83,7 +83,8 @@ template <typename T> inline TVector<T> mid(const TVector<T> &v,
     if(length == -1) {
         return TVector<T>(v.begin()+pos, v.begin() + v.size());
     } else {
-        if(pos+length > v.size()) {
+        size_t pp = pos+length;
+        if(pp > v.size()) {
             return TVector<T>(v.begin()+pos, v.begin() + v.size());
         } else {
             return TVector<T>(v.begin()+pos, v.begin() + pos + length);
@@ -109,8 +110,8 @@ std::ostream& operator<< (std::ostream& out, const std::vector<T>& v) {
 
 template <typename T>
 std::ostream& operator<< (std::ostream& out, const TVector<TVector<T>>& matrix) {
-    for(int i=0; i< matrix.size(); i++){
-        out << matrix[i];
+    for(auto vec : matrix) {
+        out << vec;
     }
     return out;
 }

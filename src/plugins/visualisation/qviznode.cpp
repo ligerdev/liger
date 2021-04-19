@@ -267,8 +267,8 @@ void QVizNode::initializeWidgetDisplay()
     extractGoalsAndThresholds();
     setAvailableIterationList();
     setSelectSetsList();
-    resetSelectedVariablesToDisplay();
     customiseWidget(m_widget);
+    resetSelectedVariablesToDisplay();
 }
 
 void QVizNode::setupTimedTracking()
@@ -715,9 +715,9 @@ void QVizNode::filterBrushedSolutions()
 void QVizNode::applyFilters()
 {
     displaySet(m_selectedSet);
-    if (!m_toggleDominatedButton->isChecked()) filterNonDominated();
-    if (m_toggleInFeasibleButton->isChecked()) filterFeasible();
+    if (!m_toggleInFeasibleButton->isChecked()) filterFeasible();
     if (!m_toggleNonPertinentButton->isChecked()) filterPertinent();
+    if (!m_toggleDominatedButton->isChecked()) filterNonDominated();
 }
 
 void QVizNode::filterNonDominated()
@@ -1073,6 +1073,7 @@ void QVizNode::extractNamesAndCategories()
 void QVizNode::extractGoalsAndThresholds()
 {
     QVariantList goals, thresholds, prefDirections;
+    TVector<bool> setGoalVec           = m_ipset->setGoalVec();
     TVector<IElementSPtr> goalVec      = m_ipset->goalVec();
     TVector<IElementSPtr> thresholdVec = m_ipset->thresholdVec();
     TVector<ElementProperties> oprts   = m_ipset->objectiveVecProperties();
@@ -1087,7 +1088,7 @@ void QVizNode::extractGoalsAndThresholds()
             int cInd = m_dataMaps[i].m_constInd;
 
             OptimizationType type = oprts[oInd].optimizationType();
-            bool goalDefined = isGoalDefined(goalVec[oInd]);
+            bool goalDefined = setGoalVec[oInd];
             if(cInd < 0) {
                 // objective
                 thresholds.append(QVariant());
@@ -1116,7 +1117,7 @@ void QVizNode::extractGoalsAndThresholds()
             } else {
                 // objective and constraint
                 OptimizationType type = oprts[oInd].optimizationType();
-                bool goalDefined = isGoalDefined(goalVec[oInd]);
+                bool goalDefined = setGoalVec[oInd];
                 bool thresholdDefined = isThresholdDefined(thresholdVec[cInd]);
                 if(type == Minimization) {
                     if(goalDefined) {

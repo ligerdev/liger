@@ -58,7 +58,7 @@ PopulationEntry::PopulationEntry(ISet *pop, const TString &name,
         record(LSolutions, toJsonArray(pop));
 
         TStringList keys = additinalFields.keys();
-        for(int i = 0; i < keys.size(); i++) {
+        for(size_t i = 0; i < keys.size(); i++) {
             record(keys[i], additinalFields[keys[i]]);
         }
     }

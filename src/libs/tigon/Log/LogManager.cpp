@@ -34,10 +34,10 @@ LogManager::LogManager(const LogManager &other)
     : m_evalEntries(other.m_evalEntries.size()),
       m_popEntries(other.m_popEntries.size())
 {
-    for(int i = 0; i < m_evalEntries.size(); i++) {
+    for(size_t i = 0; i < m_evalEntries.size(); i++) {
         m_evalEntries[i] = other.m_evalEntries[i]->clone();
     }
-    for(int i = 0; i < m_popEntries.size(); i++) {
+    for(size_t i = 0; i < m_popEntries.size(); i++) {
         m_popEntries[i] = other.m_popEntries[i]->clone();
     }
     m_isLogEvaluatoin = other.m_isLogEvaluatoin;
@@ -62,7 +62,7 @@ void LogManager::clearLog()
 
 void LogManager::clearEvaluationsLog()
 {
-    for(int i = 0; i < m_evalEntries.size(); i++) {
+    for(size_t i = 0; i < m_evalEntries.size(); i++) {
         delete m_evalEntries[i];
     }
     m_evalEntries.clear();
@@ -70,7 +70,7 @@ void LogManager::clearEvaluationsLog()
 
 void LogManager::clearPopulationsLog()
 {
-    for(int i = 0; i < m_popEntries.size(); i++) {
+    for(size_t i = 0; i < m_popEntries.size(); i++) {
         delete m_popEntries[i];
     }
     m_popEntries.clear();
@@ -133,7 +133,7 @@ JsonObject LogManager::all()
 JsonObject LogManager::evaluationsLog()
 {
     JsonArray evalArray;
-    for(int i = 0; i < m_evalEntries.size(); i++) {
+    for(size_t i = 0; i < m_evalEntries.size(); i++) {
         evalArray.push_back(m_evalEntries[i]->data());
     }
     JsonObject evalLog;
@@ -144,7 +144,7 @@ JsonObject LogManager::evaluationsLog()
 JsonObject LogManager::populationsLog()
 {
     JsonArray popArray;
-    for(int i = 0; i < m_popEntries.size(); i++) {
+    for(size_t i = 0; i < m_popEntries.size(); i++) {
         popArray.push_back(m_popEntries[i]->data());
     }
     JsonObject popLog;

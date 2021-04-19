@@ -223,7 +223,9 @@ void QOpProbFormulationNodeForm::loadProblemToViews()
     TVector<ElementProperties> oprts = m_prob->oPrpts();
     TVector<ElementProperties> cprts = m_prob->cPrpts();
     TVector<ElementProperties> uprts = m_prob->uPrpts();
+    TVector<bool>           setGoals = m_prob->setGoalVector();
     TVector<IElementSPtr>      goals = m_prob->goalVector();
+    TVector<int>          priorities = m_prob->priorityVector();
     TVector<IElementSPtr>      thresholds = m_prob->thresholdVector();
     int nObj = oprts.size();
     for(int i=0; i<nObj; i++) {
@@ -235,7 +237,9 @@ void QOpProbFormulationNodeForm::loadProblemToViews()
         d.prts = oprts[i];
         d.objViewIndex = index;
         d.scopes.append(Constants::OBJECTIVE);
+        d.setGoal = setGoals[i];
         d.goal = *goals[i];
+        d.priority = priorities[i];
         m_outputData[d.ID()] = d;
     }
 
@@ -489,8 +493,10 @@ void QOpProbFormulationNodeForm::variableToParameter(const InputPrivateData &old
     problem->defineParameterVector(parameterVector);
     problem->defineExternalParameters(isExternal);
 
-    //! [4] Update goals and threholds
+    //! [4] Update goals, priorities, and thresholds
+    problem->defineSetGoalVector(m_prob->setGoalVector());
     problem->defineGoalVector(m_prob->goalVector());
+    problem->definePriorityVector(m_prob->priorityVector());
     problem->defineThresholdVector(m_prob->thresholdVector());
 
     //! [5] Process Problem
@@ -570,8 +576,10 @@ void QOpProbFormulationNodeForm::parameterToVariable(const InputPrivateData& old
     //! [4] Define function output uncertainties
     problem->defineFuncOutUncertainties(cloneFuncOutUncertainties()); // define clones
 
-    //! [5] Update goals and threholds
+    //! [5] Update goals, priorities, and threholds
+    problem->defineSetGoalVector(m_prob->setGoalVector());
     problem->defineGoalVector(m_prob->goalVector());
+    problem->definePriorityVector(m_prob->priorityVector());
     problem->defineThresholdVector(m_prob->thresholdVector());
 
     //! [6] Process Problem
@@ -896,7 +904,9 @@ void QOpProbFormulationNodeForm::loadFunction(IFunctionSPtr func)
 
         TVector<UncertaintyMapping*> dVecUncertainties = cloneDVecUncertaintyMapping();
         TVector<TVector<UncertaintyMapping*> > funcOutUncertainties = cloneFuncOutUncertainties();
+        TVector<bool>      setGoalVector = m_prob->setGoalVector();
         TVector<IElementSPtr> goalVector = m_prob->goalVector();
+        TVector<int>      priorityVector = m_prob->priorityVector();
         TVector<IElementSPtr> thresholdVector = m_prob->thresholdVector();
 
         //! [] obtain maps
@@ -964,10 +974,20 @@ void QOpProbFormulationNodeForm::loadFunction(IFunctionSPtr func)
             }
         }
 
+        //! [] Update setGoals
+        for(int i=0; i<setGoalVector.size(); i++) {
+            m_prob->redefineSetGoal(i, setGoalVector[i]);
+        }
+
         //! [] Update goals
         // Only need to copy the first goalVector.size() back
         for(int i=0; i<goalVector.size(); i++) {
             m_prob->redefineGoal(i, goalVector[i]);
+        }
+
+        //! [] Update priorities
+        for(int i=0; i<priorityVector.size(); i++) {
+            m_prob->redefinePriority(i, priorityVector[i]);
         }
 
         //! [] Update threholds
@@ -1083,7 +1103,9 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
     TVector<ElementProperties> oprpts = m_prob->oPrpts();
     TVector<ElementProperties> cprpts = m_prob->cPrpts();
     TVector<ElementProperties> uprpts = m_prob->uPrpts();
+    TVector<bool> setGoals          = m_prob->setGoalVector();
     TVector<IElementSPtr> goals     = m_prob->goalVector();
+    TVector<int> priorities         = m_prob->priorityVector();
     TVector<IElementSPtr> threholds = m_prob->thresholdVector();
     TVector<TVector<int> > f2pmap = m_prob->f2pMap();
     TVector<TVector<int> > f2omap = m_prob->f2oMap();
@@ -1101,11 +1123,15 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
             if(isObj) {
                 qDebug() <<"Still obj";
                 oprpts[objIndex] = data.prts;
+                setGoals[objIndex] = data.setGoal;
                 goals[objIndex]->defineValue(data.goal);
+                priorities[objIndex] = data.priority;
             } else {
                 qDebug() <<"Not obj any more";
                 removeAt(oprpts, objIndex);
+                removeAt(setGoals, objIndex);
                 removeAt(goals, objIndex);
+                removeAt(priorities, objIndex);
                 // update f2omap
                 for(int i=0; i<nFuncs; i++) {
                     removeAt(f2omap[i], objIndex);
@@ -1131,7 +1157,9 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
             // unused
             qDebug() << "Unused";            
             removeAt(oprpts, objIndex);
+            removeAt(setGoals, objIndex);
             removeAt(goals, objIndex);
+            removeAt(priorities, objIndex);
             removeAt(cprpts, cnstrIndex);
             removeAt(threholds, cnstrIndex);
             // update f2omap and f2cmap
@@ -1162,14 +1190,18 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
             if(!isObj) {
                 qDebug() << "obj - no";
                 removeAt(oprpts, objIndex);
+                removeAt(setGoals, objIndex);
                 removeAt(goals, objIndex);
+                removeAt(priorities, objIndex);
                 // update f2omap
                 for(int i=0; i<nFuncs; i++) {
                     removeAt(f2omap[i], objIndex);
                 }
             } else {
                 oprpts[objIndex] = data.prts;
+                setGoals[objIndex] = data.setGoal;
                 goals[objIndex]->defineValue(data.goal);
+                priorities[objIndex] = data.priority;
             }
 
             if(isCnstr) {
@@ -1185,7 +1217,9 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
             // unused
             qDebug() << "Unused";
             removeAt(oprpts, objIndex);
+            removeAt(setGoals, objIndex);
             removeAt(goals, objIndex);
+            removeAt(priorities, objIndex);
             // update f2omap
             for(int i=0; i<nFuncs; i++) {
                 removeAt(f2omap[i], objIndex);
@@ -1215,7 +1249,9 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
                     f2omap[i].push_back(m_prob->f2cMap()[i][cnstrIndex]);
                 }
                 oprpts.push_back(data.prts);
+                setGoals.push_back(data.setGoal);
                 goals.push_back(IElementSPtr(new IElement(data.goal)));
+                priorities.push_back(data.priority);
             }
 
             if(!isCnstr) {
@@ -1268,7 +1304,9 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
                 }
 
                 oprpts.push_back(data.prts);
+                setGoals.push_back(data.setGoal);
                 goals.push_back(IElementSPtr(new IElement(data.goal)));
+                priorities.push_back(data.priority);
                 // update f2omap
                 for(int i=0; i<nFuncs; i++) {
                     for(int j=0; j<funcs[i]->TP_nOutputs(); j++) {
@@ -1334,23 +1372,33 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
         if(!wasObj && isObj) {
             // append obj
             TVector<ElementProperties> newOprpts;
+            TVector<bool> newSetGoals;
             TVector<IElementSPtr> newGoals;
+            TVector<int> newPriorities;
             int counter = 0;
             for(int i=0; i<problem->oPrpts().size(); i++) {
                 if(id == problem->oPrpts()[i].ID()) {
                     newOprpts.push_back(data.prts);
+                    newSetGoals.push_back(data.setGoal);
                     newGoals.push_back(IElementSPtr(new IElement(data.goal)));
+                    newPriorities.push_back(data.priority);
                 } else {
                     newOprpts.push_back(oprpts[counter]);
+                    newSetGoals.push_back(setGoals[counter]);
                     newGoals.push_back(goals[counter]);
+                    newPriorities.push_back(priorities[counter]);
                     ++counter;
                 }
             }
             problem->defineOVecPrpts(newOprpts);
+            problem->defineSetGoalVector(newSetGoals);
             problem->defineGoalVector(newGoals);
+            problem->definePriorityVector(newPriorities);
         } else {
             problem->defineOVecPrpts(oprpts);
+            problem->defineSetGoalVector(setGoals);
             problem->defineGoalVector(goals);
+            problem->definePriorityVector(priorities);
         }
 
         if(!wasCnstr && isCnstr) {
@@ -1678,18 +1726,30 @@ void QTigon::QOpProbFormulationNodeForm::on_removeButton_clicked()
     removeAt(funcOutUncertainties, row);
     problem->defineFuncOutUncertainties(funcOutUncertainties);
 
-    //! [] Update goals
+    //! [] Update goals and priorities
+
+    TVector<bool> setGoalVector = m_prob->setGoalVector();
+    TVector<bool> newSetGoalVector;
+
     TVector<IElementSPtr> goalVector = m_prob->goalVector();
     TVector<IElementSPtr> newGoalVector;
+
+    TVector<int> priorityVector = m_prob->priorityVector();
+    TVector<int> newPriorityVector;
+
     for(int col=0; col<no; col++) {
         for(int r=0; r<f2omap.size(); r++) {
             if(f2omap[r][col] != -1) {
+                setGoalVector.push_back(setGoalVector[col]);
                 newGoalVector.push_back(goalVector[col]);
+                newPriorityVector.push_back(priorityVector[col]);
                 break;
             }
         }
     }
+    problem->defineSetGoalVector(newSetGoalVector);
     problem->defineGoalVector(newGoalVector);
+    problem->definePriorityVector(newPriorityVector);
 
     //! [] Update threhold
     TVector<IElementSPtr> thresholdVector = m_prob->thresholdVector();

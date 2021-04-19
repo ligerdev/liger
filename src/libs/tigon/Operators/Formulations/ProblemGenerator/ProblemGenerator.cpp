@@ -119,7 +119,9 @@ void ProblemGenerator::initialise()
     addProperty("externalParamGroups", "externalParamGroups", getTType(TString));
     addProperty("externalParamGroupDataPathes", "externalParamGroupDataPathes",
                 getTType(TString));
+    addProperty("setGoals", "setGoals", getTType(TString));
     addProperty("goals", "goals", getTType(TString));
+    addProperty("priorities", "priorities", getTType(TString));
     addProperty("thresholds", "thresholds", getTType(TString));
     addProperty("dVecUncertainties", "dVecUncertaintiesJson", getTType(TString));
     addProperty("funcOutUncertainties", "funcOutUncertaintiesJson", getTType(TString));
@@ -158,11 +160,13 @@ ProblemDefinitionStatus ProblemGenerator::setProblemDataJson(const TString &str)
     if(!jobj.contains("funcPrpts"))   return Undefined;
     if(!jobj.contains("iprts"))       return Undefined;
     if(!jobj.contains("oprts"))       return Undefined;
-
     if(!jobj.contains("lbs"))         return Undefined;
     if(!jobj.contains("ubs"))         return Undefined;
     if(!jobj.contains("pVector"))     return Undefined;
+
+    if(!jobj.contains("setGoals"))    return Undefined;
     if(!jobj.contains("goals"))       return Undefined;
+    if(!jobj.contains("priorities"))  return Undefined;
     if(!jobj.contains("thresholds"))  return Undefined;
 
     if(!jobj.contains("f2dMap"))      return Undefined;
@@ -200,8 +204,14 @@ ProblemDefinitionStatus ProblemGenerator::setProblemDataJson(const TString &str)
     TVector<IElementSPtr> pVector;
     fromJsonArrayFullInfo(jobj["pVector"].toArray(), pVector);
 
+    TVector<bool> setGoals;
+    fromJsonArray(jobj["setGoals"].toArray(), setGoals);
+
     TVector<double> goals;
     fromJsonArray(jobj["goals"].toArray(), goals);
+
+    TVector<int> priorities;
+    fromJsonArray(jobj["priorities"].toArray(), priorities);
 
     TVector<double> thresholds;
     fromJsonArray(jobj["thresholds"].toArray(), thresholds);
@@ -290,7 +300,9 @@ ProblemDefinitionStatus ProblemGenerator::setProblemDataJson(const TString &str)
 
     /// [6] Goals and thresholds
     //qDebug() << "[6] Goals and thresholds";
+    prob->defineSetGoalVector(setGoals);
     prob->defineGoalVector(realVecToElemVec(goals));
+    prob->definePriorityVector(priorities);
     prob->defineThresholdVector(realVecToElemVec(thresholds));
 
     /// [7] Uncertainties
@@ -373,7 +385,7 @@ void ProblemGenerator::definef2uMap(const TString &mapString)
     m_f2uMap = stringToMap(mapString);
 }
 
-ProblemDefinitionStatus ProblemGenerator::processFormualtion()
+ProblemDefinitionStatus ProblemGenerator::processFormulation()
 {
     ProblemSPtr problem = this->problem();
 
@@ -450,9 +462,11 @@ ProblemDefinitionStatus ProblemGenerator::processFormualtion()
         // std::cout << "todo Checkout groupDataPathes" << std::endl;
     }
 
-    /// [6] Goals and thresholds
+    /// [6] Goals, priorities and thresholds
     //qDebug() << "[6] Goals and thresholds";
+    problem->defineSetGoalVector(m_setGoalVec);
     problem->defineGoalVector(m_goalVec);
+    problem->definePriorityVector(m_priorityVec);
     problem->defineThresholdVector(m_threholdVec);
 
     /// [7] Uncertainties
@@ -569,6 +583,16 @@ void ProblemGenerator::defineExternalParam(const TString &value)
     fromJsonArray(jdoc.array(), m_isExternalParams);
 }
 
+TString ProblemGenerator::setGoals() const
+{
+    return boolVecToJsonString(setGoalVec());
+}
+
+void ProblemGenerator::defineSetGoals(const TString &setGoalString)
+{
+    m_setGoalVec = JsonStringToBoolVec(setGoalString);
+}
+
 TString ProblemGenerator::goals() const
 {
     return elementVecToJsonString(goalVec());
@@ -577,6 +601,16 @@ TString ProblemGenerator::goals() const
 void ProblemGenerator::defineGoals(const TString &goalString)
 {
     m_goalVec = JsonStringToElementSPtrVec(goalString);
+}
+
+TString ProblemGenerator::priorities() const
+{
+    return intVecToJsonString(priorityVec());
+}
+
+void ProblemGenerator::definePriorities(const TString &priorityString)
+{
+    m_priorityVec = JsonStringToIntVec(priorityString);
 }
 
 TString ProblemGenerator::thresholds() const
@@ -678,6 +712,22 @@ TString ProblemGenerator::elementVecToJsonString(const TVector<IElement> &vec) c
     return jdoc.toJson(JsonDocument::Compact);
 }
 
+TString ProblemGenerator::boolVecToJsonString(const TVector<bool> &vec) const
+{
+    JsonDocument jdoc;
+    JsonArray array = toJsonArray(vec);
+    jdoc.setArray(array);
+    return jdoc.toJson(JsonDocument::Compact);
+}
+
+TString ProblemGenerator::intVecToJsonString(const TVector<int> &vec) const
+{
+    JsonDocument jdoc;
+    JsonArray array = toJsonArray(vec);
+    jdoc.setArray(array);
+    return jdoc.toJson(JsonDocument::Compact);
+}
+
 TString ProblemGenerator::elementVecToJsonString(const TVector<IElementSPtr> &vec) const
 {
     /// \todo handle nonparamtric distribution
@@ -713,6 +763,24 @@ TVector<IElementSPtr> ProblemGenerator::JsonStringToElementSPtrVec(const TString
     JsonDocument jdoc = JsonDocument::fromJson(JsonString);
     JsonArray array = jdoc.array();
     fromJsonArrayFullInfo(array, vec);
+    return vec;
+}
+
+TVector<bool> ProblemGenerator::JsonStringToBoolVec(const TString &JsonString)
+{
+    TVector<bool> vec;
+    JsonDocument jdoc = JsonDocument::fromJson(JsonString);
+    JsonArray array = jdoc.array();
+    fromJsonArray(array,vec);
+    return vec;
+}
+
+TVector<int> ProblemGenerator::JsonStringToIntVec(const TString &JsonString)
+{
+    TVector<int> vec;
+    JsonDocument jdoc = JsonDocument::fromJson(JsonString);
+    JsonArray array = jdoc.array();
+    fromJsonArray(array,vec);
     return vec;
 }
 

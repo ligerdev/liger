@@ -19,7 +19,10 @@
 #include <tigon/Operators/Evaluators/Evaluator.h>
 #include <tigon/Operators/Filtrations/TournamentFiltrationForDirection.h>
 #include <tigon/Operators/Directions/SBXCrossOver.h>
+#include <tigon/Operators/Directions/DiscreteCrossover.h>
 #include <tigon/Operators/Perturbations/PolynomialMutation.h>
+#include <tigon/Operators/Perturbations/IntegerMutation.h>
+#include <tigon/Operators/Perturbations/CategoricalPerturpation.h>
 #include <tigon/Operators/Filtrations/MergeForNextIteration.h>
 #include <tigon/Operators/Fitness/NonDominanceRanking.h>
 #include <tigon/tigonengineregistry.h>
@@ -52,16 +55,22 @@ void SMSEMOA::initialise()
     TournamentFiltrationForDirection*
                     children  = new TournamentFiltrationForDirection(selection);
     SBXCrossOver*            crossOver = new SBXCrossOver(children);
-    TruncateSets*               resize = new TruncateSets(crossOver);
+    DiscreteCrossover*         disOver = new DiscreteCrossover(crossOver);
+    TruncateSets*               resize = new TruncateSets(disOver);
     PolynomialMutation*             pm = new PolynomialMutation(resize);
-    MergeForNextIteration*      newpop = new MergeForNextIteration(pm);
+    IntegerMutation*                im = new IntegerMutation(pm);
+    CategoricalPerturpation*     cPert = new CategoricalPerturpation(im);
+    MergeForNextIteration*      newpop = new MergeForNextIteration(cPert);
 
     appendOperator(ranking);
     appendOperator(selection);
     appendOperator(children);
     appendOperator(crossOver);
+    appendOperator(disOver);
     appendOperator(resize);
     appendOperator(pm);
+    appendOperator(im);
+    appendOperator(cPert);
     appendOperator(newpop);
 
     ranking->defineOutputTags(TStringList({Tigon::TReducePopulation}));
@@ -73,7 +82,9 @@ void SMSEMOA::initialise()
     children->addOutputTag(Tigon::TForNextIteration);
     children->addOutputTag(Tigon::TForResize);
 
-    crossOver->TP_defineSolutionCrossoverProbability(1);
+    crossOver->TP_defineSolutionCrossoverProbability(1.0);
+    disOver->TP_defineSolutionCrossoverProbability(1.0);
+
     resize->TP_defineSetSize(1);
 
     if (this->decisionVecSize() > 0){

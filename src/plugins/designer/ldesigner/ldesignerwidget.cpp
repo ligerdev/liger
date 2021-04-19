@@ -1444,12 +1444,12 @@ void LDesignerWidget::runDesign()
             if(status) {
                 d->m_engine->start();
             } else {
-                QMessageBox::information(this, "Optimization Engine", "Cannot run currnet workflow");
+                QMessageBox::information(this, "Optimization Engine", "Cannot run current workflow");
                 return;
             }
         } else {
             // Cannot save file
-            QMessageBox::information(this, "Optimization Engine", "Cannot save currnet workflow");
+            QMessageBox::information(this, "Optimization Engine", "Cannot save current workflow");
             return;
         }
     } else {

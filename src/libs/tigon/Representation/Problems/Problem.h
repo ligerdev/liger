@@ -46,7 +46,7 @@ public:
     /// Variable/parameter/objective/constraint/unused Properties
     /// \note The fastest way to get ids, names, unites, descriptions,
     /// and types of the elements is to get their properties first and
-    /// then access the corresspoding member function.
+    /// then access the corresponding member function.
     TVector<ElementProperties> dPrpts()            const;
     TVector<ElementProperties> oPrpts()            const;
     TVector<ElementProperties> pPrpts()            const;
