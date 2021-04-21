@@ -22,7 +22,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
-DefaultDirName={pf}\{#MyAppName}
+DefaultDirName={commonpf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile={#ProjectDir}\LICENSE
 OutputDir={#BuildDir}
@@ -69,48 +69,50 @@ Root: HKCR; Subkey: "LigerWorkflowFile\DefaultIcon"; ValueType: string; ValueNam
 Root: HKCR; Subkey: "LigerWorkflowFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\bin\{#MyAppExeName}"" ""%1"""
 
 [Code]
-
 const 
   ModPathName = 'modifypath';
   ModPathType = 'user';
 
 function ModPathDir(): TArrayOfString;
 var 
-  DMatlabPath: TArrayOfString;
-  I: Integer;  
-  MFound: Boolean;
-  CMPath: String;
+  MatlabRootFolder: String;
+  MatlabInstalled: Boolean;
+  psub1, psub2, psub3, Path1, Path2, Path3: String;
 begin
-  
-  setArrayLength(DMatlabPath, 10);
-  I := 9;
-  MFound := false
-  DMatlabPath[0] := ExpandConstant('C:\Program Files\MATLAB\R2013a\bin\win64');
-  DMatlabPath[1] := ExpandConstant('C:\Program Files\MATLAB\R2013b\bin\win64');
-  DMatlabPath[2] := ExpandConstant('C:\Program Files\MATLAB\R2014a\bin\win64');
-  DMatlabPath[3] := ExpandConstant('C:\Program Files\MATLAB\R2014b\bin\win64');
-  DMatlabPath[4] := ExpandConstant('C:\Program Files\MATLAB\R2015a\bin\win64');
-  DMatlabPath[5] := ExpandConstant('C:\Program Files\MATLAB\R2015b\bin\win64');
-  DMatlabPath[6] := ExpandConstant('C:\Program Files\MATLAB\R2016a\bin\win64');
-  DMatlabPath[7] := ExpandConstant('C:\Program Files\MATLAB\R2016b\bin\win64');
-  DMatlabPath[8] := ExpandConstant('C:\Program Files\MATLAB\R2017a\bin\win64');
-  DMatlabPath[9] := ExpandConstant('C:\Program Files\MATLAB\R2017b\bin\win64');
-
-  while (MFound=FALSE) and (I>=0) do
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\8.1', 'MATLABROOT', MatlabRootFolder); // 2013a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\8.2', 'MATLABROOT', MatlabRootFolder); // 2013b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\8.3', 'MATLABROOT', MatlabRootFolder); // 2014a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\8.4', 'MATLABROOT', MatlabRootFolder); // 2014b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\8.5', 'MATLABROOT', MatlabRootFolder); // 2015a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\8.6', 'MATLABROOT', MatlabRootFolder); // 2015b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.0', 'MATLABROOT', MatlabRootFolder); // 2016a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.1', 'MATLABROOT', MatlabRootFolder); // 2016b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.2', 'MATLABROOT', MatlabRootFolder); // 2017a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.3', 'MATLABROOT', MatlabRootFolder); // 2017b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.4', 'MATLABROOT', MatlabRootFolder); // 2018a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.5', 'MATLABROOT', MatlabRootFolder); // 2018b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.6', 'MATLABROOT', MatlabRootFolder); // 2019a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.7', 'MATLABROOT', MatlabRootFolder); // 2019b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.8', 'MATLABROOT', MatlabRootFolder); // 2020a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.9', 'MATLABROOT', MatlabRootFolder); // 2020b
+  if MatlabInstalled then
   begin
-    CMPath := DMatlabPath[I];
-    MFound := DirExists(CMPath);
-    I := I-1;  
-  end;
   
-  if (MFound=true) then
-    begin
-      setArrayLength(Result, 1);
-      Result[0] := ExpandConstant(CMPath);
-    end
-  else
-    MsgBox('MATLAB Not found.', mbInformation, MB_OK);
+    // MsgBox('Found MATLAB Installation in ' + MatlabRootFolder, mbInformation, MB_OK);
 
+    psub1 := '\extern\bin\win64';
+	psub2 := '\runtime\win64';
+	psub3 := '\bin';
+
+	Path1 := MatlabRootFolder + psub1;
+	Path2 := MatlabRootFolder + psub2;
+	Path3 := MatlabRootFolder + psub3;
+
+    setArrayLength(Result, 3);
+	Result[0] := ExpandConstant(Path1);
+	Result[1] := ExpandConstant(Path2);
+	Result[2] := ExpandConstant(Path3);
+  end
 end;
 #include "modpath.iss"
 
@@ -124,9 +126,9 @@ type
   INSTALLSTATE = Longint;
 const
   INSTALLSTATE_DEFAULT = 5;      // The product is installed for the current user.
-  // Visual C++ 2015 Redistributable 14.0.23026
-  VC_2015_REDIST_X64_MIN = '{A1C31BA5-5438-3A07-9EEE-A5FB2D0FDE36}';
-  VC_2015_REDIST_X64_ADD = '{B0B194F8-E0CE-33FE-AA11-636428A4B73D}';
+  // Visual C++ 2019 Redistributable 14.25.28508
+  VC_2019_REDIST_X64_MIN = '{EEA66967-97E2-4561-A999-5C22E3CDE428}';
+  VC_2019_REDIST_X64_ADD = '{7D0B74C2-C3F8-4AF1-940F-CD79AB4B2DCE}';
 
 function MsiQueryProductState(szProduct: string): INSTALLSTATE; 
   external 'MsiQueryProductState{#AW}@msi.dll stdcall';
@@ -143,6 +145,6 @@ begin
   // this statement, the following won't install your VC redist only when
   // the Visual C++ 2010 Redist (x86) and Visual C++ 2010 SP1 Redist(x86)
   // are installed for the current user
-  Result := not (VCVersionInstalled(VC_2015_REDIST_X64_MIN) and 
-    VCVersionInstalled(VC_2015_REDIST_X64_ADD));
+  Result := not (VCVersionInstalled(VC_2019_REDIST_X64_MIN) and 
+    VCVersionInstalled(VC_2019_REDIST_X64_ADD));
 end;

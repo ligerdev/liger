@@ -61,8 +61,8 @@ windeployqt.exe --compiler-runtime --release --no-translations ^
 -xml -concurrent -webenginecore -webengine -webenginewidgets -qthelp ^
 -sql -printsupport "%BUILDDIR%\bin\liger.exe"
 
-xcopy "%QTPATH%\Qt5QuickWidgets.dll" "%BUILDDIR%\bin\"
-xcopy "%PYTHON_DLL%" "%BUILDDIR%\bin\"
+xcopy "%QTPATH%\Qt5QuickWidgets.dll" "%BUILDDIR%\bin\" /c /h /y
+xcopy "%PYTHON_DLL%" "%BUILDDIR%\bin\" /c /h /y
 
 "%INNO_SETUP_DIR%\iscc" "%LIGERSRC%\dev\WindowsBuild\LigerSetupBuilder.iss" ^
 /DProjectDir="%LIGERSRC%" ^
