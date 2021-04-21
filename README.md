@@ -33,8 +33,9 @@ verifies the fix)!
    * Python2.7 (for python interface)
    * Optional: MATLAB (for MATLAB interface)
    * On Windows:
+     - Microsoft Visual C++ 2015 to 2019
+     - [Windows SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-10-sdk)
      - jom
-     - MSVC 2015
    * On Mac: Xcode (Clang)
    * On Linux: 
      - g++
@@ -87,19 +88,22 @@ You can build Liger with the following commands.
 
 Windows 
 ```
-    qmake ../liger.pro -r -spec win32-msvc2015 "BOOST_INCLUDE=/path/to/boost/headers" "BOOST_LIB=/path/to/bootlibs"
+    qmake ../liger.pro -r -spec win32-msvc2015 "BOOST_INCLUDE=/path/to/boost/headers" "BOOST_LIB=/path/to/bootlibs" "BOOST_PYTHON_LIB=/path/to/bootlibs"
     jom
 ```
 
 Mac: 
 ```
-    qmake ../liger.pro -r -spec macx-clang "BOOST_INCLUDE=/path/to/boost/headers" "BOOST_LIB=/path/to/bootlibs"
+    qmake ../liger.pro -r -spec macx-clang "BOOST_INCLUDE=/path/to/boost/headers" "BOOST_LIB=/path/to/bootlibs" "BOOST_PYTHON_LIB=/path/to/bootlibs"
     make 
 ```
 
 Linux: 
 ```
-    qmake ../liger.pro -r -spec linux-g++ "BOOST_INCLUDE=/path/to/boost/headers" "BOOST_LIB=/path/to/bootlibs"
+    export BOOST_INCLUDE=/path/to/boost/headers
+    export BOOST_LIB=/path/to/bootlibs
+    export BOOST_PYTHON_LIB=/path/to/bootlibs
+    qmake ../liger.pro -r -spec linux-g++
     make 
 ```
 
@@ -112,6 +116,19 @@ make install INSTALL_ROOT=$INSTALL_DIRECTORY
 Alternatively, Qt Creator can be used to configure and compile Liger. This 
 is recommended for Developers.
 
-## Developer Notes
+## License
 
-There is a number of TODOs of known problems. So there's much to be done!
+This software is Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+
+This program is free software (software libre); you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License (LGPL) version 3 as published by the Free Software Foundation. Please review the following information to ensure the GNU Lesser General Public License version 3 requirements will be met: https://www.gnu.org/licenses/lgpl-3.0.html.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+Although Liger is released as Free Software, it does not excuse you from scientific propriety, which obligates you to give appropriate credit! If you write a scientific paper describing research that made substantive use of this program, it is your obligation as a scientist to (a) mention the fashion in which this software was used in the Methods section; (b) mention the algorithm in the References section. The appropriate citation is:
+
+João A. Duro, Yiming Yan, Ioannis Giagkiozis, Stefanos Giagkiozis, Shaul Salomon,
+Daniel C. Oara, Ambuj K. Sriwastava, Jacqui Morison, Claire M. Freeman, Robert J.
+Lygoe, Robin C. Purshouse, and Peter J. Fleming. 2021. Liger: A cross-platform
+open-source integrated optimization and decision-making environment. Applied
+Soft Computing 98 (2021), 106851. https://doi.org/10.1016/j.asoc.2020.106851
+
