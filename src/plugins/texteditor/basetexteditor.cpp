@@ -89,6 +89,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QClipboard>
+#include <QPainterPath>
 
 //#define DO_FOO
 

@@ -51,6 +51,7 @@
 #include <QStyleOption>
 #include <QToolBar>
 #include <QToolButton>
+#include <QPainterPath>
 
 // We define a currently unused state for indicating animations
 const QStyle::State State_Animating = QStyle::State(0x00000040);
