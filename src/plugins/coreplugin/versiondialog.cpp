@@ -69,7 +69,7 @@ VersionDialog::VersionDialog(QWidget *parent)
         "<br/>"
         "%5"
         "<br/>"
-        "Copyright 2008-%6 %7. All rights reserved.<br/>"
+        "Copyright 2012-%6 %7. All rights reserved.<br/>"
         "<br/>"
         "The program is provided AS IS with NO WARRANTY OF ANY KIND, "
         "INCLUDING THE WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A "
