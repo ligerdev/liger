@@ -165,6 +165,9 @@ echo Copying Boost library to Liger/bin...
 cp -r ${BOOST_LIB}/libboost_filesystem.so ${TMPDIR}/bin/
 cp -r ${BOOST_LIB}/libboost_filesystem.so.* ${TMPDIR}/bin/
 
+cp -r ${BOOST_LIB}/libboost_system.so ${TMPDIR}/bin/
+cp -r ${BOOST_LIB}/libboost_system.so.* ${TMPDIR}/bin/
+
 cp -r ${BOOST_LIB}/libboost_python27.so ${TMPDIR}/bin/
 cp -r ${BOOST_LIB}/libboost_python27.so.* ${TMPDIR}/bin/
 
