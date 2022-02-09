@@ -1,6 +1,6 @@
 <plugin name=\"MatlabTemplate\" version=\"$$LIGER_VERSION\" compatVersion=\"$$LIGER_VERSION\">
     <vendor>The University of Sheffield</vendor>
-    <copyright>(C) 2016 The University of Sheffield</copyright>
+    <copyright>(C) 2022 The University of Sheffield</copyright>
     <license>GNU Lesser General Public License Usage
 
 This plugin may be used under the terms of the GNU Lesser General Public License version 2.1 as published by the Free Software Foundation.  Please review the following information to ensure the GNU Lesser General Public License version 2.1 requirements will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.</license>
