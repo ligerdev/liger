@@ -1,6 +1,6 @@
 <plugin name=\"Designer\" version=\"$$LIGER_VERSION\" compatVersion=\"$$LIGER_COMPAT_VERSION\">
     <vendor>The University of Sheffield</vendor>
-    <copyright>(C) 2018 The University of Sheffield</copyright>
+    <copyright>(C) 2022 The University of Sheffield</copyright>
     <license>
 
 GNU Lesser General Public License Usage

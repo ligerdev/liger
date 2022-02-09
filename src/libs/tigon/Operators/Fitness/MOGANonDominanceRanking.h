@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2019 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
