@@ -59,14 +59,16 @@ jobs:
               cd boost
               ./bootstrap.sh --with-python-version=3.6
               ./b2 --with-filesystem --with-system --with-python link=shared threading=multi toolset=${BOOST_TOOLSET} stage
-              cd ..
               
       - name: Build liger
         run: |
+             pwd
              export HOME=/home/runner/work
              export BOOST_INCLUDE=${HOME}/boost
              export BOOST_LIB=${HOME}/boost/stage/lib
              export BOOST_PYTHON_LIB=${HOME}/boost/stage/lib
+             ls ${BOOST_INCLUDE}
+             ls ${BOOST_LIB}             
              mkdir build
              cd build
              qmake --version
