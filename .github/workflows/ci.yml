@@ -76,10 +76,10 @@ jobs:
              echo BOOST_LIB ${BOOST_LIB}
              echo BOOST_PYTHON_LIB ${BOOST_PYTHON_LIB}
              qmake ../liger.pro -r -spec ${COMPILER_SPEC}
+             make -s
              
       - name: Run script
         run: |
-             make -s
              cd tests/bin
              chmod +x ${TEST_SCRIPT}
              ./${TEST_SCRIPT}
