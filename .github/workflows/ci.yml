@@ -52,6 +52,7 @@ jobs:
               
       - name: Install Boost      
         run: |
+              pwd
               wget ${BOOST_URL}/${BOOST_SRC}
               mkdir boost
               tar --strip-components=1 -xf ${BOOST_SRC} -C boost
@@ -59,11 +60,12 @@ jobs:
               cd boost
               ./bootstrap.sh --with-python-version=3.6
               ./b2 --with-filesystem --with-system --with-python link=shared threading=multi toolset=${BOOST_TOOLSET} stage
+
               
       - name: Build liger
         run: |
              pwd
-             export HOME=/home/runner/work
+             export HOME=/home/runner/work/liger/liger
              export BOOST_INCLUDE=${HOME}/boost
              export BOOST_LIB=${HOME}/boost/stage/lib
              export BOOST_PYTHON_LIB=${HOME}/boost/stage/lib
