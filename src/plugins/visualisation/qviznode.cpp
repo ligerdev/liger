@@ -1,6 +1,6 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -70,11 +70,10 @@ QVizNode::QVizNode()
     , m_toggleDominatedButton(0)
     , m_toggleInFeasibleButton(0)
     , m_toggleNonPertinentButton(0)
-    , m_toggleDispPreferencesButton(0)
     , m_isInSync(false)
     , m_recordGoals(false)
     , m_timer(new QTimer)
-    , m_iterationInteruptor(new IterationInteruptor())
+    , m_iterationInteruptor(new IterationInteruptor)
     , m_refreshRequested (false)
 {
     m_text         = QString("Viz");
@@ -95,7 +94,8 @@ QVizNode::QVizNode()
     connect(m_timer, &QTimer::timeout, this, &QVizNode::refreshPlotRequested);
     connect(m_iterationInteruptor, &IterationInteruptor::iterationReached,
             this, &QVizNode::refreshPlotRequested);
-    connect(this, &QVizNode::nodeStateChangedSignal, this, &QVizNode::refreshPlotRequested);
+    connect(this, &QVizNode::nodeStateChangedSignal,
+            this, &QVizNode::refreshPlotRequested);
 
     m_selectSetsOptions << "Main Optimization Set"
                         << "Archived Non-Dominated Solutions";
@@ -104,10 +104,20 @@ QVizNode::QVizNode()
 QVizNode::~QVizNode()
 {
     disconnect(this, 0, 0, 0);
-    delete m_timer;
-    delete m_widget;
-    delete m_filteredSet;
-    delete m_iterationInteruptor;
+    if(m_timer) delete m_timer;
+    if(m_widget) delete m_widget;
+    if(m_filteredSet) delete m_filteredSet;
+    if(m_iterationInteruptor) delete m_iterationInteruptor;
+}
+
+IPSet* QVizNode::IPSetObj() const
+{
+    return m_ipset;
+}
+
+VisualisationWidget* QVizNode::widgetObj() const
+{
+    return m_widget;
 }
 
 void QVizNode::refreshPlotRequested()
@@ -238,7 +248,7 @@ void QVizNode::refreshPlot()
         m_widget->reloadView();
     }
     if(isWidgetVisible() && isInitialized()){
-            m_iterationInteruptor->updateIteration(m_ipset->currentIteration());
+        m_iterationInteruptor->updateIteration(m_ipset->currentIteration());
     }
 }
 
@@ -257,6 +267,7 @@ void QVizNode::initializeWidgetData()
     if(m_ipset) {
         m_selectedSet = m_ipset->set(0)->clone();
         m_displayedSet = m_selectedSet->clone();
+        m_filteredSet = m_selectedSet->clone();
     }
 }
 
@@ -264,9 +275,6 @@ void QVizNode::initializeWidgetDisplay()
 {
     setDataMaps();
     extractNamesAndCategories();
-    extractGoalsAndThresholds();
-    setAvailableIterationList();
-    setSelectSetsList();
     customiseWidget(m_widget);
     resetSelectedVariablesToDisplay();
 }
@@ -305,6 +313,8 @@ void QVizNode::setupIterationSelection()
     m_iterationOptions->insertItems(0, iterations);
     connect(m_iterationOptions, &QComboBox::currentTextChanged,
             this, &QVizNode::selectIterComboPopup);
+
+    setAvailableIterationList();
 }
 
 void QVizNode::setupSetSelection()
@@ -313,6 +323,11 @@ void QVizNode::setupSetSelection()
     m_widget->addItemToToolBar(m_selectSetsCombo);
     connect(m_selectSetsCombo, &QComboBox::currentTextChanged,
             this, &QVizNode::selectSetsToDisplay);
+
+    QAction* selSetAct = m_widget->addActionToMenuEdit("Select Set to Display");
+    connect(selSetAct, &QAction::triggered,
+            this, &QVizNode::selectSetsComboPopup);
+    setSelectSetsList();
 }
 
 void QVizNode::setupInSyncCheckbox(QString checkboxStyle)
@@ -333,17 +348,6 @@ void QVizNode::setupRecordGoalsCheckbox(QString checkboxStyle)
     m_widget->addItemToToolBar(recordGoalsButton);
     connect(recordGoalsButton, &QCheckBox::toggled,
             this, &QVizNode::recordGoals);
-}
-
-void QVizNode::setupShowPrefsCheckbox(QString checkboxStyle)
-{
-    m_toggleDispPreferencesButton =
-            new QCheckBox("Show Preferences", m_widget->centralWidget());
-    m_toggleDispPreferencesButton->setChecked(true);
-    m_toggleDispPreferencesButton->setStyleSheet(checkboxStyle);
-    m_widget->addItemToToolBar(m_toggleDispPreferencesButton);
-    connect(m_toggleDispPreferencesButton, &QCheckBox::toggled,
-            m_widget, &VisualisationWidget::setDisplayPreferences);
 }
 
 void QVizNode::setupNonPertientCheckbox(QString checkboxStyle)
@@ -394,6 +398,14 @@ void QVizNode::setupSaveBrushedSolutionsFileOption()
             this, &QVizNode::saveBrushedSolutions);
 }
 
+void QVizNode::setupSelectVariablesEditOptions()
+{
+    QAction* selectVariables =
+            m_widget->addActionToMenuEdit(tr("Select Variables"));
+    connect(selectVariables, &QAction::triggered,
+            m_widget, &VisualisationWidget::showVariableSelectionForm);
+}
+
 void QVizNode::setupZoomToBrushedButton()
 {
     m_toggleBrushedButton = new QPushButton(ButtonZoomToBrushed, m_widget->centralWidget());
@@ -412,41 +424,12 @@ void QVizNode::setupWidget(VisualisationWidget *widget)
         }
 
         m_widget = widget;
-        connect(m_widget, &VisualisationWidget::brushedBoundsUpdated,
-                this, &QVizNode::receivedBrushedBounds);
+        m_widget->setAttribute(Qt::WA_DeleteOnClose);
+
         connect(static_cast<QObject*>(m_widget), &QObject::destroyed,
                 m_timer, &QTimer::stop);        
         connect(static_cast<QObject*>(m_widget), &QObject::destroyed,
                 this, &QVizNode::resetWidget);
-        m_widget->setAttribute(Qt::WA_DeleteOnClose);
-
-        setupSaveBrushedSolutionsFileOption();
-        setupSaveAlllSolutionsFileOption();
-
-        QAction* selSetAct = m_widget->addActionToMenuEdit("Select Set to Display");
-        connect(selSetAct, &QAction::triggered, this, &QVizNode::selectSetsComboPopup);
-
-        setupZoomToBrushedButton();
-
-        connect(m_widget, &VisualisationWidget::brushedIndicesUpdated,
-                this, &QVizNode::resetBrushedButton);
-
-        QString checkboxStyle = "QCheckBox {color: white}";
-        setupDominatedCheckbox(checkboxStyle);
-        setupInfeasibleCheckbox(checkboxStyle);
-        setupNonPertientCheckbox(checkboxStyle);
-        setupShowPrefsCheckbox(checkboxStyle);
-        setupRecordGoalsCheckbox(checkboxStyle);
-        setupInSyncCheckbox(checkboxStyle);
-
-        m_widget->addSpacerToToolBar();
-        setupSetSelection();
-        m_widget->addSpacerToToolBar();
-        setupTimedTracking();
-        m_widget->addSpacerToToolBar();
-        setupIterationTracking();
-        m_widget->addSpacerToToolBar();
-        setupIterationSelection();
     }
 }
 
@@ -473,6 +456,7 @@ void QVizNode::updateGoal(int index, qreal lb, qreal ub)
     if(idxIPset > -1) {
         OptimizationType type = m_ipset->objectiveVecProperties()[idxIPset]
                 .optimizationType();
+        m_ipset->defineSetGoalVec(idxIPset, true);
         if(type == Minimization) {
             m_ipset->defineGoal(idxIPset, IElementSPtr(new IElement(ub)));
         } else if(type == Maximization) {
@@ -491,7 +475,7 @@ void QVizNode::saveBrushedSolutions()
         return;
     }
 
-    filterBrushedSolutions();
+//    filterBrushedSolutions();
 
     saveToFile(file, m_filteredSet);
 }
@@ -543,7 +527,10 @@ void QVizNode::selectIterationSet(int iterationNumber)
             while(!jarray.empty()){
                 JsonObject jObj = jarray.takeAt(0).toObject();
                 IMappingSPtr imap = IMappingSPtr(new IMapping(m_ipset->problem()));
-                tempSet->append(imap);
+                bool jsonOK = fromJSonObj(imap, jObj);
+                if(jsonOK) {
+                    tempSet->append(imap);
+                }
             }
             setSelectedSet(tempSet);
             delete tempSet;
@@ -568,84 +555,7 @@ void QVizNode::setAvailableIterationList()
     m_iterationOptions->insertItems(0, iterationsList);    
 }
 
-void QVizNode::updateRobustness(const QStringList &indicators,
-                                const QVector<qreal> &parameters)
-{
-    QVariantList sv = m_widget->selectedIndices();
 
-    int nRows = m_elemData.size();
-    int nCols = m_widget->allNames().size();
-    TVector<OptimizationType> otypes = m_ipset->objectiveVecOptimizationTypes();
-    TVector<OptimizationType> ctypes = m_ipset->constraintVecOptimizationTypes();
-    TVector<OptimizationType> utypes = m_ipset->unusedVecOptimizationTypes();
-
-    QVector<QVector<qreal> > outputdata(nRows);
-    // Create a boxplot data of m x n x 5 tensor.
-    // m is the number of data points,
-    // n is the number of selected objectives/constraints
-    // and 5 is the number of boxplot bars (2%, 25%, 50%, 75%, 98%).
-    QVector<QVector<QVector<qreal> > >
-            boxplotdata(nRows, QVector<QVector<qreal> >(nCols, QVector<qreal>(5)));
-
-    bool hidePerferences = false;
-    for(int i=0; i<nRows; i++) {
-        outputdata[i].resize(nCols);
-
-        for(int j=0; j<nCols; j++) {
-            IElementSPtr cElem = m_elemData[i][j];
-            qreal outputdata_j = cElem->value<qreal>();
-            QString indicatorType;
-            if(cElem->dist() != Q_NULLPTR) {
-                // Stochastic variable
-                int idx = sv.indexOf(QVariant::fromValue(j));
-                if(idx>-1) {
-                    indicatorType = indicators[idx];
-                    if(indicatorType == QString(Constants::INDICATOR_CONFIDENCE)) {
-                        ConfidenceIndicator indicator(parameters[idx]);
-                        outputdata_j = indicator.evaluate(cElem->dist());
-                    } else if(indicatorType == QString(Constants::INDICATOR_THRESHOLD)) {
-                        ThresholdIndicator indicator(parameters[idx]);
-                        outputdata_j = indicator.evaluate(cElem->dist());
-                        hidePerferences = true;
-                    } else {
-                        // No proper indicator defined
-                        outputdata_j = cElem->value<qreal>();
-                    }
-                }
-            }
-
-            // Check types
-            OptimizationType type = NonOptimization;
-            // default ind is -1
-            if(m_dataMaps[j].m_objInd > -1) {
-                // Objs
-                type = otypes[m_dataMaps[j].m_objInd];
-            } else if(m_dataMaps[j].m_constInd > -1) {
-                // Cnstr
-                type = ctypes[m_dataMaps[j].m_constInd];
-            } else if(m_dataMaps[j].m_unusedInd > -1) {
-                // Unused
-                type = utypes[m_dataMaps[j].m_unusedInd];
-            }
-            if(type == Maximization) {
-                outputdata_j = -outputdata_j;
-            }
-
-            outputdata[i][j] = outputdata_j;
-            if(indicatorType == QString(Constants::INDICATOR_THRESHOLD)) {
-                boxplotdata[i][j].fill(outputdata_j, 5);
-            } else {
-                boxplotdata[i][j] = getBoxplotEntry(cElem, type);
-            }
-        }
-    }
-    // Hide preferences if Threshold Indicator is applied
-    if(hidePerferences && m_toggleDispPreferencesButton->isChecked()) {
-        m_toggleDispPreferencesButton->setChecked(false);
-    }
-    m_widget->setData(outputdata);
-    m_widget->setBoxPlotData(boxplotdata);
-}
 
 bool QVizNode::isRefreshable()
 {
@@ -675,11 +585,6 @@ bool QVizNode::areVariablesToDisplaySelected()
 
 }
 
-bool QVizNode::isInSync()
-{
-    return m_isInSync;
-}
-
 void QVizNode::receivedBrushedBounds(int index, qreal lb, qreal ub)
 {
     if(m_recordGoals) {
@@ -692,32 +597,36 @@ void QVizNode::filterBrushedSolutions()
     if(m_toggleBrushedButton->text() == ButtonZoomToBrushed) {
         updateFilteredSetFromBrushing();
         m_toggleBrushedButton->setText(ButtonShowAll);
-        displaySet(m_filteredSet);
+        setDisplaySet(m_filteredSet);
 
         if(m_isInSync) {
             // Sync with linked nodes
             syncNetworkBrushing();
+            // Sync with other local plots
+            syncBrushing();
         }
     } else {
         resetButtons();
         if(m_isInSync) {
             // Sync with linked nodes
             emit requestToReset();
+            resetSyncBrushing();
         }
-    }
-
-    if(m_isInSync) {
-        // Sync with other local plots
-        syncBrushing();
     }
 }
 
 void QVizNode::applyFilters()
 {
-    displaySet(m_selectedSet);
-    if (!m_toggleInFeasibleButton->isChecked()) filterFeasible();
-    if (!m_toggleNonPertinentButton->isChecked()) filterPertinent();
-    if (!m_toggleDominatedButton->isChecked()) filterNonDominated();
+    setDisplaySet(m_selectedSet);
+    if(m_toggleInFeasibleButton) {
+        if (!m_toggleInFeasibleButton->isChecked()) filterFeasible();
+    }
+    if(m_toggleNonPertinentButton) {
+        if (!m_toggleNonPertinentButton->isChecked()) filterPertinent();
+    }
+    if(m_toggleNonPertinentButton) {
+        if (!m_toggleDominatedButton->isChecked()) filterNonDominated();
+    }
 }
 
 void QVizNode::filterNonDominated()
@@ -749,7 +658,9 @@ void QVizNode::filterPertinent()
 
 void QVizNode::resetBrushedButton()
 {
-    m_toggleBrushedButton->setText(ButtonZoomToBrushed);
+    if(m_toggleBrushedButton) {
+        m_toggleBrushedButton->setText(ButtonZoomToBrushed);
+    }
 }
 
 void QVizNode::updateTimedTrackingInterval(const QString &interval)
@@ -919,102 +830,82 @@ void QVizNode::resetSelectedVariablesToDisplay()
 
 void QVizNode::setData()
 {
-    if(m_displayedSet) {
-        int nSolutions   = m_displayedSet->size();
-        int nElements    = m_dataMaps.size();
-
-        m_elemData.fill(QVector<IElementSPtr>(nElements), nSolutions);
-        QVector<QVector<qreal> > outputData(nSolutions, QVector<qreal>(nElements));
-        QVector<QVector<QVector<qreal> > > boxplotdata(
-                    nSolutions, QVector<QVector<qreal> >(
-                        nElements, QVector<qreal>(5)));
-
-        // Populate the data
-        for(int j = 0; j < nElements; j++) {
-            if(m_dataMaps[j].m_objInd >= 0) {
-                // objectives
-                TVector<OptimizationType> otypes = m_ipset->objectiveVecOptimizationTypes();
-                int ind = m_dataMaps[j].m_objInd;
-                for(int i = 0; i < nSolutions; i++) {
-                    IMappingSPtr imap = m_displayedSet->at(i);
-                    IElementSPtr elem = imap->objectiveVar(ind);
-                    m_elemData[i][j] = elem;
-                    qreal value = elem->value<qreal>();
-                    // Account for the optimization types
-                    if(otypes[ind] == Maximization) {
-                        value = -value;
-                    }
-                    outputData[i][j] = value;
-                    boxplotdata[i][j] = getBoxplotEntry(elem, otypes[ind]);
-                }
-
-            } else if(m_dataMaps[j].m_constInd >= 0) {
-                // Consraints
-                TVector<OptimizationType> ctypes = m_ipset->constraintVecOptimizationTypes();
-                int ind = m_dataMaps[j].m_constInd;
-                for(int i = 0; i < nSolutions; i++) {
-                    IMappingSPtr imap = m_displayedSet->at(i);
-                    IElementSPtr elem = imap->constraintVar(ind);
-                    m_elemData[i][j] = elem;
-                    qreal value = elem->value<qreal>();
-                    // Account for the optimization types
-                    if(ctypes[ind] == Maximization) {
-                        value = -value;
-                    }
-                    outputData[i][j] = value;
-                    boxplotdata[i][j] = getBoxplotEntry(elem, ctypes[ind]);
-                }
-
-            } else if(m_dataMaps[j].m_unusedInd >= 0) {
-                // Unused
-                TVector<OptimizationType> utypes = m_ipset->unusedVecOptimizationTypes();
-                int ind = m_dataMaps[j].m_unusedInd;
-                for(int i = 0; i < nSolutions; i++) {
-                    IMappingSPtr imap = m_displayedSet->at(i);
-                    IElementSPtr elem = imap->unusedVar(ind);
-                    m_elemData[i][j] = elem;
-                    qreal value = elem->value<qreal>();
-                    // Account for the optimization types
-                    if(utypes[ind] == Maximization) {
-                        value = -value;
-                    }
-                    outputData[i][j] = value;
-                    boxplotdata[i][j] = getBoxplotEntry(elem, NonOptimization);
-                }
-
-            } else if(m_dataMaps[j].m_varInd >= 0) {
-                // Decision variables
-                int ind = m_dataMaps[j].m_varInd;
-                for(int i = 0; i < nSolutions; i++) {
-                    IMappingSPtr imap = m_displayedSet->at(i);
-                    IElementSPtr elem = imap->decisionVar(ind);
-                    m_elemData[i][j] = elem;
-                    qreal value = elem->value<qreal>();
-                    outputData[i][j] = value;
-                    boxplotdata[i][j] = getBoxplotEntry(elem, NonOptimization);
-                }
-
-            } else if(m_dataMaps[j].m_paramInd >= 0) {
-                // Parameters
-                int ind = m_dataMaps[j].m_paramInd;
-                for(int i = 0; i < nSolutions; i++) {
-                    IMappingSPtr imap = m_displayedSet->at(i);
-                    IElementSPtr elem = imap->parameterVar(ind);
-                    m_elemData[i][j] = elem;
-                    double value = elem->value();
-                    outputData[i][j] = value;
-                    boxplotdata[i][j] = getBoxplotEntry(elem, NonOptimization);
-                }
-
-            } else {
-                qDebug() << "Error: data variable has no scope";
-                return;
-            }
-        }
-
-        m_widget->setData(outputData);
-        m_widget->setBoxPlotData(boxplotdata);
+    if(!m_displayedSet) {
+        return;
     }
+
+    int nSolutions   = m_displayedSet->size();
+    QVector<QVector<qreal>> outputData(nSolutions);
+    TVector<OptimizationType> otypes = m_ipset->objectiveVecOptimizationTypes();
+    TVector<OptimizationType> ctypes = m_ipset->constraintVecOptimizationTypes();
+    TVector<OptimizationType> utypes = m_ipset->unusedVecOptimizationTypes();
+
+    // Populate the data
+    for(auto dataMap : m_dataMaps) {
+
+        outputData.reserve(nSolutions);
+        if(dataMap.m_objInd >= 0) {
+            // Objective
+            int ind = dataMap.m_objInd;
+            for(int i = 0; i < nSolutions; i++){
+                IMappingSPtr imap = m_displayedSet->at(i);
+                qreal value = imap->doubleObjectiveVar(ind);
+                if(otypes[ind] == Maximization) {
+                    value = -value;
+                }
+                outputData[i].push_back(value);
+            }
+        } else if(dataMap.m_constInd >= 0) {
+            // Constraint
+            int ind = dataMap.m_constInd;
+            for(int i = 0; i < nSolutions; i++) {
+                IMappingSPtr imap = m_displayedSet->at(i);
+                qreal value = imap->doubleConstraintVar(ind);
+                // Account for the optimization types
+                if(ctypes[ind] == Maximization) {
+                    value = -value;
+                }
+                outputData[i].push_back(value);
+            }
+
+        } else if(dataMap.m_unusedInd >= 0) {
+            // Unused
+            int ind = dataMap.m_unusedInd;
+            for(int i = 0; i < nSolutions; i++) {
+                IMappingSPtr imap = m_displayedSet->at(i);
+                qreal value = imap->doubleUnusedVar(ind);
+                // Account for the optimization types
+                if(utypes[ind] == Maximization) {
+                    value = -value;
+                }
+                outputData[i].push_back(value);
+            }
+
+        } else if(dataMap.m_varInd >= 0) {
+            // Decision variables
+            int ind = dataMap.m_varInd;
+            for(int i = 0; i < nSolutions; i++) {
+                IMappingSPtr imap = m_displayedSet->at(i);
+                qreal value = imap->doubleDecisionVar(ind);
+                outputData[i].push_back(value);
+            }
+
+        } else if(dataMap.m_paramInd >= 0) {
+            // Parameters
+            int ind = dataMap.m_paramInd;
+            for(int i = 0; i < nSolutions; i++) {
+                IMappingSPtr imap = m_displayedSet->at(i);
+                qreal value = imap->doubleParameterVar(ind);
+                outputData[i].push_back(value);
+            }
+
+        } else {
+            qDebug() << "Error: data variable has no scope";
+            return;
+        }
+    }
+
+    m_widget->setData(outputData);
 }
 
 void QVizNode::extractNamesAndCategories()
@@ -1073,19 +964,19 @@ void QVizNode::extractNamesAndCategories()
 void QVizNode::extractGoalsAndThresholds()
 {
     QVariantList goals, thresholds, prefDirections;
-    TVector<bool> setGoalVec           = m_ipset->setGoalVec();
-    TVector<IElementSPtr> goalVec      = m_ipset->goalVec();
-    TVector<IElementSPtr> thresholdVec = m_ipset->thresholdVec();
-    TVector<ElementProperties> oprts   = m_ipset->objectiveVecProperties();
-    TVector<ElementProperties> cprts   = m_ipset->constraintVecProperties();
+    TVector<bool> setGoalVec           = IPSetObj()->setGoalVec();
+    TVector<IElementSPtr> goalVec      = IPSetObj()->goalVec();
+    TVector<IElementSPtr> thresholdVec = IPSetObj()->thresholdVec();
+    TVector<ElementProperties> oprts   = IPSetObj()->objectiveVecProperties();
+    TVector<ElementProperties> cprts   = IPSetObj()->constraintVecProperties();
 
-    int nElements = m_dataMaps.size();
+    int nElements = dataMaps().size();
     prefDirections.reserve(nElements);
 
     for(int i=0; i<nElements; i++) {
-        if(m_dataMaps[i].m_objInd >= 0) {
-            int oInd = m_dataMaps[i].m_objInd;
-            int cInd = m_dataMaps[i].m_constInd;
+        if(dataMaps()[i].m_objInd >= 0) {
+            int oInd = dataMaps()[i].m_objInd;
+            int cInd = dataMaps()[i].m_constInd;
 
             OptimizationType type = oprts[oInd].optimizationType();
             bool goalDefined = setGoalVec[oInd];
@@ -1151,11 +1042,11 @@ void QVizNode::extractGoalsAndThresholds()
                     prefDirections.append(QVariant());
                 }
             }
-        } else if(m_dataMaps[i].m_constInd >= 0) {
+        } else if(dataMaps()[i].m_constInd >= 0) {
             // constraint
             goals.append(QVariant());
 
-            int ind = m_dataMaps[i].m_constInd;
+            int ind = dataMaps()[i].m_constInd;
             bool isThredDefined = isThresholdDefined(thresholdVec[ind]);
             OptimizationType type = cprts[ind].optimizationType();
             QVariant threshold = QVariant();
@@ -1174,7 +1065,7 @@ void QVizNode::extractGoalsAndThresholds()
             }
             thresholds.append(threshold);
 
-        } else if(m_dataMaps[i].m_varInd >= 0) {
+        } else if(dataMaps()[i].m_varInd >= 0) {
             // decision variable
             goals.append(QVariant());
             thresholds.append(QVariant());
@@ -1182,9 +1073,9 @@ void QVizNode::extractGoalsAndThresholds()
         }
     }
 
-    m_widget->setGoals(goals);
-    m_widget->setThresholds(thresholds);
-    m_widget->setPreferenceDirerctions(prefDirections);
+    widgetObj()->setGoals(goals);
+    widgetObj()->setThresholds(thresholds);
+    widgetObj()->setPreferenceDirerctions(prefDirections);
 }
 
 void QVizNode::saveAsJsonFormat(QFile * ofile, ISet *solset)
@@ -1257,64 +1148,58 @@ void QVizNode::saveAsTxtFormat(QFile *ofile, ISet *solset)
     }
 }
 
-void QVizNode::displaySet(ISet *displayedSet)
+void QVizNode::setDisplaySet(ISet *displayedSet)
 {
-    // force the filtered set to contain the solutions of the displayed set
-//    if(displayedSet && (displayedSet != m_filteredSet)) {
-//        m_filteredSet->define(displayedSet->all());
-//    }
-
     m_displayedSet = displayedSet->clone();
     setData();
 
     // reset the brushed indices to the full list
-    if(m_displayedSet == m_selectedSet) {
+    if(m_displayedSet->size() == m_selectedSet->size()) {
         m_widget->resetBrushedIndices();
     }
 }
 
+ISet* QVizNode::displayedSet() const
+{
+    return m_displayedSet;
+}
+
+QVector<DataMap> QVizNode::dataMaps() const
+{
+    return m_dataMaps;
+}
+
+
 void QVizNode::setSelectedSet(ISet* currentPop)
 {
     m_selectedSet = currentPop->clone();
-    displaySet(m_selectedSet);
+    setDisplaySet(m_selectedSet);
 }
 
 void QVizNode::setFilteredSet(ISet* filteredSet)
 {
     m_filteredSet->clearMappings();
     m_filteredSet = filteredSet->clone();
-    displaySet(m_filteredSet);
+    setDisplaySet(m_filteredSet);
 }
 
 void QVizNode::updateFilteredSetFromBrushing()
 {
     QList<int> brushedIndices = m_widget->brushedIndices();
-    ISet* tmp = new ISet(m_filteredSet);
-    m_filteredSet->clearMappings();
 
-    /// \bug This is a bug: brushedIndices can contain indices that are out of
-    /// the boundaries of m_filteredSet/tmp. Especially when resetBrushedIndices is
-    /// called.
-
-    /// \note ad-hoc solution: if tmp has different size as brushedIndices
-    /// set m_filteredSet to the displayed set. This will stop liger from crashing.
-    /// However, I believe there must exist a better resolution.
-    /// \attention @shaul: I think the logic of handling filteredSet and brushed
-    /// indices needs to be clarified.
-
-    /// Ad hoc fix Starts =========
-    int maxIdx = *std::max_element(brushedIndices.cbegin(), brushedIndices.cend());
-    if(m_displayedSet && tmp->size() <= maxIdx) {
-        qDebug() << "Ad-hoc solution. Reset m_filteredSet to m_diplayedSet";
-        m_filteredSet->define(m_displayedSet->all());
+    if(brushedIndices.empty()) {
         return;
     }
-    /// Ad hoc fix Ends ===========
 
-    for(int i = 0; i < brushedIndices.size(); i++) {
-        m_filteredSet->append(tmp->at(brushedIndices[i]));
+    int maxIdx = *std::max_element(brushedIndices.cbegin(), brushedIndices.cend());
+    if(m_displayedSet->size() <= maxIdx) {
+        return;
     }
-    delete tmp;
+
+    m_filteredSet->clearMappings();
+    for(auto idx : brushedIndices) {
+        m_filteredSet->append(m_displayedSet->at(idx));
+    }
 }
 
 void QVizNode::setSelectSetsList()
@@ -1337,12 +1222,19 @@ void QVizNode::setSelectSetsList()
 
 void QVizNode::resetButtons()
 {
-    displaySet(m_selectedSet);
+    setDisplaySet(m_selectedSet);
+    m_filteredSet = m_selectedSet->clone();
 
     resetBrushedButton();
-    m_toggleDominatedButton->setChecked(true);
-    m_toggleInFeasibleButton->setChecked(true);
-    m_toggleNonPertinentButton->setChecked(true);
+    if(m_toggleBrushedButton) {
+        m_toggleDominatedButton->setChecked(true);
+    }
+    if(m_toggleInFeasibleButton) {
+        m_toggleInFeasibleButton->setChecked(true);
+    }
+    if(m_toggleNonPertinentButton) {
+        m_toggleNonPertinentButton->setChecked(true);
+    }
 }
 
 void QVizNode::syncBrushing()
@@ -1357,7 +1249,25 @@ void QVizNode::syncBrushing()
         QVizNode* cnode = dynamic_cast<QVizNode*>(p);
         if(cnode && cnode != this) {
             if(cnode->isWidgetVisible() && cnode->isInSync()) {
-                cnode->displaySet(m_filteredSet);
+                cnode->setDisplaySet(m_filteredSet);
+            }
+        }
+    }
+}
+
+void QVizNode::resetSyncBrushing()
+{
+    LDesignerWidget* designerWidget =
+            Designer::Internal::DesignEditorW::instance()->designerEditor()->widget();
+
+    QList<QGraphicsItem*> items = designerWidget->scene()->items();
+
+    /// Search for all visualisation objects
+    foreach(QGraphicsItem* p, items) {
+        QVizNode* cnode = dynamic_cast<QVizNode*>(p);
+        if(cnode && cnode != this) {
+            if(cnode->isWidgetVisible() && cnode->isInSync()) {
+                cnode->resetButtons();
             }
         }
     }
@@ -1387,34 +1297,6 @@ void QVizNode::syncNetworkBrushing()
     emit requestToUpdateDisplayedSolutions(dataMap);
 }
 
-QVector<qreal> QVizNode::getBoxplotEntry(IElementSPtr elm, OptimizationType type)
-{
-    QVector<qreal> boxdata(5);
-    IDistribution* dist = elm->dist();
-    if(dist == Q_NULLPTR) {
-        // Deterministic
-        if(type == Maximization) {
-            boxdata.fill(-elm->value<qreal>(), 5);
-        } else {
-            boxdata.fill(elm->value<qreal>(), 5);
-        }
 
-    } else {
-        if(type == Maximization) {
-            boxdata[4] = -dist->percentile(0.02);
-            boxdata[3] = -dist->percentile(0.25);
-            boxdata[2] = -dist->median();
-            boxdata[1] = -dist->percentile(0.75);
-            boxdata[0] = -dist->percentile(0.98);
-        } else {
-            boxdata[0] = dist->percentile(0.02);
-            boxdata[1] = dist->percentile(0.25);
-            boxdata[2] = dist->median();
-            boxdata[3] = dist->percentile(0.75);
-            boxdata[4] = dist->percentile(0.98);
-        }
-    }
-    return boxdata;
-}
 
 } // namespace Visualisation

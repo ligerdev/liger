@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -16,15 +16,13 @@
 #ifndef SCATTERPLOTWIDGET_H
 #define SCATTERPLOTWIDGET_H
 #include <visualisation/core/visualisationwidget.h>
-#include <tigon/Representation/Elements/IElement.h>
 
 #include <QObject>
 
-QT_BEGIN_NAMESPACE
-class QComboBox;
-QT_END_NAMESPACE
+class SelectScatterPlotVarsForm;
 
 namespace Visualisation {
+class ScatterPlotDataModel;
 
 class ScatterPlotWidget : public VisualisationWidget
 {
@@ -35,18 +33,19 @@ public:
     ~ScatterPlotWidget();
     void initialise();
     void setSelectedIndices(const QVariantList& selected);
-    void setXLabels(const QStringList &xlabels);
-    void setYLabels(const QStringList &ylabels);
+    void setLabels(const QStringList &labels);
 
 public slots:
     void updateSelectedIndices();
+    void updateDisplayVariableOptions();
 
 protected:
     void showVariableSelectionForm();
 
 private:
-    QComboBox*   m_xcombo;
-    QComboBox*   m_ycombo;
+    ScatterPlotDataModel *data() const;
+
+    SelectScatterPlotVarsForm* m_varsSelectForm;
 };
 
 }

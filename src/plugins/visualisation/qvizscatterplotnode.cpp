@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -16,18 +16,16 @@
 #include <visualisation/qvizscatterplotnode.h>
 #include <visualisation/core/scatterplotwidget.h>
 
-#include <tigon/Tigon.h>
-
-#include <QString>
-#include <QAction>
-
-#include <QDebug>
-using namespace Visualisation;
-using namespace Tigon::Representation;
+namespace Visualisation {
 
 QVizScatterPlotNode::QVizScatterPlotNode()
 {
     setSvg(":/visualisation/images/qvizscatterplotnode.svg");
+}
+
+QVizScatterPlotNode::~QVizScatterPlotNode()
+{
+
 }
 
 void QVizScatterPlotNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -44,10 +42,37 @@ void QVizScatterPlotNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void QVizScatterPlotNode::customiseWidget(VisualisationWidget* widget)
 {
     ScatterPlotWidget* sWidget = static_cast<ScatterPlotWidget*>(widget);
-    sWidget->setXLabels(sWidget->allNames());
-    sWidget->setYLabels(sWidget->allNames());
+    sWidget->setLabels(sWidget->allNames());
+
+    connect(sWidget, &VisualisationWidget::brushedBoundsUpdated,
+            this, &QVizScatterPlotNode::receivedBrushedBounds);
+
+    setupSaveBrushedSolutionsFileOption();
+    setupSaveAlllSolutionsFileOption();
+    setupSelectVariablesEditOptions();
+
+    setupZoomToBrushedButton();
+
+    connect(sWidget, &VisualisationWidget::brushedIndicesUpdated,
+            this, &QVizScatterPlotNode::resetBrushedButton);
+
+    sWidget->addSpacerToToolBar();
+
+    QString checkboxStyle = "QCheckBox {color: white}";
+    setupDominatedCheckbox(checkboxStyle);
+    setupInfeasibleCheckbox(checkboxStyle);
+    setupNonPertientCheckbox(checkboxStyle);
+    setupRecordGoalsCheckbox(checkboxStyle);
+    setupInSyncCheckbox(checkboxStyle);
+
+    sWidget->addSpacerToToolBar();
+    setupSetSelection();
+    sWidget->addSpacerToToolBar();
+    setupTimedTracking();
+    sWidget->addSpacerToToolBar();
+    setupIterationTracking();
+    sWidget->addSpacerToToolBar();
+    setupIterationSelection();
 }
 
-QVizScatterPlotNode::~QVizScatterPlotNode()
-{
-}
+} // namespace Visualisation

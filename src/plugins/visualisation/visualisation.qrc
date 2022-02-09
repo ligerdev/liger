@@ -88,5 +88,11 @@
         <file>lib/jquery/jquery-2.2.4.js</file>
         <file>lib/jquery/jquery-3.1.0.js</file>
         <file>lib/jquery/jquery-ui-1.11.3.min.js</file>
+        <file>images/qvizglyphsplot.svg</file>
+        <file>html/glyphsplot.html</file>
+        <file>lib/colorbar.js</file>
+        <file>lib/d3.v6/d3.min.js</file>
+        <file>html/barplot.html</file>
+        <file>lib/venn/venn.js</file>
     </qresource>
 </RCC>

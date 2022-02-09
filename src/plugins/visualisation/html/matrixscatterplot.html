@@ -131,6 +131,12 @@
         }
 
         var drawPlot = function() {
+
+            if(dataJson[1] == null) {
+                // there is no data to draw
+                return;
+            }
+
             var point_radius = 1.5;
             window["point_radius"] = point_radius;
 

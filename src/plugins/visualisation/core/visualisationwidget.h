@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -81,7 +81,7 @@ public:
     void addItemToToolBar(QWidget* item);
     void addSpacerToToolBar();
 
-    void setView(VisualisationViewModel *view);
+    virtual void setView(VisualisationViewModel *view);
 
     virtual void showVariableSelectionForm();
     virtual void setData(const QVector<QVector<qreal> >& dataVec,
@@ -90,10 +90,10 @@ public:
     virtual void setNames(const QStringList& names);
     virtual void setCategories(const QVariantList &colCategories);
     virtual void setSelectedIndices(const QVariantList &selected);
-    virtual void setBoxPlotData(const QVector<QVector<QVector<qreal> > > &boxplotData);
     virtual void setGoals(const QVariantList& goals);
     virtual void setThresholds(const QVariantList& thresholds);
     virtual void setPreferenceDirerctions(const QVariantList& preferenceDirections);
+
 
     QVector<QVector<qreal>> rawData() const;
     QStringList allNames() const;
@@ -108,12 +108,15 @@ public:
 signals:
     void brushedBoundsUpdated(const int& index, const qreal& lb, const qreal& ub);
     void brushedIndicesUpdated(const QList<int>& brushedIndices);
-    void setDisplayPreferences(bool disp);
 
 private slots:
+
+    // The generated code by the designed calls connectSlotsByName().
+    // This function automatically connects the following slots to the
+    // corresponding UI variables once a call to setupui() is placed.
     void on_actionSave_triggered();
     void on_actionSave_As_triggered();
-    void on_actionSelect_Vars_triggered();
+//    void on_actionSelect_Vars_triggered();
 
 protected:
     VisualisationViewModel *view() const;

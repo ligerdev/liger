@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -15,50 +15,42 @@
 ****************************************************************************/
 #include <visualisation/core/scatterplotwidget.h>
 #include <visualisation/core/visualisationdatamodel.h>
+#include <visualisation/core/scatterplotdatamodel.h>
 #include <visualisation/core/visualisationviewmodel.h>
+#include <visualisation/core/selectscatterplotvarsform.h>
 
-#include <QDebug>
-#include <QGridLayout>
-#include <QComboBox>
-#include <QPushButton>
-#include <QLabel>
-
-using namespace Visualisation;
+namespace Visualisation {
 
 ScatterPlotWidget::ScatterPlotWidget(QWidget *parent)
     : VisualisationWidget(parent)
-    , m_xcombo(0)
-    , m_ycombo(0)
+    , m_varsSelectForm(new SelectScatterPlotVarsForm(this))
 {
     initialise();
 }
 
 ScatterPlotWidget::~ScatterPlotWidget()
 {
-    delete m_xcombo;
-    delete m_ycombo;
+    delete m_varsSelectForm;
 }
 
 void ScatterPlotWidget::initialise()
 {
-    VisualisationDataModel* dataModel = new VisualisationDataModel;
+    ScatterPlotDataModel* dataModel = new ScatterPlotDataModel;
     VisualisationViewModel* view = new VisualisationViewModel(this);
     view->setUrl(QUrl("qrc:/visualisation/html/scatterplot.html"));
     view->setDataModel(dataModel);
     view->linkWithJavaScript();
     setView(view);
 
-    m_xcombo = new QComboBox(centralWidget());
-    m_ycombo = new QComboBox(centralWidget());
-
-    addItemToToolBar(new QLabel("X: ", centralWidget()));
-    addItemToToolBar(m_xcombo);
-    addItemToToolBar(new QLabel("Y: ", centralWidget()));
-    addItemToToolBar(m_ycombo);
+    QPushButton* varButton = new QPushButton("Select Variables", centralWidget());
+    connect(varButton, &QPushButton::clicked, this,
+            &ScatterPlotWidget::showVariableSelectionForm);
+    addItemToToolBar(varButton);
 
     QPushButton* button = new QPushButton("Refresh", centralWidget());
     addItemToToolBar(button);
     connect(button, SIGNAL(clicked()), this, SLOT(updateSelectedIndices()));
+    connect(button, SIGNAL(clicked()), this, SLOT(updateDisplayVariableOptions()));
 
     setWindowTitle(QString("Scatter Plot"));
 
@@ -68,38 +60,64 @@ void ScatterPlotWidget::initialise()
 
 void ScatterPlotWidget::setSelectedIndices(const QVariantList &selected)
 {
-    if(selected.size() < 2) {
-        return;
+    QVariantList sel = selected;
+    if(sel.size() < 4) {
+        QVariant last = selected.last();
+        while(sel.size() < 4) {
+            sel.append(last);
+        }
     }
-    m_xcombo->setCurrentIndex(selected[0].toInt());
-    m_ycombo->setCurrentIndex(selected[1].toInt());
-    VisualisationWidget::setSelectedIndices(selected);
+
+    m_varsSelectForm->setSelectedIndices(sel);
+    VisualisationWidget::setSelectedIndices(sel);
 }
 
-void ScatterPlotWidget::setXLabels(const QStringList &xlabels)
+void ScatterPlotWidget::setLabels(const QStringList &labels)
 {
-    m_xcombo->clear();
-    m_xcombo->insertItems(0, xlabels);
-}
-
-void ScatterPlotWidget::setYLabels(const QStringList &ylabels)
-{
-    m_ycombo->clear();
-    m_ycombo->insertItems(0, ylabels);
+    m_varsSelectForm->setXNames(labels);
+    m_varsSelectForm->setYNames(labels);
+    m_varsSelectForm->setSizeNames(labels);
+    m_varsSelectForm->setColorNames(labels);
 }
 
 void ScatterPlotWidget::updateSelectedIndices()
 {
-    QVariantList selected;
-    selected.append(m_xcombo->currentIndex());
-    selected.append(m_ycombo->currentIndex());
+    QVariantList selected = m_varsSelectForm->selectedIndex();
+    m_varsSelectForm->setSelectedIndices(selected);
     VisualisationWidget::setSelectedIndices(selected);
 }
 
+void ScatterPlotWidget::updateDisplayVariableOptions()
+{
+    bool showSize = m_varsSelectForm->showSize();
+    bool showColor = m_varsSelectForm->showColor();
+
+    data()->setDisplayScatterPlotPointSize(showSize);
+    data()->setDisplayScatterPlotPointColor(showColor);
+}
+
+
 void ScatterPlotWidget::showVariableSelectionForm()
 {
-    this->raise();
-    setXLabels(data()->allNames());
-    setYLabels(data()->allNames());
-    m_xcombo->showPopup();
+    QStringList names = data()->allNames();
+    bool displayScatterPlotPointColor = data()->displayScatterPlotPointColor();
+    bool displayScatterPlotPointSize = data()->displayScatterPlotPointSize();
+
+    m_varsSelectForm->setXNames(names);
+    m_varsSelectForm->setYNames(names);
+    m_varsSelectForm->setSizeNames(names);
+    m_varsSelectForm->setColorNames(names);
+
+    m_varsSelectForm->setShowColor(displayScatterPlotPointColor);
+    m_varsSelectForm->setShowSize(displayScatterPlotPointSize);
+
+    m_varsSelectForm->show();
+    m_varsSelectForm->raise();
 }
+
+ScatterPlotDataModel* ScatterPlotWidget::data() const
+{
+    return static_cast<ScatterPlotDataModel*>(VisualisationWidget::data());
+}
+
+} // namespace Visualisation

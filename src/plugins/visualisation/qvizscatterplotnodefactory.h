@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -28,7 +28,8 @@ class IProcessNode;
 }
 namespace Visualisation {
 
-class VISUALISATION_EXPORT QVizScatterPlotNodeFactory : public Designer::IProcessNodeFactory
+class VISUALISATION_EXPORT QVizScatterPlotNodeFactory
+        : public Designer::IProcessNodeFactory
 {
     Q_OBJECT
 

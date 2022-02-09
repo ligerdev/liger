@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -39,7 +39,38 @@ void QVizMScatterPlotNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event
 
 void QVizMScatterPlotNode::customiseWidget(VisualisationWidget* widget)
 {
-    Q_UNUSED(widget);
+    MatrixScatterPlotWidget* sWidget =
+            static_cast<MatrixScatterPlotWidget*>(widget);
+
+    connect(sWidget, &VisualisationWidget::brushedBoundsUpdated,
+            this, &QVizMScatterPlotNode::receivedBrushedBounds);
+
+    setupSaveBrushedSolutionsFileOption();
+    setupSaveAlllSolutionsFileOption();
+    setupSelectVariablesEditOptions();
+
+    setupZoomToBrushedButton();
+
+    connect(sWidget, &VisualisationWidget::brushedIndicesUpdated,
+            this, &QVizMScatterPlotNode::resetBrushedButton);
+
+    sWidget->addSpacerToToolBar();
+
+    QString checkboxStyle = "QCheckBox {color: white}";
+    setupDominatedCheckbox(checkboxStyle);
+    setupInfeasibleCheckbox(checkboxStyle);
+    setupNonPertientCheckbox(checkboxStyle);
+    setupRecordGoalsCheckbox(checkboxStyle);
+    setupInSyncCheckbox(checkboxStyle);
+
+    sWidget->addSpacerToToolBar();
+    setupSetSelection();
+    sWidget->addSpacerToToolBar();
+    setupTimedTracking();
+    sWidget->addSpacerToToolBar();
+    setupIterationTracking();
+    sWidget->addSpacerToToolBar();
+    setupIterationSelection();
 }
 
 QVizMScatterPlotNode::~QVizMScatterPlotNode()

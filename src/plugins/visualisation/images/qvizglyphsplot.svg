@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: CorelDRAW X5 -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xml:space="preserve"
+   width="128px"
+   height="128px"
+   style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+   viewBox="0 0 128 128"
+   version="1.1"
+   id="svg44"
+   sodipodi:docname="qvizglyphsplot.svg"
+   inkscape:version="0.92.4 (5da689c313, 2019-01-14)"><metadata
+   id="metadata48"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1920"
+   inkscape:window-height="1051"
+   id="namedview46"
+   showgrid="false"
+   inkscape:zoom="5.2149125"
+   inkscape:cx="61.225074"
+   inkscape:cy="61.345787"
+   inkscape:window-x="1920"
+   inkscape:window-y="0"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="Layer_x0020_1" />
+ <defs
+   id="defs4">
+  <style
+   type="text/css"
+   id="style2">
+   <![CDATA[
+    .str1 {stroke:#2B2A29;stroke-width:2.36223}
+    .str0 {stroke:#2B2A29;stroke-width:2.36223;stroke-linecap:round;stroke-linejoin:round}
+    .str3 {stroke:#008DD2;stroke-width:2.36223}
+    .str2 {stroke:#009846;stroke-width:2.36223}
+    .str4 {stroke:#393185;stroke-width:2.36223}
+    .str7 {stroke:#E31E24;stroke-width:2.36223}
+    .str6 {stroke:#EF7F1A;stroke-width:2.36223}
+    .str5 {stroke:#FFED00;stroke-width:2.36223}
+    .fil0 {fill:none}
+    .fil2 {fill:#009846}
+    .fil3 {fill:#00A0E3}
+    .fil4 {fill:#393185}
+    .fil7 {fill:#E31E24}
+    .fil6 {fill:#EF7F1A}
+    .fil5 {fill:#FFED00}
+    .fil1 {fill:#2B2A29}
+   ]]>
+  </style>
+ </defs>
+ <g
+   id="Layer_x0020_1">
+  <metadata
+   id="CorelCorpID_0Corel-Layer" />
+  <line
+   class="fil0 str0"
+   x1="15"
+   y1="11"
+   x2="15"
+   y2="119"
+   id="line7" />
+  <line
+   class="fil0 str1"
+   x1="0"
+   y1="64"
+   x2="0"
+   y2="65"
+   id="line9" />
+  <line
+   class="fil0 str1"
+   x1="64"
+   y1="0"
+   x2="64"
+   y2="1"
+   id="line11" />
+  <line
+   class="fil0 str1"
+   x1="128"
+   y1="64"
+   x2="128"
+   y2="65"
+   id="line13" />
+  <line
+   class="fil0 str1"
+   x1="64"
+   y1="127"
+   x2="64"
+   y2="128"
+   id="line15" />
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <line
+   class="fil0 str0"
+   x1="10"
+   y1="116"
+   x2="118"
+   y2="116"
+   id="line41" />
+ <path
+   sodipodi:type="star"
+   style="opacity:1;fill:#0000ff;fill-opacity:1;stroke:#000000;stroke-width:2.26771665;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+   id="path4561"
+   sodipodi:sides="5"
+   sodipodi:cx="66.539948"
+   sodipodi:cy="61.268295"
+   sodipodi:r1="42.762413"
+   sodipodi:r2="9.7929306"
+   sodipodi:arg1="0.93177948"
+   sodipodi:arg2="1.5403072"
+   inkscape:flatsided="false"
+   inkscape:rounded="0"
+   inkscape:randomized="0"
+   d="M 92.043732,95.592936 66.838479,71.056675 41.776377,96.130733 57.322897,64.576991 25.731435,48.489826 60.544965,53.524803 66.08247,18.508329 72.051895,53.173858 107.06572,47.619653 75.941501,64.00915 Z"
+   inkscape:transform-center-x="-0.17776923"
+   inkscape:transform-center-y="1.2225855" /></g>
+</svg>
