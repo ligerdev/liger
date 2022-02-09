@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v2
         
       - name: Install packages and python modules
-        uses: |
+        run: |
               sudo apt-get -y install g++-7 mesa-common-dev \
               libglu1-mesa-dev qt5-default qt5-qmake qtbase5-dev \
               libqt5webengine5 libqt5webengine-data libqt5webenginewidgets5 \
@@ -46,12 +46,12 @@ jobs:
               sudo python -m pip install tabulate # python modules
               
       - name: Some setup
-        uses: |
+        run: |
               sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20
               sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20
               
       - name: Install Boost      
-        uses: |
+        run: |
               wget ${BOOST_URL}/${BOOST_SRC}
               mkdir boost
               tar --strip-components=1 -xf ${BOOST_SRC} -C boost
@@ -60,7 +60,6 @@ jobs:
               ./bootstrap.sh --with-python-version=3.6
               ./b2 --with-filesystem --with-system --with-python link=shared threading=multi toolset=${BOOST_TOOLSET} stage
               cd ..
-        
               export BOOST_INCLUDE="${TRAVIS_BUILD_DIR}/boost"
               export BOOST_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
               export BOOST_PYTHON_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
