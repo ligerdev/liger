@@ -573,6 +573,10 @@ contains(HAVE_PYTHON, yes) {
   linux-* {
       exists($$(BOOST_PYTHON_LIB)/libboost_python.so){
           LIBS += $$(BOOST_PYTHON_LIB)/libboost_python.so
+      } else : exists($$(BOOST_PYTHON_LIB)/libboost_python3??.so){
+          LIBS += $$(BOOST_PYTHON_LIB)/libboost_python3??.so
+      } else : exists($$(BOOST_PYTHON_LIB)/libboost_python3?.so){
+          LIBS += $$(BOOST_PYTHON_LIB)/libboost_python3?.so
       } else : exists($$(BOOST_PYTHON_LIB)/libboost_python27.so){
           LIBS += $$(BOOST_PYTHON_LIB)/libboost_python27.so
       } else {
@@ -592,6 +596,9 @@ macx {
 linux-* {
     LIBS += $$(BOOST_LIB)/libboost_filesystem.so \
             $$(BOOST_LIB)/libboost_system.so
+    if(contains(DEFINES, REQUIRES_ATOMIC)) {
+        LIBS += $$(BOOST_LIB)/libboost_atomic.so
+    }
 }
 
 # Fix dll conflicts between python plugin and matlab
@@ -605,30 +612,31 @@ win32 {
     }
 
     exists($$(BOOST_LIB)/boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*){
-        BOOST_DLLs = $$(BOOST_LIB)/boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* \
-                 $$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
-    } else : exists($$(BOOST_LIB)/boost_filesystem-vc???-mt-1_*) {
-        BOOST_DLLs = $$(BOOST_LIB)/boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG1_* \
-                 $$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG1_*
+        BOOST_DLLs = $$(BOOST_LIB)/boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
     } else {
         message("The Boost libraries were not found.$$escape_expand(\\n) \
             $$escape_expand(\\t)Check that BOOST_INCLUDE, BOOST_LIB and BOOST_PYTHON_LIB are correctly set in the Project environemt variables.$$escape_expand(\\n) \
-            $$escape_expand(\\t)Check that the files boost*vc???-mt-BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* exist in $$BOOST_LIB folder")
+            $$escape_expand(\\t)Check that the files boost_filesystem-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* exist in $$BOOST_LIB folder")
+    }
+
+    exists($$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*){
+        BOOST_DLLs += $$(BOOST_LIB)/boost_system-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
+    } else {
+        message("The Boost libraries were not found.$$escape_expand(\\n) \
+            $$escape_expand(\\t)Check that BOOST_INCLUDE, BOOST_LIB and BOOST_PYTHON_LIB are correctly set in the Project environemt variables.$$escape_expand(\\n) \
+            $$escape_expand(\\t)Check that the files boost_system-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* exist in $$BOOST_LIB folder")
     }
 
     # Add boost python library
-    exists($$(BOOST_LIB)/boost_python27-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*){
-        BOOST_DLLs += $$(BOOST_LIB)/boost_python27-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
+    PYTHON_VERSION=3*
+    exists($$(BOOST_LIB)/boost_python$$PYTHON_VERSION-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*){
+        BOOST_DLLs += $$(BOOST_LIB)/boost_python$$PYTHON_VERSION-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
     } else : exists($$(BOOST_LIB)/boost_python-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*){
         BOOST_DLLs += $$(BOOST_LIB)/boost_python-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_*
-    } else : exists($$(BOOST_LIB)/boost_python27-vc???-mt-$$BOOST_DEBUG_FLAG1_*){
-        BOOST_DLLs += $$(BOOST_LIB)/boost_python27-vc???-mt-$$BOOST_DEBUG_FLAG1_*
-    } else : exists($$(BOOST_LIB)/boost_python-vc???-mt-$$BOOST_DEBUG_FLAG1_*){
-        BOOST_DLLs += $$(BOOST_LIB)/boost_python-vc???-mt-$$BOOST_DEBUG_FLAG1_*
     } else {
-        message("The Boost libraries were not found.$$escape_expand(\\n) \
+        message("The Boost python library was not found.$$escape_expand(\\n) \
             $$escape_expand(\\t)Check that BOOST_INCLUDE, BOOST_LIB and BOOST_PYTHON_LIB are correctly set in the Project environemt variables.$$escape_expand(\\n) \
-            $$escape_expand(\\t)Check that the files boost*vc???-mt-BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* exist in $$BOOST_LIB folder")
+            $$escape_expand(\\t)Check that the files boost_python$$PYTHON_VERSION-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* or boost_python-vc???-mt-$$BOOST_DEBUG_FLAG$$BOOST_LIB_ARCH-1_* exist in $$BOOST_LIB folder")
     }
 
     copyToDir($$BOOST_DLLs, $$LIGER_BIN_PATH/)
