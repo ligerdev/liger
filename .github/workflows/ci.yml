@@ -60,12 +60,13 @@ jobs:
               ./bootstrap.sh --with-python-version=3.6
               ./b2 --with-filesystem --with-system --with-python link=shared threading=multi toolset=${BOOST_TOOLSET} stage
               cd ..
-              export BOOST_INCLUDE="${TRAVIS_BUILD_DIR}/boost"
-              export BOOST_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
-              export BOOST_PYTHON_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
               
       - name: Build liger
         run: |
+             export HOME=/home/runner/work
+             export BOOST_INCLUDE=${HOME}/boost
+             export BOOST_LIB=${HOME}/boost/stage/lib
+             export BOOST_PYTHON_LIB=${HOME}/boost/stage/lib
              mkdir build
              cd build
              qmake --version
