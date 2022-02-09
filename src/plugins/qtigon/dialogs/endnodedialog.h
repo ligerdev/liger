@@ -38,8 +38,10 @@ public:
     void   setBudget(qint64 budget);
     bool   isUseBuget() const;
     bool   isUseIteration() const;
+    bool   isEstimateTime() const;
     void   setUseBugdget(bool b=true);
     void   setUseIter(bool b=true);
+    void   setEstimateTime(bool b=false);
     bool   isPauseByIteration() const;
     bool   isPauseByBudget() const;
     void   setPauseByIteration(bool b=true);

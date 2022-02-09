@@ -33,7 +33,7 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="0">
+   <item row="5" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -58,7 +58,7 @@
       </size>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="terminationTab">
       <attribute name="title">
@@ -113,6 +113,20 @@
          </item>
         </layout>
        </item>
+       <item row="3" column="0" rowspan="3">
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetDefaultConstraint</enum>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="estimateTime">
+           <property name="text">
+            <string>Estimate time it takes to complete the optimization run</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item row="1" column="0">
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
@@ -161,7 +175,7 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0">
+       <item row="6" column="0">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>

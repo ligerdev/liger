@@ -30,6 +30,12 @@ using namespace Designer;
 using namespace Tigon;
 using namespace Json;
 
+// Measuring time
+using std::chrono::steady_clock;
+using std::chrono::duration;
+using std::chrono::duration_cast;
+using std::chrono::milliseconds;
+
 QTigonEngine::QTigonEngine()
     : m_engine(Tigon::TigonEngine::instance())
     , m_populationsLog(0)
@@ -188,6 +194,12 @@ void QTigonEngine::engine_loop()
             jprocess["MaxIteration"]  = flow->maxIteration();
         }
 
+        int previousUsedBudget;
+        bool isTimeZero = true; bool isFirstIteration = true;
+        /// \todo estimate alpha given the data
+        double alphaIterations = 0.2; // smoothing factor for Iterations
+        double alphaBudget     = 0.2; // smoothing factor for Budget
+        double estTimeI, estUsedBudget;
         while(!flow->isTerminate()) {
             if(isRunning()) {
                 flow->incrementIteration();
@@ -198,6 +210,14 @@ void QTigonEngine::engine_loop()
                     emit signalIterationCounter(flow->currentIteration());
                 }
 
+                if(flow->budget() > 0) {
+                    previousUsedBudget = flow->usedBudget();
+                }
+
+                steady_clock::time_point start;
+                if(m_masterEndNode->isEstimateTime()) {
+                    start = steady_clock::now();
+                }
                 /// [] Evaluate
                 try {
                     flow->evaluate();
@@ -210,6 +230,47 @@ void QTigonEngine::engine_loop()
                     errMessage += QString(e.what());
                     emit engineError(errMessage);
                     return;
+                }
+                steady_clock::time_point end;
+                if(m_masterEndNode->isEstimateTime()) {
+                    end = steady_clock::now();
+                }
+
+                if((!isFirstIteration) && m_masterEndNode->isEstimateTime()) {
+                    milliseconds t_span = duration_cast<milliseconds> (end - start);
+                    double estTimeB;
+                    if(flow->budget() > 0) {
+                        int lastUsedBudget = flow->usedBudget() - previousUsedBudget;
+                        // exponential smoothing
+                        if(isTimeZero) {
+                            estUsedBudget = lastUsedBudget;
+                        } else {
+                            estUsedBudget = alphaBudget * lastUsedBudget +
+                                    (1.0-alphaBudget) * estUsedBudget;
+                        }
+                        double rIter = flow->remainingBudget() / estUsedBudget;
+                        estTimeB = t_span.count() * rIter;
+                    }
+                    if(flow->maxIteration() > 0) {
+                        int iterS = t_span.count() * flow->remainingIterations();
+                        // exponential smoothing
+                        if(isTimeZero) {
+                            estTimeI = iterS;
+                        } else {
+                            estTimeI = alphaIterations * iterS +
+                                    (1.0-alphaIterations) * estTimeI;
+                        }
+                        if(flow->budget() > 0) { // select the smallest
+                            estTimeI = (estTimeI < estTimeB) ? estTimeI : estTimeB;
+                        }
+                    }
+
+                    if((flow->maxIteration() > 0) ||
+                            ((flow->maxIteration() > 0) && (flow->budget() > 0))) {
+                        emit signalTimeCounter(estTimeI);
+                    } else if(flow->budget() > 0) {
+                        emit signalTimeCounter(estTimeB);
+                    }
                 }
 
                 /// [] Generate Logs
@@ -239,6 +300,10 @@ void QTigonEngine::engine_loop()
                     emit signalBudgetCounter(flow->usedBudget());
                 }
                 qDebug() << "finished: " << flow->currentIteration();
+                if(!isFirstIteration) {
+                    isTimeZero = false;
+                }
+                isFirstIteration = false;
             } else if(isPaused()) {
                 if(m_isLogProgress) {
                     jprocess["Paused"] = isPaused();

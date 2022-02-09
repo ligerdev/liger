@@ -38,19 +38,26 @@ IEngine::IEngine()
     , m_masterEndNode(0)
     , m_masterStartNodePresent(false)
     , m_masterEndNodePresent(false)
-    , m_iterationProgressInterface(0)
-    , m_budgetProgressInterface(0)
-    , m_iterationFutureProgress(0)
+    , m_iterationProgressInterface(nullptr)
+    , m_budgetProgressInterface(nullptr)
+    , m_timeProgressInterface(nullptr)
+    , m_iterationFutureProgress(nullptr)
+    , m_budgetFutureProgress(nullptr)
+    , m_timeFutureProgress(nullptr)
     , m_engineStatus(EngineStatus::IDLE)
     , m_maxIteration(0)
     , m_budget(0)
     , m_currentIteration(0)
     , m_usedBudget(0)
+    , m_maxTime(0)
+    , m_remainingTime(-1)
 {
     connect(this, SIGNAL(signalIterationCounter(int)),
             this, SLOT(receivedIterationCount(int)));
     connect(this, SIGNAL(signalBudgetCounter(int)),
             this, SLOT(receivedBudgetCount(int)));
+    connect(this, SIGNAL(signalTimeCounter(int)),
+            this, SLOT(receivedTimeCount(int)));
     connect(&m_iterationProgressWatcher, SIGNAL(canceled()), this, SLOT(exit()));
     connect(&m_iterationProgressWatcher, SIGNAL(finished()), this, SLOT(finished()));
     connect(&m_iterationProgressWatcher, SIGNAL(paused()), this, SLOT(pause()));
@@ -58,6 +65,10 @@ IEngine::IEngine()
     connect(&m_budgetProgressWatcher, SIGNAL(canceled()), this, SLOT(exit()));
     connect(&m_budgetProgressWatcher, SIGNAL(finished()), this, SLOT(finished()));
     connect(&m_budgetProgressWatcher, SIGNAL(paused()), this, SLOT(pause()));
+
+    connect(&m_timeProgressWatcher, SIGNAL(canceled()), this, SLOT(exit()));
+    connect(&m_timeProgressWatcher, SIGNAL(finished()), this, SLOT(finished()));
+    connect(&m_timeProgressWatcher, SIGNAL(paused()), this, SLOT(pause()));
 }
 
 IEngine::~IEngine()
@@ -70,6 +81,7 @@ IEngine::~IEngine()
 
     delete m_iterationProgressInterface;
     delete m_budgetProgressInterface;
+    delete m_timeProgressInterface;
 }
 
 /*!
@@ -263,6 +275,27 @@ void IEngine::start()
             return;
         }
 
+        if(m_masterEndNode->isEstimateTime()) {
+            m_timeProgressInterface = new QFutureInterface<void>;
+            m_timeProgressWatcher.setFuture(m_timeProgressInterface->future());
+            m_timeProgressInterface->setProgressRange(0, m_maxTime);
+            m_timeFutureProgress = ProgressManager::addTask(
+                        m_timeProgressInterface->future(),
+                        tr("Time Remaining"),
+                        Designer::Constants::TASK_ENGINE_RUN);
+
+            ICountingLabel* tLabel = new ICountingLabel();
+            tLabel->setLabelFormat(LABEL_FORMAT::TimeFormat);
+            tLabel->setMaxCount(m_maxTime);
+            m_timeFutureProgress->setWidget(tLabel);
+            m_timeProgressInterface->reportStarted();
+            m_timeSinceLastEstimate = 0;
+
+            m_timer = new QTimer();
+            connect(m_timer, SIGNAL(timeout()), this, SLOT(updateTimer()));
+            m_timer->start(1000);
+        }
+
         if(m_masterEndNode->isUseIteration()) {
             m_iterationProgressInterface = new QFutureInterface<void>;
             qDebug() << "Use iteration" << m_iterationProgressInterface;
@@ -328,6 +361,12 @@ void IEngine::pause()
             m_budgetProgressInterface->waitForFinished();
             m_budgetFutureProgress->setTitle("Engine Paused");
         }
+        if(m_timeProgressInterface) {
+            m_timer->stop();
+            m_timeProgressInterface->setPaused(true);
+            m_timeProgressInterface->waitForFinished();
+            m_timeFutureProgress->setTitle("Engine Pause");
+        }
         updateProcessNodeStatus(ProcessState::NODE_IN_QUEUE);
         emit enginePaused();
     }
@@ -376,6 +415,24 @@ void IEngine::resume()
             m_budgetProgressInterface->setProgressValue(m_usedBudget);
         }
 
+        if(m_timeProgressInterface) {
+            delete m_timeProgressInterface;
+            m_timeProgressInterface = new QFutureInterface<void>;
+            m_timeProgressWatcher.setFuture(m_timeProgressInterface->future());
+            m_timeProgressInterface->setProgressRange(0, m_maxTime);
+            m_timeFutureProgress = ProgressManager::addTask(
+                        m_timeProgressInterface->future(),
+                        tr("Remaining Time"),
+                        Designer::Constants::TASK_ENGINE_RUN);
+            ICountingLabel* label = new ICountingLabel();
+            label->setLabelFormat(LABEL_FORMAT::TimeFormat);
+            label->setMaxCount(m_maxTime);
+            m_timeFutureProgress->setWidget(label);
+            m_timeProgressInterface->reportStarted();
+            updateTimer();
+            m_timer->start(1000);
+        }
+
         m_result = QtConcurrent::run(this, &IEngine::run);
         updateProcessNodeStatus(ProcessState::NODE_RUNNING);
         emit engineResumed();
@@ -403,6 +460,13 @@ void IEngine::exit()
             delete m_budgetProgressInterface;
             m_budgetProgressInterface = 0;
         }
+        if(m_timeProgressInterface) {
+            resetTimer();
+            m_timeProgressInterface->reportCanceled();
+            m_timeProgressInterface->waitForFinished();
+            delete m_timeProgressInterface;
+            m_timeProgressInterface = nullptr;
+        }
         m_result.waitForFinished();
     } else if(isPaused()) {
         m_engineStatus = EngineStatus::IDLE;
@@ -416,6 +480,12 @@ void IEngine::exit()
             delete m_budgetProgressInterface;
             m_budgetProgressInterface = 0;
         }
+        if(m_timeProgressInterface) {
+            resetTimer();
+            m_timeFutureProgress->close();
+            delete m_timeProgressInterface;
+            m_timeProgressInterface = nullptr;
+        }
         m_result.waitForFinished();
     }
     updateProcessNodeStatus(ProcessState::NODE_DONE);
@@ -425,6 +495,9 @@ void IEngine::exit()
 
 void IEngine::finished()
 {
+    if(m_timeProgressInterface) {
+        resetTimer();
+    }
     m_engineStatus = EngineStatus::IDLE;
     updateProcessNodeStatus(ProcessState::NODE_DONE);
     unloadDesign();
@@ -476,6 +549,48 @@ void IEngine::receivedBudgetCount(int budget)
                                  , QMessageBox::Ok, QMessageBox::Ok);
     }
     }
+}
+
+void IEngine::receivedTimeCount(int time)
+{
+    if(!m_timeProgressInterface) {
+        return;
+    }
+    if(time > m_maxTime) {
+        m_maxTime = time;
+        m_timeProgressInterface->setProgressRange(0, m_maxTime);
+    }
+    m_remainingTime = time;
+    m_timeSinceLastEstimate = 0;
+}
+
+void IEngine::updateTimer()
+{
+    if(!m_timeProgressInterface) {
+        return;
+    }
+    ICountingLabel* label =
+            static_cast<ICountingLabel*>(m_timeFutureProgress->widget());
+    if(!label) {
+        return;
+    }
+
+    m_timeProgressInterface->setProgressValue(m_maxTime-m_remainingTime);
+    int time = m_remainingTime-m_timeSinceLastEstimate;
+    if((m_remainingTime<0) || (time<0)) {
+        label->setText(QString("Loading ..."));
+    } else {
+        label->updateCount(time);
+        m_timeSinceLastEstimate += 1000;
+    }
+}
+
+void IEngine::resetTimer()
+{
+    m_timer->stop();
+    m_remainingTime = 0;
+    m_timeSinceLastEstimate = 0;
+    updateTimer();
 }
 
 void IEngine::updateProcessNodeStatus(ProcessState state)
@@ -547,6 +662,9 @@ void IEngine::run()
         if(m_budgetProgressInterface) {
             m_budgetProgressInterface->reportFinished();
         }
+        if(m_timeProgressInterface) {
+            m_timeProgressInterface->reportFinished();
+        }
         return;
     }
 
@@ -559,6 +677,9 @@ void IEngine::run()
     }
     if(m_budgetProgressInterface) {
         m_budgetProgressInterface->reportFinished();
+    }
+    if(m_timeProgressInterface) {
+        m_timeProgressInterface->reportFinished();
     }
 }
 

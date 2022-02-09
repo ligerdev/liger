@@ -113,6 +113,11 @@ bool EndNodeDialog::isUseIteration() const
     return ui->iterCheckBox->isChecked();
 }
 
+bool EndNodeDialog::isEstimateTime() const
+{
+    return ui->estimateTime->isChecked();
+}
+
 bool EndNodeDialog::isPauseByIteration() const
 {
     return ui->iterPauseCheckBox->isChecked();
@@ -191,6 +196,11 @@ void EndNodeDialog::setUseBugdget(bool b)
 void EndNodeDialog::setUseIter(bool b)
 {
     ui->iterCheckBox->setChecked(b);
+}
+
+void EndNodeDialog::setEstimateTime(bool b)
+{
+    ui->estimateTime->setChecked(b);
 }
 
 QString EndNodeDialog::iterPausePoints() const

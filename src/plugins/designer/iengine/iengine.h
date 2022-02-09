@@ -24,6 +24,7 @@
 #include <QString>
 #include <QList>
 #include <QObject>
+#include <QTimer>
 
 namespace Designer {
 
@@ -94,6 +95,7 @@ signals:
     /// Iteration and budget signals
     void signalIterationCounter(int iter);
     void signalBudgetCounter(int budget);
+    void signalTimeCounter(int time);
 
     /// Logging signals
     void signalPopulationsLog(const QJsonObject& jobj);
@@ -118,6 +120,8 @@ signals:
 private slots:
     void receivedIterationCount(int iter);
     void receivedBudgetCount(int budget);
+    void receivedTimeCount(int time);
+    void updateTimer();
 
 ///\todo Move all protected data to be private
 protected:
@@ -137,21 +141,30 @@ protected:
     QFuture<void> m_result;
     QFutureInterface<void>* m_iterationProgressInterface;
     QFutureInterface<void>* m_budgetProgressInterface;
+    QFutureInterface<void>* m_timeProgressInterface;
     QFutureWatcher<void>    m_iterationProgressWatcher;
     QFutureWatcher<void>    m_budgetProgressWatcher;
+    QFutureWatcher<void>    m_timeProgressWatcher;
     Core::FutureProgress*   m_iterationFutureProgress;
     Core::FutureProgress*   m_budgetFutureProgress;
+    Core::FutureProgress*   m_timeFutureProgress;
     volatile EngineStatus   m_engineStatus;
     int m_maxIteration;
     int m_budget;
     int m_currentIteration;
     int m_usedBudget;
 
+    int m_maxTime;
+    int m_remainingTime;
+    int m_timeSinceLastEstimate;
+
 private:
     void updateProcessNodeStatus(ProcessState state);
     void resetLogFlags();
 
     bool masterNodesPresent();
+
+    void resetTimer();
 
     QList<ILogManager*> m_logManagers;
     // Disable copying of an engine.
@@ -160,6 +173,8 @@ private:
 
     bool m_masterStartNodePresent;
     bool m_masterEndNodePresent;
+
+    QTimer* m_timer;
 };
 
 } // namespace Designer
