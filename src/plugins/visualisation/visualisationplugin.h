@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -23,6 +23,7 @@ namespace Visualisation {
 class QvizParallelCoordinatesNodeFactory;
 class QVizScatterPlotNodeFactory;
 class QVizMScatterPlotNodeFactory;
+class QVizGlyphsPlotNodeFactory;
 
 namespace Internal {
 
@@ -43,6 +44,7 @@ private:
     QvizParallelCoordinatesNodeFactory* m_qvizparallelcoordinatesnodefactory;
     QVizScatterPlotNodeFactory* m_qvizScatterPlotNodeFactory;
     QVizMScatterPlotNodeFactory* m_qvizMScatterPlotNodeFactory;
+    QVizGlyphsPlotNodeFactory* m_qvizGlyphsPlotNodeFactory;
 };
 
 } // namespace Internal

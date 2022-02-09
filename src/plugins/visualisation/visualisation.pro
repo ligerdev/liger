@@ -32,6 +32,14 @@ win32 {
 
 
 SOURCES +=  \
+    core/glyphsplotdatamodel.cpp \
+    core/glyphsplotwidget.cpp \
+    core/parallelcoordinatesplotdatamodel.cpp \
+    core/scatterplotdatamodel.cpp \
+    core/selectglyphsplotvarsform.cpp \
+    core/selectscatterplotvarsform.cpp \
+    qvizglyphsplotnode.cpp \
+    qvizglyphsplotnodefactory.cpp \
     visualisationplugin.cpp \
     qvizparallelcoordinatesnodefactory.cpp \
     qvizparallelcoordinatesnode.cpp \
@@ -50,6 +58,14 @@ SOURCES +=  \
     iterationinteruptor.cpp
 
 HEADERS +=  \
+    core/glyphsplotdatamodel.h \
+    core/glyphsplotwidget.h \
+    core/parallelcoordinatesplotdatamodel.h \
+    core/scatterplotdatamodel.h \
+    core/selectglyphsplotvarsform.h \
+    core/selectscatterplotvarsform.h \
+    qvizglyphsplotnode.h \
+    qvizglyphsplotnodefactory.h \
     visualisationplugin.h  \
     visualisation_global.h  \
     visualisationconstants.h \
@@ -75,5 +91,7 @@ RESOURCES += \
 QTQUICK_COMPILER_SKIPPED_RESOURCES += visualisation.qrc
 
 FORMS += \
+    core/selectglyphsplotvarsform.ui \
     core/selectplotvarsform.ui \
+    core/selectscatterplotvarsform.ui \
     core/visualisationwidget.ui

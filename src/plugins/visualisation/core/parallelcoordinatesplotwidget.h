@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -22,6 +22,8 @@
 class SelectPlotVarsForm;
 
 namespace Visualisation {
+class ParallelCoordinatesPlotDataModel;
+
 class ParallelCoordinatesPlotWidget : public VisualisationWidget
 {
     Q_OBJECT
@@ -33,6 +35,11 @@ public:
 
     SelectPlotVarsForm *varsSelectForm() const;
 
+    void setBoxPlotData(const QVector<QVector<QVector<qreal>>> &boxplotData);
+
+signals:
+    void setDisplayPreferences(bool disp);
+
 private slots:
     void updateSelection();
 
@@ -40,6 +47,9 @@ protected:
     void showVariableSelectionForm();
 
 private:
+    ParallelCoordinatesPlotDataModel *data() const;
+    void setView(VisualisationViewModel *view);
+
     SelectPlotVarsForm* m_varsSelectForm;
 };
 

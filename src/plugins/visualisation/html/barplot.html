@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+
+<head>
+  <script src="qrc:///visualisation/lib/d3.v6/d3.min.js"></script>
+  <script src="qrc:///visualisation/lib/jquery/jquery-2.2.2.min.js"></script>
+  <script src="qrc:///visualisation/lib/venn/venn.js"></script>
+  <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+
+  <style>
+    body,
+    html {
+      margin: auto auto auto auto;
+      height: 100%;
+      width: calc();
+      overflow: hidden;
+      font: 10px sans-serif;
+    }
+
+    #plot {
+      width: calc();
+      height: 50%;
+      float: center;
+    }
+
+    .venntooltip {
+      position: absolute;
+      text-align: center;
+      /* width: 128px;
+      height: 16px; */
+      background: #333;
+      color: #ddd;
+      padding: 1px;
+      border: 0px;
+      border-radius: 4px;
+      opacity: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="plot"></div>
+  <script>
+    new QWebChannel(qt.webChannelTransport,
+      function(channel) {
+
+        // Define Margins
+        var margin = {top: 20, right: 40, bottom: 40, left: 50};
+        window["margin"] = margin;
+
+        // Flag that indicates which plot to use
+        var currentPlot = 0;
+        window["currentPlot"] = currentPlot;
+
+        var dataModel = channel.objects.dataModel;
+        window["dataModel"] = dataModel;
+
+        receiveObjReduction();
+        drawPlot();
+        dataModel.objReductionDataChanged.connect(updateObjReductionReceived)
+        dataModel.visualisationTypeChanged.connect(changeVisualisationType)
+      }
+    );
+
+    var changeToBarPlot = function() {
+      currentPlot = 0;
+      updatePlot();
+    }
+
+    var changeToVennPlot = function() {
+      currentPlot = 1;
+      updatePlot();
+    }
+
+    var changeToVariancePCAPlot = function() {
+      currentPlot = 2;
+      updatePlot();
+    }
+
+    var clearPlot = function() {
+      var svgSelection = d3.select("svg");
+      if (!svgSelection.empty()) {
+        svgSelection.remove();
+      }
+    }
+
+    var receiveObjReduction = function() {
+      var objReductionDataJson = dataModel.objReductionDataJson;
+      window["objReductionDataJson"] = objReductionDataJson;
+    }
+
+    var changeVisualisationType = function() {
+      var visualisationSelected = dataModel.visualisationType;
+      currentPlot = visualisationSelected;
+      updatePlot();
+    }
+
+    var drawPlot = function() {
+
+      switch(currentPlot) {
+      case 0:
+          drawBarPlot();  
+          break;
+        case 1:
+          drawVennPlot();
+          break;
+        case 2:
+          drawVariancePCAPlot();
+          break;
+      }
+    }
+
+    var updatePlot = function() {
+      clearPlot();
+      drawPlot();
+    }
+
+    var updateObjReductionReceived = function() {
+      receiveObjReduction();
+      updatePlot();
+    }
+    
+    var drawBarPlot = function() {
+      
+      if (objReductionDataJson[1] == null) {
+        // there is no data to draw
+        return;
+      }
+
+      // format the data
+      var data = objReductionDataJson.map(function(d) {
+        return {
+          name: d["name"],
+          error: +d["error"]*100,
+          essential: d["isObjectiveEssential"]
+        };
+      });
+
+      // sort data
+      data.sort(function(b, a) {
+        return a.error - b.error;
+      });
+
+      // Define margins and plot size
+      var width = $(window).width() - 10 - margin.left - margin.right;
+      var height = $(window).height() - 10 - margin.top - margin.bottom;
+
+      // define the scale of the axis
+      var xScale = d3.scaleBand()
+        .range([0, width])
+        .domain(data.map(function(d) { return d.name; }))
+        .padding(0.2);
+
+      var y_max = d3.max(data, d => d.error)
+      var y_limit = Math.min(100, Math.ceil((y_max+5)/10)*10);
+      var yScale = d3.scaleLinear()
+        .range([height, 0])
+        .domain([0, y_limit]).nice();
+
+      var xAxis = d3.axisBottom(xScale);
+      var yAxis = d3.axisLeft(yScale);
+
+      // Append the svg object to the body of the page
+       var barplot = d3.select("#plot")
+         .append("svg")
+           .attr("width", width + margin.left + margin.right)
+           .attr("height", height + margin.top + margin.bottom)
+         .append("g")
+           .attr("transform", 
+                 "translate(" + margin.left + "," + margin.top + ")");
+
+      // Add the x-axis
+      barplot.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+      // Add the y-axis
+      barplot.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+       // Add a label to the y-axis
+      barplot.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .attr("font-size", "10pt")
+        .style("text-anchor", "middle")
+        .text("Error incurred if an objective were to be discarded (%)");
+
+      // barplot.append("text")
+      //   .attr("class", "title")
+      //   .attr("x", width / 2)
+      //   .attr("y", margin.top)
+      //   .attr("font-size", "10pt")
+      //   .attr("font-weight", "bold")
+      //   .attr('text-anchor', 'middle')
+      //   .text('Error incurred if an objective were to be discarded (%)');
+
+      // add the bars
+      barplot.selectAll("mybar")
+        .data(data)
+        .enter()
+        .append("rect")
+          .attr("x", d => xScale(d.name))
+          .attr("y", d => yScale(d.error))
+          .attr("width", xScale.bandwidth())
+          .attr("height", function(d) { return height - yScale(d.error); })
+          .attr("fill", function(d) {
+            if(d.essential) {return "#004885"}
+            else {return "#FF8B00"} 
+          ;});
+
+      // add the values of the bars
+      barplot.selectAll("mybar")
+        .data(data)
+        .enter()
+        .append("text")
+          .attr("class", "value")
+          .attr("x", d => xScale(d.name) + xScale.bandwidth()/2)
+          .attr("y", d => yScale(d.error+0.1))
+          .attr("text-anchor", "middle")
+          .text(d => `${d.error.toFixed(2)}%`);
+
+
+      // Draw the legend
+
+      // Essential
+      // Marker
+      barplot.append("rect")
+        .attr("class", "legendItem")
+        .attr("x", width - margin.right - 60)
+        .attr("y", margin.top)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#004885");
+      // Label
+      barplot.append("text")
+        .attr("class", "legendLabel")
+        .attr("x", width - margin.right - 60 + 20 + 2)
+        .attr("y", margin.top + 20/2)
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle")
+        .style("font", "14px sans-serif")
+        .text("Essential");
+
+      // Redundant
+      // Marker
+      barplot.append("rect")
+        .attr("class", "legendItem")
+        .attr("x", width - margin.right - 60)
+        .attr("y", margin.top + 30)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", "#FF8B00");
+      // Label
+      barplot.append("text")
+        .attr("class", "legendLabel")
+        .attr("x", width - margin.right - 60 + 20 + 2)
+        .attr("y", margin.top + 30 + 20/2)
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle")
+        .style("font", "14px sans-serif")
+        .text("Redundant");
+    }
+
+    var drawVariancePCAPlot = function() {
+      
+      // format the data
+      var data = objReductionDataJson.map(function(d) {
+        return {
+          name: d["name"],
+          error: +d["variancePerPCA"]*100,
+        };
+      });
+
+      for(i in data) {
+        let res = Number(i) + 1;
+        data[i].name = "PC";
+        data[i].name += res;
+      }
+
+      // Define margins and plot size
+      var width = $(window).width() - 10 - margin.left - margin.right;
+      var height = $(window).height() - 10 - margin.top - margin.bottom;
+
+      // define the scale of the axis
+      var xScale = d3.scaleBand()
+        .range([0, width])
+        .domain(data.map(function(d) { return d.name; }))
+        .padding(0.2);
+
+      var y_max = d3.max(data, d => d.error)
+      var y_limit = Math.min(100, Math.ceil((y_max+5)/10)*10);
+      var yScale = d3.scaleLinear()
+        .range([height, 0])
+        .domain([0, y_limit]).nice();
+
+      var xAxis = d3.axisBottom(xScale);
+      var yAxis = d3.axisLeft(yScale);
+
+      // Append the svg object to the body of the page
+       var barplot = d3.select("#plot")
+         .append("svg")
+           .attr("width", width + margin.left + margin.right)
+           .attr("height", height + margin.top + margin.bottom)
+         .append("g")
+           .attr("transform", 
+                 "translate(" + margin.left + "," + margin.top + ")");
+
+      // Add the x-axis
+      barplot.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+      // Add the y-axis
+      barplot.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+       // Add a label to the y-axis
+      barplot.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .attr("font-size", "10pt")
+        .style("text-anchor", "middle")
+        .text("Normalised eigenvalues for each Principal Component (%)");
+
+      // add the bars
+      barplot.selectAll("mybar")
+        .data(data)
+        .enter()
+        .append("rect")
+          .attr("x", d => xScale(d.name))
+          .attr("y", d => yScale(d.error))
+          .attr("width", xScale.bandwidth())
+          .attr("height", function(d) { return height - yScale(d.error); })
+          .attr("fill", "#004885");
+
+      // add the values of the bars
+      barplot.selectAll("mybar")
+        .data(data)
+        .enter()
+        .append("text")
+          .attr("class", "value")
+          .attr("x", d => xScale(d.name) + xScale.bandwidth()/2)
+          .attr("y", d => yScale(d.error+0.1))
+          .attr("text-anchor", "middle")
+          .text(d => `${d.error.toFixed(2)}%`);
+    }
+
+    var drawVennPlot = function() {
+      
+      // format the data
+      var myScale = d3.scaleLinear().range([0, 20]).domain([0, 1]);
+      var sets = [];
+      for(i in objReductionDataJson) {
+        var name1 = objReductionDataJson[i].name;
+        var variance = objReductionDataJson[i].variancePerObjective;
+        var varScaled = myScale(variance);
+        var objs1 = {sets: [name1], size: varScaled};
+        sets.push(objs1);
+        for(j in objReductionDataJson[i].correlatedObjectives) {
+          var name2 = objReductionDataJson[i].correlatedObjectives[j].name;
+          if(name1 != name2) {
+            var strength = objReductionDataJson[i].correlatedObjectives[j].strength;
+            var strScaled = myScale(variance*strength);
+            var intersection = [name1, name2];
+            var objs2 = {sets: intersection, size: strScaled};
+            sets.push(objs2);
+          }
+        }
+      }
+
+      // Define plot size
+      var width = $(window).width() - 10 - margin.left - margin.right;
+      var height = $(window).height() - 10 - margin.top - margin.bottom;
+      
+      var chart = venn.VennDiagram()
+        .width(width)
+        .height(height);
+      var vennPlot = d3.select("#plot")
+        .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", 
+                "translate(" + margin.left + "," + margin.top + ")");
+      
+      vennPlot.datum(sets).call(chart);
+
+      var tooltip = d3.select("body").append("div")
+        .attr("class", "venntooltip");
+
+      vennPlot.selectAll("path")
+        .style("stroke-opacity", 0)
+        .style("stroke", "#fff")
+        .style("stroke-width", 3)
+
+
+      d3.selectAll("#plot .venn-circle text")
+        .style("font-size", "24px")
+        .style("font-weight", "100");
+
+      d3.selectAll("#plot .venn-circle,#plot .venn-intersection")
+        .on("mouseover", function(event, d) {
+
+          // sort all the areas relative to the current item
+          venn.sortAreas(vennPlot, d);
+
+          // Display a tooltip with the current size
+          var nameToDisplay = "";
+          var names = d.sets;
+          if(names.length == 1) {
+            nameToDisplay = names[0];
+          } else {
+            nameToDisplay = names[0] + " - " + names[1];
+          }
+
+          var value = myScale.invert(d.size)*100;
+          tooltip.transition().duration(400).style("opacity", .9);
+          tooltip.text(nameToDisplay + ": " + value.toFixed(2) + "%");
+
+          // highlight the current path
+          var selection = d3.select(this).transition("tooltip").duration(400);
+          selection.select("path")
+            .style("fill-opacity", d.sets.length == 1 ? .4 : .1)
+            .style("stroke-opacity", 1);
+
+        })
+        .on("mousemove", function(event, d) {
+          tooltip.style("left", (event.pageX) + "px")
+                 .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", function(event, d) {
+          tooltip.transition().duration(400).style("opacity", 0);
+          var selection = d3.select(this).transition("tooltip").duration(400);
+          selection.select("path")
+            .style("fill-opacity", d.sets.length == 1 ? .25 : .0)
+            .style("stroke-opacity", 0);
+        });
+
+    }
+
+    var resizeTimer;
+    $(window).resize(function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updatePlot(), 100);
+    });
+  </script>
+
+</body>
+
+</html>

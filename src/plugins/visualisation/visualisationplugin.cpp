@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -18,6 +18,7 @@
 #include <visualisation/qvizmscatterplotnodefactory.h>
 #include <visualisation/qvizscatterplotnodefactory.h>
 #include <visualisation/qvizparallelcoordinatesnodefactory.h>
+#include <visualisation/qvizglyphsplotnodefactory.h>
 
 #include <coreplugin/icore.h>
 
@@ -29,6 +30,7 @@ VisualisationPlugin::VisualisationPlugin()
     : m_qvizparallelcoordinatesnodefactory(0)
     , m_qvizScatterPlotNodeFactory(0)
     , m_qvizMScatterPlotNodeFactory(0)
+    , m_qvizGlyphsPlotNodeFactory(0)
 {
     // Create your members
 }
@@ -51,10 +53,12 @@ bool VisualisationPlugin::initialize(const QStringList &arguments, QString *erro
     m_qvizparallelcoordinatesnodefactory = new Visualisation::QvizParallelCoordinatesNodeFactory;
     m_qvizScatterPlotNodeFactory = new Visualisation::QVizScatterPlotNodeFactory;
     m_qvizMScatterPlotNodeFactory = new Visualisation::QVizMScatterPlotNodeFactory;
+    m_qvizGlyphsPlotNodeFactory = new Visualisation::QVizGlyphsPlotNodeFactory;
 
     addAutoReleasedObject(m_qvizparallelcoordinatesnodefactory);
     addAutoReleasedObject(m_qvizScatterPlotNodeFactory);
     addAutoReleasedObject(m_qvizMScatterPlotNodeFactory);
+    addAutoReleasedObject(m_qvizGlyphsPlotNodeFactory);
 
     return true;
 }

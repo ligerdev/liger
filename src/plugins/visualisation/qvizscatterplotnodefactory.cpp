@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -23,7 +23,7 @@ using namespace Visualisation;
 QVizScatterPlotNodeFactory::QVizScatterPlotNodeFactory()
 {
     Designer::DesignerToolBox* dtoolBox = Designer::Internal::DesignEditorPlugin::instance()->designerToolBox();
-    m_toolBoxButton = dtoolBox->registerVisualization(this, QString("ScatterPlot visualization node."),
+    m_toolBoxButton = dtoolBox->registerVisualization(this, QString("ScatterPlot visualization node"),
                       QString(":/visualisation/images/qvizscatterplotnode.svg"));
 }
 

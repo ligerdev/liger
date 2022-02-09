@@ -3,7 +3,8 @@
 <meta charset="utf-8">
 
 <head>
-  <script src="qrc:///visualisation/lib/d3.v3/d3.min.js"></script>
+  <script src="qrc:///visualisation/lib/d3.v6/d3.min.js"></script>
+  <script src="qrc:///visualisation/lib/colorbar.js"></script>
   <script src="qrc:///visualisation/lib/jquery/jquery-2.2.2.min.js"></script>
   <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
 
@@ -28,14 +29,14 @@
     }
 
     circle {
-      fill-opacity: .9;
+      fill-opacity: .5;
     }
 
     circle.hidden {
       fill: #ccc !important;
     }
 
-    .extent {
+    .selection {
       fill: #000;
       fill-opacity: .125;
       stroke: #fff;
@@ -45,8 +46,8 @@
     div.tooltip {
       position: absolute;
       text-align: center;
-      width: 100px;
-      height: 30px;
+      /* width: 100px; */
+      /* height: 30px; */
       padding: 1px;
       font: 10px sans-serif;
       background: lightsteelblue;
@@ -54,6 +55,7 @@
       border-radius: 4px;
       pointer-events: none;
     }
+
 
     #checkTable {
       position: relative;
@@ -75,6 +77,7 @@
 
 <body>
   <div id="scatter_plot" class="scatter"></div>
+  <div id="colorbar_plot" class="colorbar"></div>
   <script>
     new QWebChannel(qt.webChannelTransport,
       function(channel) {
@@ -87,8 +90,17 @@
         dataModel.dataChanged.connect(updateDataReceived);
         dataModel.namesChanged.connect(updateNamesReceived);
         dataModel.selectedIndicesChanged.connect(updateSelectionsReceived);
+        initializeToolTip();
       }
     );
+
+    var initializeToolTip = function() {
+      // Define the div for the tooltip
+      var toolTipsDiv = d3.select("#scatter_plot").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
+      window["toolTipsDiv"] = toolTipsDiv;
+    }
 
     var clearPlot = function() {
       var svgSelection = d3.select("svg");
@@ -111,7 +123,7 @@
     var receiveSelections = function() {
       var selectedIndices = dataModel.selectedIndices;
       // only the first two indices will be considered
-      var indices = [selectedIndices[0], selectedIndices[1]];
+      var indices = [selectedIndices[0], selectedIndices[1], selectedIndices[2], selectedIndices[3]];
       window["indices"] = indices;
     }
 
@@ -137,7 +149,6 @@
 
     var drawPlot = function() {
       var radius = 3;
-      var colorgen = d3.scale.category20();
       var margin = {
         top: 20,
         right: 40,
@@ -146,37 +157,42 @@
       };
       var width = $(window).width() - 10 - margin.left - margin.right;
       var height = $(window).height() - 10 - margin.top - margin.bottom;
-      var x = d3.scale.linear().range([0, width]);
-      var y = d3.scale.linear().range([height, 0]);
-      var xAxis = d3.svg.axis().scale(x).orient("bottom");
-      var yAxis = d3.svg.axis().scale(y).orient("left");
-      var z = d3.scale.category10();
 
-      var seriesNames = d3.keys(data[1])
-        .filter(function(d) {
-          return d == names[indices[1]];
-        })
-        .sort();
+      var xScale = d3.scaleLinear().range([0, width]);
+      var yScale = d3.scaleLinear().range([height, 0]);
+      var xAxis = d3.axisBottom(xScale);
+      var yAxis = d3.axisLeft(yScale);
+      var colorScale = d3.scaleSequential().interpolator(d3.interpolateSpectral);
+
+      if(data[1] == null) {
+        // there is no data to draw
+        return;
+      }
+
       var xname = names[indices[0]];
+      var yname = names[indices[1]];
+      var zname = names[indices[2]];
+      var wname = names[indices[3]];
 
-      // Map the data to an array of arrays of {x, y} tuples.
-      var series = seriesNames.map(function(series) {
-        return data.map(function(d) {
-          return {
-            x: +d[xname],
-            y: +d[series]
-          };
-        });
+      var series = data.map(function(d) {
+        return {
+          x: +d[xname],
+          y: +d[yname],
+          z: +d[zname],
+          w: +d[wname]
+        };
       });
 
       // Compute the scales’ domains.
-      x.domain(d3.extent(d3.merge(series), function(d) {
-        return d.x;
-      })).nice();
-      y.domain(d3.extent(d3.merge(series), function(d) {
-        return d.y;
-      })).nice();
+      var x_extremes = d3.extent(series, d => d.x);
+      var y_extremes = d3.extent(series, d => d.y);
+      var z_extremes = d3.extent(series, d => d.z);
+      var w_extremes = d3.extent(series, d => d.w);
+      xScale.domain(x_extremes).nice();
+      yScale.domain(y_extremes).nice();
+      colorScale.domain(w_extremes).nice();
 
+      // Construct the plot area
       var svg = d3.select("#scatter_plot").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -184,6 +200,7 @@
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
       window["svg"] = svg;
 
+      // Add the x-axis
       svg.append("g")
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
@@ -198,10 +215,10 @@
         .style("text-anchor", "middle")
         .text(names[indices[0]]);
 
-      // Add the y-axis.
+      // Add the y-axis
       svg.append("g")
         .attr("class", "y axis")
-        .call(d3.svg.axis().scale(y).orient("left"));
+        .call(d3.axisLeft(yScale));
 
       // Add a label to the y-axis
       svg.append("text")
@@ -214,137 +231,197 @@
         .style("text-anchor", "middle")
         .text(names[indices[1]]);
 
-      // Define the div for the tooltip
-      var toolTipsDiv = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+      // After redrawing the graph hide the tool tip
+      if (typeof toolTipsDiv !== 'undefined') {
+        toolTipsDiv.transition()
+          .duration(200)
+          .style("opacity", 0.0);
+      }
 
       // Brushing
-      var brush = d3.svg.brush()
-        .x(x)
-        .y(y)
-        .on("brushstart", brushstart)
+      var brush = d3.brush()
+        .extent([[0, 0], [width, height]])
+        .on("start", brushstart)
         .on("brush", brushmove)
-        .on("brushend", brushend);
+        .on("end", brushend);
       window["brush"] = brush;
 
       svg.append("g")
         .attr("class", "brush")
-        .call(brush)
+        .call(brush);
 
-      svg.append("defs").append("clipPath")
-        .attr("id", "clip")
-        .append("rect")
-        .attr("width", width)
-        .attr("height", height);
+      var rScale = d3.scaleSqrt()
+        .domain(z_extremes)
+        .range([2, 10]);
 
-      // Add points
-      svg.selectAll(".series")
-        .data(series)
-        .enter().append("g")
-        .attr("class", "series")
-        .style("fill", function(d, i) {
-          return z(i);
-        })
-        .selectAll(".point")
-        .data(function(d) {
-          return d;
-        })
-        .enter().append("circle")
-        .attr("class", "point")
-        .attr("r", radius)
-        .attr("cx", function(d) {
-          return x(d.x);
-        })
-        .attr("cy", function(d) {
-          return y(d.y);
-        })
-        .on("mouseover", function(d) {
-          d3.select(this)
-            .transition()
-            .attr("r", 2.0 * radius)
-            .style("fill", "red")
-        })
-        .on("mouseover.tooltp", function(d) {
-          toolTipsDiv.transition()
-            .duration(200)
-            .style("opacity", .9);
-          toolTipsDiv.html("x-value: " + d.x.toFixed(4) + "<br/>" + "y-value: " + d.y.toFixed(4))
-            .style("left", (d3.event.pageX + 10) + "px")
-            .style("top", (d3.event.pageY - 28) + "px");
-        })
-        .on("mouseout", function(d) {
-          d3.select(this)
-            .transition()
-            .attr("r", radius)
-            .style("fill", function(d, i) {
-              return z(i);
-            })
-        })
-        .on("mouseout.tooltip", function() {
-          toolTipsDiv.transition()
-            .duration(200)
-            .style("opacity", 0.0);
-        })
-        .on('mousedown', function() {
-          brush_elm = svg.select(".brush").node();
-          new_click_event = new Event('mousedown');
-          new_click_event.pageX = d3.event.pageX;
-          new_click_event.clientX = d3.event.clientX;
-          new_click_event.pageY = d3.event.pageY;
-          new_click_event.clientY = d3.event.clientY;
-          brush_elm.dispatchEvent(new_click_event);
-        });
-    }
+      scatterPlotPointSize  = dataModel.displayScatterPlotPointSize;
+      scatterPlotPointColor = dataModel.displayScatterPlotPointColor;
 
-    // Clear the previously-active brush, if any.
-    var brushCell;
+      // Add the points
+      svg.append('g')
+         .selectAll(".point")
+         .data(series)
+         .enter()
+         .append("circle")
+           .attr("class", "point")
+           //.attr("r", radius)
+           .attr("cx", d => xScale(d.x))
+           .attr("cy", d => yScale(d.y))
+           .attr("r", function(d) {
+             if(scatterPlotPointSize) {return rScale(d.z)}
+             else {return 3}
+           ;})
+           .style("fill", function(d) {
+             if(scatterPlotPointColor) {return colorScale(d.w)}
+             else {return "steelblue"}
+           ;})
+           .style("fill-opacity", .5)
+           .on("mouseover", pointHighlight)
+           .on("mouseover.tooltip", showToolTip)
+           .on("mouseout", pointNormal)
+           .on("mouseout.tooltip", hideTooltip);
 
-    function brushstart(p) {
-      if (brushCell !== p) {
-        svg.call(brush.clear());
-        x.domain(d3.extent(d3.merge(series), function(d) {
-          return d.x;
-        })).nice();
-        y.domain(d3.extent(d3.merge(series), function(d) {
-          return d.y;
-        })).nice();
-        brushCell = p;
+      if(scatterPlotPointColor) {
+      // Add color bar
+      legend({
+        svgg: svg,
+        color: colorScale,
+        title: wname,
+        width: 500 + width/2 - 500/2,
+        marginLeft: width/2 - 500/2
+      });
       }
-    }
 
-    // Highlight the selected circles.
-    function brushmove(p) {
-      var e = brush.extent();
-      svg.selectAll("circle").classed("hidden", function(d) {
-        return e[0][0] > d.x || d.x > e[1][0] || e[0][1] > d.y || d.y > e[1][1];
-      });
-      selectedPoints();
-    }
+      // *****************
+      // Tooltip functions
+      // *****************
 
-    // If the brush is empty, select all circles.
-    function brushend() {
-      if (brush.empty()) svg.selectAll(".hidden").classed("hidden", false);
-      dataModel.setBrushedIndices(selected_points_index);
-      var e = brush.extent();
-      dataModel.setBrushedBounds(indices[0], e[0][0], e[1][0]);
-      dataModel.setBrushedBounds(indices[1], e[0][1], e[1][1]);
-    }
+      // change color of selected point and make it slightly bigger
+      function pointHighlight() {
+        d3.select(this)
+          .transition()
+          .attr("r", function(d) {
+            if(scatterPlotPointSize) {return rScale(d.z)+3}
+            else {return 6}
+          ;})
+          .style("fill", "red")
+          .style("fill-opacity", .9);
+      }
 
-    function selectedPoints() {
-      var e = brush.extent();
-      var itr = 0;
-      var selected_points_index = new Array();
-      var spts = svg.selectAll("circle").filter(function(d, i) {
-        if (e[0][0] < d.x && d.x < e[1][0] && e[0][1] < d.y && d.y < e[1][1]) {
-          selected_points_index[itr] = i;
-          itr = itr + 1;
-          return true;
+      // show a tooltip next to selected point
+      function showToolTip(event, d) {
+
+        var xtext = names[indices[0]] + ": " + d.x.toFixed(3);
+        var ytext = names[indices[1]] + ": " + d.y.toFixed(3);
+        var ztext = names[indices[2]] + ": " + d.z.toFixed(3);
+        var wtext = names[indices[3]] + ": " + d.w.toFixed(3);
+        var text = xtext + "<br/>" + ytext;
+        if(scatterPlotPointSize) {
+            text += "<br/>" + ztext;
+            if(scatterPlotPointColor) {
+                text += "<br/>" + wtext;
+            }
         } else {
-          return false;
+            if(scatterPlotPointColor) {
+                text += "<br/>" + wtext;
+            }
         }
-      });
-      window["selected_points_index"] = selected_points_index;
+
+        //var text = xtext + "<br/>" + ytext + "<br/>" + ztext + "<br/>" + wtext;
+
+        toolTipsDiv.html(text)
+          .style("left", (event.pageX + 10) + "px")
+          .style("top", (event.pageY - 28) + "px");
+
+        toolTipsDiv.transition()
+          .duration(200)
+          .style("opacity", .9);
+      }
+
+      // once a point is no longer selected change it back to normal
+      function pointNormal(event, d) {
+        d3.select(this)
+          .transition()
+          .attr("r", function(d) {
+             if(scatterPlotPointSize) {return rScale(d.z)}
+             else {return 3}
+           ;})
+          .style("fill", function(d) {
+             if(scatterPlotPointColor) {return colorScale(d.w)}
+             else {return "steelblue"}
+           ;})
+          .style("fill-opacity", .5);
+      }
+
+      // once a point is no longer selected hide tooltip
+      function hideTooltip() {
+        toolTipsDiv.transition()
+          .duration(200)
+          .style("opacity", 0.0);
+      }
+
+      // ***************
+      // Brush functions
+      // ***************
+
+      // Clear the previously-active brush, if any.
+      var brushCell;
+      function brushstart(event, p) {
+        if (brushCell !== p) {
+          svg.call(brush.clear());
+          brushCell = p;
+        }
+      }
+
+      // Highlight the points inside the brushed area,
+      // and make the fill of the others go gray.
+      function brushmove(event) {
+
+        var e = event.selection,
+           x0 = e[0][0],
+           y0 = e[0][1],
+           dx = e[1][0] - x0,
+           dy = e[1][1] - y0;
+
+        // select all points outside of brushed area
+        svg.selectAll("circle").classed("hidden", function(d) {
+          return x0 > xScale(d.x) || xScale(d.x) > x0 + dx || y0 > yScale(d.y) || yScale(d.y) > y0 + dy;
+        });
+      }
+
+      // Once a user stops brushing an area:
+      // 1. construct an array with the indices of the selected points;
+      // 2. send the selected point and bounds of the brushed are to Tigon; and
+      // 3. in case no area is brushed then highlight all points.
+      function brushend(event) {
+        if (event.selection === null) {
+          svg.selectAll(".hidden").classed("hidden", false);
+        } else {
+
+          var e = event.selection,
+           x0 = e[0][0],
+           y0 = e[0][1],
+           dx = e[1][0] - x0,
+           dy = e[1][1] - y0;
+
+          var itr = 0;
+          var selected_points_index = new Array();
+          var spts = svg.selectAll("circle").filter(function(d, i) {
+            if (x0 < xScale(d.x) && xScale(d.x) < x0 + dx && y0 < yScale(d.y) && yScale(d.y) < y0 + dy) {
+              selected_points_index[itr] = i;
+              itr = itr + 1;
+              return true;
+            } else {
+              return false;
+            }
+          });
+          window["selected_points_index"] = selected_points_index;
+
+          dataModel.setBrushedIndices(selected_points_index);
+          dataModel.setBrushedBounds(indices[0], xScale.invert(e[0][0]), xScale.invert(e[1][0]));
+          dataModel.setBrushedBounds(indices[1], yScale.invert(e[1][1]), yScale.invert(e[0][1]));
+        }
+      }
     }
 
     var resizeTimer;

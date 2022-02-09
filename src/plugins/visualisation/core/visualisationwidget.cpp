@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -130,24 +130,19 @@ void VisualisationWidget::setSelectedIndices(const QVariantList &selected)
     m_data->setSelectedIndices(selected);
 }
 
-void VisualisationWidget::setBoxPlotData(const QVector<QVector<QVector<qreal> > > &boxplotData)
-{
-    m_data->setBoxplotData(boxplotData);
-}
-
 void VisualisationWidget::setGoals(const QVariantList &goals)
 {
-    m_data->setGoals(goals);
+    data()->setGoals(goals);
 }
 
 void VisualisationWidget::setThresholds(const QVariantList &thresholds)
 {
-    m_data->setThresholds(thresholds);
+    data()->setThresholds(thresholds);
 }
 
 void VisualisationWidget::setPreferenceDirerctions(const QVariantList &preferenceDirections)
 {
-    m_data->setPreferenceDirerctions(preferenceDirections);
+    data()->setPreferenceDirerctions(preferenceDirections);
 }
 
 QVector<QVector<qreal> > VisualisationWidget::rawData() const
@@ -313,10 +308,10 @@ void VisualisationWidget::on_actionSave_As_triggered()
     }
 }
 
-void VisualisationWidget::on_actionSelect_Vars_triggered()
-{
-    showVariableSelectionForm();
-}
+//void VisualisationWidget::on_actionSelect_Vars_triggered()
+//{
+//    showVariableSelectionForm();
+//}
 
 void VisualisationWidget::setView(VisualisationViewModel *view)
 {
@@ -325,6 +320,4 @@ void VisualisationWidget::setView(VisualisationViewModel *view)
     centralWidget()->layout()->addWidget(view);
     connect(m_data, &VisualisationDataModel::brushedIndicesChanged,
             this, &VisualisationWidget::brushedIndicesUpdated);
-    connect(this, &VisualisationWidget::setDisplayPreferences,
-            m_data, &VisualisationDataModel::setDisplayPreferences);
 }

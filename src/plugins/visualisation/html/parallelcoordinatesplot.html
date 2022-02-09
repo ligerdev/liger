@@ -136,7 +136,9 @@
                 updatePlot();
                 dataModel.dataChanged.connect(updatePlot);
                 dataModel.selectedIndicesChanged.connect(updatePlot);
-                dataModel.boxplotDataChanged.connect(updatePlot);
+                if (typeof dataModel.boxplotDataChanged !== 'undefined') {
+                    dataModel.boxplotDataChanged.connect(updatePlot);
+                }
                 dataModel.goalsChanged.connect(updatePlot);
                 dataModel.thresholdsChanged.connect(updatePlot);
                 dataModel.displayPreferencesChanged.connect(updatePlot);
@@ -209,18 +211,33 @@
             }
 
             var boxplotDataJson = dataModel.boxplotDataJson;
-            //alert(boxplotDataJson[0][selNamesIdx[0]]);
-            for (i = 0; i < nsolutions; i++) {
-                for (j = 0; j < ndimensions; j++) {
-                    var bvalue = boxplotDataJson[i][selNamesIdx[j]];
-                    var map_boxplot = {};
-                    map_boxplot["id"] = i;
-                    map_boxplot["whiskersBottom"] = bvalue["whiskersBottom"];
-                    map_boxplot["firstQuartile"] = bvalue["firstQuartile"];
-                    map_boxplot["secondQuartile"] = bvalue["secondQuartile"];
-                    map_boxplot["thirdQuartile"] = bvalue["thirdQuartile"];
-                    map_boxplot["whiskersTop"] = bvalue["whiskersTop"];
-                    boxplot_data[i][j] = map_boxplot;
+            if (typeof boxplotDataJson !== 'undefined') {
+                for (i = 0; i < nsolutions; i++) {
+                    for (j = 0; j < ndimensions; j++) {
+                        var bvalue = boxplotDataJson[i][selNamesIdx[j]];
+                        var map_boxplot = {};
+                        map_boxplot["id"] = i;
+                        map_boxplot["whiskersBottom"] = bvalue["whiskersBottom"];
+                        map_boxplot["firstQuartile"] = bvalue["firstQuartile"];
+                        map_boxplot["secondQuartile"] = bvalue["secondQuartile"];
+                        map_boxplot["thirdQuartile"] = bvalue["thirdQuartile"];
+                        map_boxplot["whiskersTop"] = bvalue["whiskersTop"];
+                        boxplot_data[i][j] = map_boxplot;
+                    }
+                }
+            } else {
+                for (i = 0; i < nsolutions; i++) {
+                    for (j = 0; j < ndimensions; j++) {
+                        var bvalue = (dataJson[i])[selNames[j]];
+                        var map_boxplot = {};
+                        map_boxplot["id"] = i;
+                        map_boxplot["whiskersBottom"] = bvalue;
+                        map_boxplot["firstQuartile"] = bvalue;
+                        map_boxplot["secondQuartile"] = bvalue;
+                        map_boxplot["thirdQuartile"] = bvalue;
+                        map_boxplot["whiskersTop"] = bvalue;
+                        boxplot_data[i][j] = map_boxplot;
+                    }
                 }
             }
             //alert(boxplot_data[0][0]);

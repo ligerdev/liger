@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -33,9 +33,24 @@ public:
     ~QvizParallelCoordinatesNode();
     void show();
 
+protected slots:
+    void updateRobustness(const QStringList& indicators,
+                          const QVector<qreal>& parameters);
+
 private:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void customiseWidget(VisualisationWidget* widget);
+
+    ParallelCoordinatesPlotWidget* widgetObj() const;
+
+    void setData();
+    void setBoxPlotData();
+    void setupShowPrefsCheckbox(QString checkboxStyle);
+    static QVector<qreal> getBoxplotEntry(Tigon::Representation::IElementSPtr elm,
+                                          Tigon::OptimizationType type);
+
+    QVector<QVector<Tigon::Representation::IElementSPtr> > m_elemData;
+    QCheckBox*   m_toggleDispPreferencesButton;
 };
 
 } // namespace Visualisation

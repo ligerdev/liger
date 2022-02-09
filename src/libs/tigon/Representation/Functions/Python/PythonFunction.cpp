@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -33,6 +33,9 @@ using namespace boost::filesystem;
 /// link with pythonXX_d.dll - unless BOOST_DEBUG_PYTHON is defined.
 /// If you want “python debugging”, then make sure BOOST_DEBUG_PYTHON is defined.
 #include <boost/python/detail/wrap_python.hpp>
+#ifdef PYTHON_LINUX
+#include <dlfcn.h>
+#endif
 namespace py = boost::python;
 
 using namespace Json;
@@ -93,6 +96,26 @@ PythonFunction::PythonFunction()
 {
     defineIsNumInputsModifiable(false);
     defineIsNumoutputsModifiable(false);
+#ifdef PYTHON_LINUX
+#ifdef PYTHON_3_10
+    dlopen("libpython3.10.so", RTLD_LAZY | RTLD_GLOBAL);
+#endif
+#ifdef PYTHON_3_9
+    dlopen("libpython3.9.so", RTLD_LAZY | RTLD_GLOBAL);
+#endif
+#ifdef PYTHON_3_8
+    dlopen("libpython3.8.so", RTLD_LAZY | RTLD_GLOBAL);
+#endif
+#ifdef PYTHON_3_7
+    dlopen("libpython3.7m.so", RTLD_LAZY | RTLD_GLOBAL);
+#endif
+#ifdef PYTHON_3_6
+    dlopen("libpython3.6m.so", RTLD_LAZY | RTLD_GLOBAL);
+#endif
+#ifdef PYTHON_2_7
+    dlopen("libpython2.7.so", RTLD_LAZY | RTLD_GLOBAL);
+#endif
+#endif
     Py_Initialize();
 }
 

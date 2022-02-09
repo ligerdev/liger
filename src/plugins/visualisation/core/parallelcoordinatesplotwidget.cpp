@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2012-2021 The University of Sheffield (www.sheffield.ac.uk)
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
 ** This file is part of Liger.
 **
@@ -14,8 +14,8 @@
 **
 ****************************************************************************/
 #include <visualisation/core/parallelcoordinatesplotwidget.h>
+#include <visualisation/core/parallelcoordinatesplotdatamodel.h>
 #include <visualisation/core/visualisationviewmodel.h>
-#include <visualisation/core/visualisationdatamodel.h>
 #include <visualisation/visualisationconstants.h>
 #include <visualisation/core/selectplotvarsform.h>
 
@@ -39,7 +39,8 @@ ParallelCoordinatesPlotWidget::~ParallelCoordinatesPlotWidget()
 
 void ParallelCoordinatesPlotWidget::initialise()
 {
-    VisualisationDataModel* dataModel = new VisualisationDataModel;
+    ParallelCoordinatesPlotDataModel* dataModel =
+            new ParallelCoordinatesPlotDataModel;
     VisualisationViewModel* view = new VisualisationViewModel(this);
     view->setUrl(QUrl("qrc:/visualisation/html/parallelcoordinatesplot.html"));
     view->setDataModel(dataModel);
@@ -87,4 +88,22 @@ void ParallelCoordinatesPlotWidget::showVariableSelectionForm()
 SelectPlotVarsForm *ParallelCoordinatesPlotWidget::varsSelectForm() const
 {
     return m_varsSelectForm;
+}
+
+void ParallelCoordinatesPlotWidget::setBoxPlotData(
+        const QVector<QVector<QVector<qreal>>> &boxplotData)
+{
+    data()->setBoxplotData(boxplotData);
+}
+
+void ParallelCoordinatesPlotWidget::setView(VisualisationViewModel *view)
+{
+    VisualisationWidget::setView(view);
+    connect(this, &ParallelCoordinatesPlotWidget::setDisplayPreferences,
+            data(), &ParallelCoordinatesPlotDataModel::setDisplayPreferences);
+}
+
+ParallelCoordinatesPlotDataModel* ParallelCoordinatesPlotWidget::data() const
+{
+    return static_cast<ParallelCoordinatesPlotDataModel*>(VisualisationWidget::data());
 }
