@@ -106,6 +106,8 @@ public:
     qint64 budget() const { return m_budget; }
     void setBudget(qint64 budget) { m_budget = budget; }
 
+    virtual bool isEstimateTime() const {return false;}
+
     /// Auto Pause
     /// \todo move to IEndNode
     virtual bool isPauseByIteration() const {return false;}

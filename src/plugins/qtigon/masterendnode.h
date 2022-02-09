@@ -33,6 +33,7 @@ class QTIGON_EXPORT MasterEndNode : public Designer::IProcessNode
 
     Q_PROPERTY(bool isUseBudget READ isUseBudget WRITE setUseBudget)
     Q_PROPERTY(bool isUseIteration READ isUseIteration WRITE setUseIteration)
+    Q_PROPERTY(bool isEstimateTime READ isEstimateTime WRITE setEstimateTime)
 
     Q_PROPERTY(QString iterPausePoints READ iterPausePoints WRITE setIterPausePoints)
     Q_PROPERTY(QString budgetPausePoints READ budgetPausePoints WRITE setBudgetPausePoints)
@@ -59,6 +60,10 @@ public:
 
     bool isUseBudget() const;
     void setUseBudget(bool isUseBudget);
+
+    /// Estimate time
+    bool isEstimateTime() const;
+    void setEstimateTime(bool estimateTime);
 
     /// Auto Pause \note only available through Liger GUI
     bool isPauseByIteration() const;
@@ -105,6 +110,7 @@ private:
     EndNodeDialog* m_dialog;
     bool           m_useIter;
     bool           m_useBudget;
+    bool           m_estimateTime;
     bool           m_pauseByIter;
     bool           m_pauseByBudget;
     bool           m_logPopulation;

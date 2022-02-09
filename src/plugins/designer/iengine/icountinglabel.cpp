@@ -44,6 +44,20 @@ void ICountingLabel::updateCount(int count)
 
     QString content;
     switch(m_labelFormat) {
+    case LABEL_FORMAT::TimeFormat:
+    {
+        long milli = count;
+        long hr = milli / 3600000;
+        milli = milli - 3600000 * hr;
+        long min = milli / 60000;
+        milli = milli - 60000 * min;
+        long sec = milli / 1000;
+        milli = milli - 1000 * sec;
+
+        content = QString::number(hr) + "h:" + QString::number(min) + "m:" +
+                  QString::number(sec)+ "s";
+        break;
+    }
     case LABEL_FORMAT::CountVsMax:
         content = QString::number(count) + "/" + QString::number(m_maxCount);
         break;

@@ -35,6 +35,7 @@ MasterEndNode::MasterEndNode()
     : m_dialog(new EndNodeDialog())
     , m_useIter(false)
     , m_useBudget(false)
+    , m_estimateTime(false)
     , m_pauseByIter(false)
     , m_pauseByBudget(false)
 {
@@ -113,6 +114,7 @@ void MasterEndNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         m_dialog->setBudget(op->budget());
         m_dialog->setUseBugdget(isUseBudget());
         m_dialog->setUseIter(isUseIteration());
+        m_dialog->setEstimateTime(isEstimateTime());
         m_dialog->setPauseByIteration(isPauseByIteration());
         m_dialog->setPauseByBudget(isPauseByBudget());
         m_dialog->show();
@@ -282,6 +284,16 @@ void MasterEndNode::setUseIteration(bool useIter)
     m_useIter = useIter;
 }
 
+void MasterEndNode::setEstimateTime(bool estimateTime)
+{
+    m_estimateTime = estimateTime;
+}
+
+bool MasterEndNode::isEstimateTime() const
+{
+    return m_estimateTime;
+}
+
 void MasterEndNode::acceptChangesSlot()
 {
     ITermination* op = static_cast<ITermination*>(data());
@@ -302,6 +314,8 @@ void MasterEndNode::acceptChangesSlot()
     } else {
         op->resetBudget();
     }
+
+    setEstimateTime(m_dialog->isEstimateTime());
 
     setPauseByIteration(m_dialog->isPauseByIteration());
     setPauseByBudget(m_dialog->isPauseByBudget());

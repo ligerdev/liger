@@ -24,7 +24,8 @@ namespace Designer {
 enum LABEL_FORMAT {
     CountOnly  = 0,
     CountVsMax = 1,
-    Percentage = 2
+    Percentage = 2,
+    TimeFormat = 3
 };
 
 class ICountingLabel : public QLabel
