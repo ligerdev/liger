@@ -1,0 +1,86 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on: [push]
+  # Triggers the workflow on push or pull request events but only for the master branch
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  # workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
+
+    env:
+      COMPILER_SPEC: linux-g++
+      BOOST_SRC: boost_1_78_0.tar.gz
+      BOOST_URL: https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/
+      BOOST_TOOLSET: gcc
+      TEST_SCRIPT: run_all_unit_tests_linux.sh
+      
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Install packages and python modules
+        uses: |
+              sudo apt-get -y install g++-7 mesa-common-dev \
+              libglu1-mesa-dev qt5-default qt5-qmake qtbase5-dev \
+              libqt5webengine5 libqt5webengine-data libqt5webenginewidgets5 \
+              libqt5webenginecore5 qtwebengine5-dev qtwebengine5-private-dev \
+              qtwebengine5-dev-tools libqt5widgets5 libqt5webchannel5 libqt5webchannel5-dev \
+              libqt5svg5 libqt5svg5-dev libqt5help5 libqt5xmlpatterns5 libqt5xmlpatterns5-dev \
+              qttools5-dev qttools5-dev-tools qtxmlpatterns5-dev-tools python3.6 dh-python \
+              libpython3-dev libpython3.6-dev python3-dev python3-distutils python3-lib2to3 python3.6-dev
+              sudo python -m pip install tabulate # python modules
+              
+      - name: Some setup
+        uses: |
+              sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20
+              sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20
+              
+      - name: Install Boost      
+        uses: |
+              wget ${BOOST_URL}/${BOOST_SRC}
+              mkdir boost
+              tar --strip-components=1 -xf ${BOOST_SRC} -C boost
+              rm -f ${BOOST_SRC}
+              cd boost
+              ./bootstrap.sh --with-python-version=3.6
+              ./b2 --with-filesystem --with-system --with-python link=shared threading=multi toolset=${BOOST_TOOLSET} stage
+              cd ..
+        
+              export BOOST_INCLUDE="${TRAVIS_BUILD_DIR}/boost"
+              export BOOST_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
+              export BOOST_PYTHON_LIB="${TRAVIS_BUILD_DIR}/boost/stage/lib"
+              
+      - name: Build liger
+        run: |
+             mkdir build
+             cd build
+             qmake --version
+             python --version
+             export QT_SELECT=qt5
+             echo BOOST_INCLUDE ${BOOST_INCLUDE}
+             echo BOOST_LIB ${BOOST_LIB}
+             echo BOOST_PYTHON_LIB ${BOOST_PYTHON_LIB}
+             qmake ../liger.pro -r -spec ${COMPILER_SPEC}
+             
+      - name: Run script
+        run: |
+             make -s
+             cd tests/bin
+             chmod +x ${TEST_SCRIPT}
+             ./${TEST_SCRIPT}
+             python failure_reporter.py .
