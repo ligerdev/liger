@@ -21,6 +21,7 @@ jobs:
     runs-on: ubuntu-18.04
 
     env:
+      MYHOME: /home/runner/work/liger/liger
       COMPILER_SPEC: linux-g++
       BOOST_SRC: boost_1_78_0.tar.gz
       BOOST_URL: https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/
@@ -33,8 +34,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
-      - name: Install packages and python modules
+      - name: Install packages
         run: |
+              sudo apt-get update
               sudo apt-get -y install g++-7 mesa-common-dev \
               libglu1-mesa-dev qt5-default qt5-qmake qtbase5-dev \
               libqt5webengine5 libqt5webengine-data libqt5webenginewidgets5 \
@@ -45,14 +47,13 @@ jobs:
               libpython3-dev libpython3.6-dev python3-dev python3-distutils python3-lib2to3 python3.6-dev
               sudo python -m pip install tabulate # python modules
               
-      - name: Some setup
+      - name: Setup Compiler
         run: |
               sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 20
               sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 20
               
-      - name: Install Boost      
+      - name: Install Boost
         run: |
-              pwd
               wget ${BOOST_URL}/${BOOST_SRC}
               mkdir boost
               tar --strip-components=1 -xf ${BOOST_SRC} -C boost
@@ -62,15 +63,13 @@ jobs:
               ./b2 --with-filesystem --with-system --with-python link=shared threading=multi toolset=${BOOST_TOOLSET} stage
 
               
-      - name: Build liger
+      - name: Build Liger
         run: |
-             pwd
-             export HOME=/home/runner/work/liger/liger
-             export BOOST_INCLUDE=${HOME}/boost
-             export BOOST_LIB=${HOME}/boost/stage/lib
-             export BOOST_PYTHON_LIB=${HOME}/boost/stage/lib
-             ls ${BOOST_INCLUDE}
-             ls ${BOOST_LIB}             
+             echo HOME ${HOME}
+             echo GITHUB_WORKSPACE ${GITHUB_WORKSPACE}
+             export BOOST_INCLUDE=${MYHOME}/boost
+             export BOOST_LIB=${MYHOME}/boost/stage/lib
+             export BOOST_PYTHON_LIB=${MYHOME}/boost/stage/lib
              mkdir build
              cd build
              qmake --version
@@ -79,12 +78,12 @@ jobs:
              echo BOOST_INCLUDE ${BOOST_INCLUDE}
              echo BOOST_LIB ${BOOST_LIB}
              echo BOOST_PYTHON_LIB ${BOOST_PYTHON_LIB}
-             qmake ../liger.pro -r -spec ${COMPILER_SPEC}
+             qmake "DISABLE_PYTHON=yes" ../liger.pro -r -spec ${COMPILER_SPEC}
              make -s
              
       - name: Run script
         run: |
-             cd tests/bin
+             cd build/tests/bin
              chmod +x ${TEST_SCRIPT}
              ./${TEST_SCRIPT}
              python failure_reporter.py .
