@@ -19,6 +19,8 @@
 #include <tigon/tigon_global.h>
 #include <tigon/tigonconstants.h>
 
+#include <tigon/Representation/Problems/ParamConnect.h>
+
 #include <tigon/Representation/Properties/ProblemProperties.h>
 #include <tigon/Representation/Properties/ElementProperties.h>
 
@@ -46,7 +48,7 @@ public:
     /// Variable/parameter/objective/constraint/unused Properties
     /// \note The fastest way to get ids, names, unites, descriptions,
     /// and types of the elements is to get their properties first and
-    /// then access the corresponding member function.
+    /// then access the corresspoding member function.
     TVector<ElementProperties> dPrpts()            const;
     TVector<ElementProperties> oPrpts()            const;
     TVector<ElementProperties> pPrpts()            const;
@@ -208,51 +210,21 @@ public:
     /// *******************
 
     TVector<bool> isExternalParameters() const;
+    int           numberExternalParameters() const;
 
-    int numberExternalParameters() const;
-    TVector<int> externalParametersIndices() const;
-    TVector<bool> usePriorForExternalParameters() const;
+    TVector<bool> paramConnectIsConnected() const;
+    bool          paramConnectIsConnected(size_t idx) const;
 
-    /// external parameters with shared variables (Kriging functions)
-    void allocateParameterKrigings(int size);
-    TVector<KrigingSPtr> externalParameterKrigings() const;
-    void defineExternalParameterKriging(int idx, KrigingSPtr externalParameterKriging);
+    TVector<size_t> paramConnectOutputIdx() const;
+    size_t          paramConnectOutputIdx(size_t idx) const;
 
-    void allocateDVec2KrigingsMap(int size);
-    TVector<TVector<int>> dVec2KrigingMap() const;
-    void defineDVec2KrigingMap(int idx, const TVector<int> &d2kMap);
+    TVector<OutputType> paramConnectOutputType() const;
+    OutputType          paramConnectOutputType(size_t idx) const;
 
-    /// external parameters without shared variables
-    void allocateExtIndividualParams(int size);
-    TVector<IDistribution*> externalParameterList(int idx) const;
-    void addExtParamData(int idx, IDistribution* dist);
+    TVector<bool> paramConnectIsMaximization() const;
+    bool          paramConnectIsMaximization(size_t idx) const;
 
-    /// **************************
-    /// External parameters Groups
-    /// **************************
-
-    TVector<bool> isExternalParameterInGroup();
-    void allocateParameterGroups(int size);
-
-    // external parameter groups
-    TVector<TVector<int>> externalParameterGroups() const;
-    TVector<int> extGroupDependentVars(size_t idx) const;
-    void defineParameterGroup(const TVector<TVector<int>> &groups);
-    void defineParameterGroup(int idx, const TVector<int> &group);
-    void defineGroupDependentVars(int idx, const TVector<int> & vars);
-
-    // add data to groups
-    /*!
-     * \brief Add group data for grouped linking variables
-     * \param idx The index of the group
-     * \param data shared pointer of a SampleVector container
-     * \param id For now, specifically for TSP. Ignore it.
-     */
-    void addGroupData(int idx, SampleVectorsSPtr data, int id=0);
-    // get the time-series data for group with index idx
-    TimeSeriesContainerSPtr groupData(int idx, int id=0);
-    // maximum number of runs so far
-    int nMaxRuns() const;
+    TVector<TVector<int>> connectedFunctions() const;
 
 private:
     /// Helper functions
@@ -324,29 +296,11 @@ private:
     /// External parameters
     /// *******************
 
+    TVector<ParamConnect>  m_paramConnect;
+    TVector<TVector<int>>  m_connectedFunctions;
+
     // indicates if a parameter is external or not
     TVector<bool>             m_pvecExternal;
-
-    /// Individual external parameters with shared varariables
-    TVector<TVector<int>>     m_d2KrigingMap;
-    TVector<KrigingSPtr>      m_pvecExternalKrigings;
-
-    /// Individual external parameters without shared variables
-    // stores the data for individual external parameters without
-    // shared variables. The data is stored as a distribution
-    TVector<TVector<IDistribution*>> m_pvecExternalIndividualData;
-
-    /// External parameters that belong to a group
-    // keeps the indices of the parameters that belong to a group
-    TVector<TVector<int>>     m_pvecExternalGroups;
-    // keeps the indices of the decision variables that each group depends on
-    TVector<TVector<int>>     m_pvecExternalGroupsDependentVars;
-
-    // stores the data for each group of external parameters
-    /// \todo consider changing TMap<int,...> to TMap<String,...>
-    /// Deals with problems with shared input linking variables
-    /// with different format (at the moment only works for the TTP)
-    TVector<TMap<int,TimeSeriesContainerSPtr>> m_pvecExternalGroupData;
 };
 
 } // namespace Representation

@@ -22,7 +22,8 @@ SUBDIRS = \
     test_fann \
     test_objectivereduction \
     test_moga \
-    test_nsgaiii
+    test_nsgaiii \
+    test_paramconnect
 
 # Include matlab plugin
 include(../../../matlabcheck.pri)

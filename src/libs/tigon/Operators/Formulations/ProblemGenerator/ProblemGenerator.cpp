@@ -45,14 +45,12 @@ namespace Operators {
 using namespace Tigon::Representation;
 
 ProblemGenerator::ProblemGenerator()
-    : m_groupedDataProcessed(false)
 {
     initialise();
 }
 
 ProblemGenerator::ProblemGenerator(IPSet *ipset)
     : IFormulation(ipset)
-    , m_groupedDataProcessed(false)
 {
     initialise();
 }
@@ -116,9 +114,6 @@ void ProblemGenerator::initialise()
     addProperty("ubounds", "ubounds", getTType(TString));
     addProperty("paramValueVec", "paramValueVec", getTType(TString));
     addProperty("externalParam", "externalParam", getTType(TString));
-    addProperty("externalParamGroups", "externalParamGroups", getTType(TString));
-    addProperty("externalParamGroupDataPathes", "externalParamGroupDataPathes",
-                getTType(TString));
     addProperty("setGoals", "setGoals", getTType(TString));
     addProperty("goals", "goals", getTType(TString));
     addProperty("priorities", "priorities", getTType(TString));
@@ -134,10 +129,6 @@ void ProblemGenerator::initialise()
 
 void ProblemGenerator::evaluateNode()
 {
-    if(!m_groupedDataProcessed) {
-        processExternalParamGroupData();
-        m_groupedDataProcessed=true;
-    }
     IFormulation::evaluateNode();
 }
 
@@ -160,10 +151,10 @@ ProblemDefinitionStatus ProblemGenerator::setProblemDataJson(const TString &str)
     if(!jobj.contains("funcPrpts"))   return Undefined;
     if(!jobj.contains("iprts"))       return Undefined;
     if(!jobj.contains("oprts"))       return Undefined;
+
     if(!jobj.contains("lbs"))         return Undefined;
     if(!jobj.contains("ubs"))         return Undefined;
     if(!jobj.contains("pVector"))     return Undefined;
-
     if(!jobj.contains("setGoals"))    return Undefined;
     if(!jobj.contains("goals"))       return Undefined;
     if(!jobj.contains("priorities"))  return Undefined;
@@ -286,7 +277,7 @@ ProblemDefinitionStatus ProblemGenerator::setProblemDataJson(const TString &str)
     //qDebug() << "[4] Boxconstraints";
     BoxConstraintsDataSPtr box = prob->boxConstraints();
     TVector<IElement> lowerBounds, upperBounds;
-    for(int i=0; i<lbs.size(); i++) {
+    for(size_t i=0; i<lbs.size(); i++) {
         lowerBounds.push_back(IElement(lbs[i]));
         upperBounds.push_back(IElement(ubs[i]));
     }
@@ -298,7 +289,7 @@ ProblemDefinitionStatus ProblemGenerator::setProblemDataJson(const TString &str)
     // This should also involve chaning the properties in functions
     prob->defineParameterVector(pVector);
 
-    /// [6] Goals and thresholds
+    /// [6] Goals, priorities and thresholds
     //qDebug() << "[6] Goals and thresholds";
     prob->defineSetGoalVector(setGoals);
     prob->defineGoalVector(realVecToElemVec(goals));
@@ -455,12 +446,6 @@ ProblemDefinitionStatus ProblemGenerator::processFormulation()
     // This should also involve chaning the properties in functions
     problem->defineParameterVector(m_paramValues);
     problem->defineExternalParameters(m_isExternalParams);
-    problem->defineParameterGroup(m_externalParamGroups);
-
-    ///\todo Checkout groupDataPathes
-    {
-        // std::cout << "todo Checkout groupDataPathes" << std::endl;
-    }
 
     /// [6] Goals, priorities and thresholds
     //qDebug() << "[6] Goals and thresholds";
@@ -489,8 +474,7 @@ TString ProblemGenerator::iprts() const
     JsonDocument jdoc;
     JsonArray jarray;
     TVector<IFunctionSPtr> funcs = functionVec();
-    for(int i=0; i<funcs.size(); i++) {
-        IFunctionSPtr func = funcs[i];
+    for(auto func : funcs) {
         JsonArray innerArray = toJsonArray(func->inputPrpts());
         jarray.push_back(innerArray);
     }
@@ -541,8 +525,7 @@ TString ProblemGenerator::oprts() const
     JsonDocument jdoc;
     JsonArray jarray;
     TVector<IFunctionSPtr> funcs = functionVec();
-    for(int i=0; i<funcs.size(); i++) {
-        IFunctionSPtr func = funcs[i];
+    for(auto func : funcs) {
         JsonArray innerArray = toJsonArray(func->outputPrpts());
         jarray.push_back(innerArray);
     }
@@ -661,8 +644,8 @@ TString ProblemGenerator::functionTypesJson() const
 {
     TStringList list;
     TVector<IFunctionSPtr> funcs = functionVec();
-    for(int i=0; i<funcs.size(); i++) {
-        list.push_back(funcs[i]->typeStr());
+    for(auto func : funcs) {
+        list.push_back(func->typeStr());
     }
     return join(list, TagDelimiter);
 }
@@ -676,8 +659,8 @@ TString ProblemGenerator::functionPathes() const
 {
     TStringList list;
     TVector<IFunctionSPtr> funcs = functionVec();
-    for(int i=0; i<funcs.size(); i++) {
-        list.push_back(funcs[i]->path());
+    for(auto func : funcs) {
+        list.push_back(func->path());
     }
     return join(list, TagDelimiter);
 }
@@ -828,83 +811,6 @@ TVector<IElementSPtr> ProblemGenerator::realVecToElemVec(const TVector<double> &
     std::transform(vec.cbegin(), vec.cend(), std::back_inserter(res),
                    [](double val) {return IElementSPtr(new IElement(val));});
     return res;
-}
-
-TString ProblemGenerator::externalParamGroupDataPathes() const
-{
-    return join(m_groupDataPathes, TagDelimiter);
-}
-
-void ProblemGenerator::defineExternalParamGroupDataPathes(const TString &pathes)
-{
-    m_groupDataPathes = split(pathes, TagDelimiter);
-}
-
-void ProblemGenerator::processExternalParamGroupData()
-{
-    for(const TString &path : m_groupDataPathes) {
-        XMLDocument xmlDoc;
-
-        if(xmlDoc.LoadFile(path.c_str()) == XML_SUCCESS) {
-
-            XMLElement* dataElm = xmlDoc.FirstChildElement("GroupData");
-            XMLElement* endDataElm = xmlDoc.LastChildElement("GroupData");
-            if(dataElm) {
-                XMLElement* group = dataElm->FirstChildElement("Group");
-                while(group) {
-                    if(group == endDataElm) {
-                        break;
-                    }
-
-                    int idx = toInt(TString(group->Attribute("index")));
-
-                    // data vector
-                    XMLElement* vec = group->FirstChildElement("RealVector");
-                    XMLElement* endVec = group->LastChildElement();
-                    SampleVectorsSPtr priorDataGroup = SampleVectorsSPtr(new SampleVectors());
-
-                    while(vec) {
-                        TString vecString(vec->GetText());
-#ifdef TIGON_DEBUG
-                        std:: cout << vecString << endl;
-#endif
-                        TStringList vecList = split(vecString, ",");
-                        TVector<double> priorData;
-                        std::transform(vecList.begin(), vecList.end(),
-                                       std::back_inserter(priorData),
-                                       [](const TString & str) {return toDouble(str);});
-
-                        priorDataGroup->addSample(priorData);
-
-                        if(vec == endVec) {
-                            break;
-                        } else {
-                            vec = vec->NextSiblingElement();
-                        }
-                    }
-                    problem()->addGroupData(idx, priorDataGroup);
-
-                    group = group->NextSiblingElement();
-                }
-            }
-        }
-    }
-}
-
-TString ProblemGenerator::externalParamGroups() const
-{
-    JsonDocument jdoc;
-    JsonArray array = toJsonArray(problem()->externalParameterGroups());
-    jdoc.setArray(array);
-    return jdoc.toJson(JsonDocument::Compact);
-}
-
-void ProblemGenerator::defineExternalParamGroups(const TString &groupsString)
-{
-    JsonDocument jdoc = JsonDocument::fromJson(groupsString);
-    JsonArray outArray = jdoc.array();
-    fromJsonArray(outArray, m_externalParamGroups);
-    return;
 }
 
 } // namespace Operators

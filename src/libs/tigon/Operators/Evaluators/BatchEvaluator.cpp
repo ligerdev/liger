@@ -50,11 +50,11 @@ void BatchEvaluator::evaluateNode()
     /// This function can have more than one output.
     if(!m_hasChecked) {
         // Check if matlab function only
-        TVector<IFunctionSPtr> funcs = this->problem()->functionVec();
-        if(funcs.size() > 1) {
-            throw TException(this->className(),
-                             BATCH_EVAL_COUNT_ERROR);
-        }
+//        TVector<IFunctionSPtr> funcs = this->problem()->functionVec();
+//        if(funcs.size() > 1) {
+//            throw TException(this->className(),
+//                             BATCH_EVAL_COUNT_ERROR);
+//        }
         m_hasChecked = true;
     }
 

@@ -174,6 +174,7 @@ SOURCES += \
     Representation/Constraints/NonLinearConstraintsData.cpp \
     Representation/PSets/PSetBase.cpp \
     Representation/Mappings/IMappingPrivate.cpp \
+    Representation/Problems/ParamConnect.cpp \
     Representation/Properties/ElementProperties.cpp \
     Representation/Properties/ElementPropertiesFactory.cpp \
     Representation/Properties/ObjectiveReductionData.cpp \
@@ -304,6 +305,7 @@ HEADERS += \
     Operators/ObjectiveReduction/IObjectiveReduction.h \
     Operators/ObjectiveReduction/LPCA.h \
     Operators/ObjectiveReduction/NLMVUPCA.h \
+    Representation/Problems/ParamConnect.h \
     Representation/Properties/ObjectiveReductionData.h \
     Tigon.h \
     Utils/ObjectiveReduction/MVUPCABasedObjectiveReduction.h \
