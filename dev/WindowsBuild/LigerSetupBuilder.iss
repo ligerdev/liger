@@ -95,6 +95,8 @@ begin
   MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.7', 'MATLABROOT', MatlabRootFolder); // 2019b
   MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.8', 'MATLABROOT', MatlabRootFolder); // 2020a
   MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.9', 'MATLABROOT', MatlabRootFolder); // 2020b
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.10', 'MATLABROOT', MatlabRootFolder); // 2021a
+  MatlabInstalled := RegQueryStringValue(HKLM, 'SOFTWARE\MathWorks\MATLAB\9.11', 'MATLABROOT', MatlabRootFolder); // 2021b
   if MatlabInstalled then
   begin
   
