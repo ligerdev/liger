@@ -38,84 +38,52 @@ cp -f ${SOURCE_DIR}/dev/LinuxBuild/qt.conf ${TMPDIR}/bin/qt.conf
 # Check if BOOST_LIB corresponds to a lib directory installed by the user, or is in the system library
 
 # Copy libraries
-#echo Copying Qt libraries to Liger/bin...
-#if [ -f "${QT_DIR}/lib/libQt5WebEngine.so" ]; then
-#  cp -f ${QT_DIR}/lib/lib*.so.* ${TMPDIR}/lib/
-#  cp -f ${QT_DIR}/lib/lib*.so ${TMPDIR}/lib/
-#else
+echo Copying Qt libraries to Liger/bin...
+if [ -f "${QT_DIR}/lib/libQt5WebEngine.so" ]; then
+  cp -f ${QT_DIR}/lib/lib*.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/lib/lib*.so ${TMPDIR}/lib/
+else
   # Uncomment if all the Qt5 libraries are required
-  #cp -f ${BOOST_LIB}/libQt5*.so ${TMPDIR}/lib/
-  #cp -f ${BOOST_LIB}/libQt5*.so.* ${TMPDIR}/lib/
+  #cp -f ${QT_DIR}/libQt5*.so ${TMPDIR}/lib/
+  #cp -f ${QT_DIR}/libQt5*.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libicui18n.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libicui18n.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5PrintSupport.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5PrintSupport.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libicuuc.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libicuuc.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Help.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Help.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libicudata.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libicudata.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Core.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Core.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Widgets.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Widgets.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Gui.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Gui.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Network.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Network.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Svg.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Svg.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Concurrent.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Concurrent.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Positioning.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Positioning.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5QuickWidgets.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5QuickWidgets.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5PrintSupport.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5PrintSupport.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Help.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Help.so.* ${TMPDIR}/lib/
-
-  cp -f ${QT_DIR}/lib/libQt5Sql.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Sql.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Sql.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Sql.so.* ${TMPDIR}/lib/
   
-  cp -f ${QT_DIR}/lib/libQt5Xml.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Xml.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5CLucene.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5CLucene.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5WebEngine.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5WebEngine.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Xml.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Xml.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5WebEngineWidgets.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5WebEngineWidgets.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebEngine.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebEngine.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5WebEngineCore.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5WebEngineCore.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebEngineWidgets.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebEngineWidgets.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5Quick.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Quick.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebEngineCore.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebEngineCore.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5WebChannel.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5WebChannel.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Quick.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Quick.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5Qml.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5Qml.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebChannel.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5WebChannel.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5XcbQpa.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5XcbQpa.so.* ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Qml.so ${TMPDIR}/lib/
+  cp -f ${QT_DIR}/libQt5Qml.so.* ${TMPDIR}/lib/
 
-  cp -f ${QT_DIR}/lib/libQt5DBus.so ${TMPDIR}/lib/
-  cp -f ${QT_DIR}/lib/libQt5DBus.so.* ${TMPDIR}/lib/
-#fi
+  cp -f /usr/lib/x86_64-linux-gnu/libprotobuf.so.* ${TMPDIR}/lib/
+  cp -f /usr/lib/x86_64-linux-gnu/libre2.so.* ${TMPDIR}/lib/
+  cp -f /usr/lib/x86_64-linux-gnu/libminizip.so.* ${TMPDIR}/lib/
+fi
 # Copy plugins
 echo Copying Qt plugins to Liger/bin/plugins...
 if [ -d "${QT_DIR}/plugins" ]; then
@@ -145,7 +113,7 @@ echo Copying QtWebEngine QML to Liger/qml/QtWebEngine
 if [ -d "${QT_DIR}/qml/QtWebEngine" ]; then
   mkdir ${TMPDIR}/qml
   mkdir ${TMPDIR}/qml/QtWebEngine
-  cp -rf ${QT_DIR}/qml/QtWebEngine/* ${TMPDIR}/qml/QtWebEngine/
+  cp -f ${QT_DIR}/qml/QtWebEngine/* ${TMPDIR}/qml/QtWebEngine/
 fi
 
 # Copy QtWebEngine Locales
@@ -159,24 +127,8 @@ fi
 
 # Copy Boost library
 echo Copying Boost library to Liger/bin...
-#cp -f ${BOOST_LIB}/libboost*.so.* ${TMPDIR}/bin/
-#cp -f ${BOOST_LIB}/libboost*.so ${TMPDIR}/bin/
-
-cp -r ${BOOST_LIB}/libboost_filesystem.so ${TMPDIR}/bin/
-cp -r ${BOOST_LIB}/libboost_filesystem.so.* ${TMPDIR}/bin/
-
-cp -r ${BOOST_LIB}/libboost_system.so ${TMPDIR}/bin/
-cp -r ${BOOST_LIB}/libboost_system.so.* ${TMPDIR}/bin/
-
-cp -r ${BOOST_LIB}/libboost_python27.so ${TMPDIR}/bin/
-cp -r ${BOOST_LIB}/libboost_python27.so.* ${TMPDIR}/bin/
-
-# Fix to path of boost libraries in the bin folder
-echo Fix to the path of boost libraries
-NEWCPATH='$ORIGIN'
-for file in ${TMPDIR}/bin/libboost_*; do
-  patchelf --set-rpath $NEWCPATH $file
-done
+cp -f ${BOOST_LIB}/libboost*.so.* ${TMPDIR}/bin/
+cp -f ${BOOST_LIB}/libboost*.so ${TMPDIR}/bin/
 
 files=""
 ## use ldd to get shared libs list ###
@@ -188,35 +140,15 @@ do
   cp -f $i ${TMPDIR}/bin
 done
 
-# change path for other libraries in bin folder
-#patchelf --set-rpath $NEWCPATH ${TMPDIR}/bin/libopenblas.so
-#patchelf --set-rpath $NEWCPATH ${TMPDIR}/bin/libopenblas.so.*
-#patchelf --set-rpath $NEWCPATH ${TMPDIR}/bin/liblapack.so.*
-#patchelf --set-rpath $NEWCPATH ${TMPDIR}/bin/libblas.so.*
-
-# Fix to path of libraries in lib/liger/plugins
-echo Fix to path of libraries in lib/liger/plugins
-for file in ${TMPDIR}/lib/liger/plugins/*.so; do
-  CPATH=`chrpath -l $file | grep -o 'RUNPATH.*' | cut -f2- -d:`
-  NEWCPATH=$CPATH:'$ORIGIN:$ORIGIN/../../../bin:$ORIGIN/../../'
-  patchelf --set-rpath $NEWCPATH $file
-done
-
-# Fix to the path of Matlab plugin
-echo Fix to the path of Matlab plugin
-NEWCPATH='$ORIGIN/../../../bin'
-patchelf --set-rpath $NEWCPATH lib/tigon/plugins/libMATLABPlugin.so
-
-# Make the Liger script file executable 
-chmod +x ${TMPDIR}/bin/liger.sh
+# shared libraries for CSDP 
+cp -f /usr/lib/x86_64-linux-gnu/openblas/libblas.so.* ${TMPDIR}/bin
+cp -f /usr/lib/x86_64-linux-gnu/openblas/liblapack.so.* ${TMPDIR}/bin
+cp -f /usr/lib/x86_64-linux-gnu/libgfortran.so.* ${TMPDIR}/bin
+cp -f /usr/lib/x86_64-linux-gnu/libopenblas* ${TMPDIR}/bin
 
 # create self extracting files
 echo "#!/bin/sh -e" > liger_install.sh
 echo "sed -e '1,/^exit$/d' "\$0" | tar xzfv - " >> liger_install.sh
-echo "echo " >> liger_install.sh
-echo "echo 'Liger installation complete'" >> liger_install.sh
-echo "echo 'To run Liger type ./Liger/bin/liger.sh'" >> liger_install.sh
-echo "echo " >> liger_install.sh
 echo "exit" >> liger_install.sh
 
 ARCHIVE_NAME=$TMPDIR_NAME

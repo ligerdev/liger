@@ -296,7 +296,14 @@
 #include <tigon/Utils/IElementUtils.h>
 #include <tigon/Utils/JsonUtils.h>
 #include <tigon/Utils/CorrelationMatrix.h>
-#include <tigon/Utils/ObjectiveReduction.h>
+#include <tigon/Utils/ObjectiveReduction/PCABasedObjectiveReduction.h>
+
+// Operators - Objective Reduction
+#include <tigon/Operators/ObjectiveReduction/IObjectiveReduction.h>
+#include <tigon/Operators/ObjectiveReduction/LPCA.h>
+#ifdef CSDP_LIBRARY
+  #include <tigon/Operators/ObjectiveReduction/NLMVUPCA.h>
+#endif
 
 
 // Exception

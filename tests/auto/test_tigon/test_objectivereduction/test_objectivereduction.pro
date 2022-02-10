@@ -18,4 +18,4 @@ win32 {
 
 
 SOURCES += \
-    tst_statistics.cpp
+    tst_objectivereduction.cpp

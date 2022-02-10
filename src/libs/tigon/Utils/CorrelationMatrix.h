@@ -29,8 +29,8 @@ public:
     CorrelationMatrix(const TMatrixReal& x);
     ~CorrelationMatrix();
 
-    void insertData(const TVector<TVector<double>>& x);
-    void insertData(const TMatrixReal& x);
+    void updateData(const TVector<TVector<double>>& x);
+    void updateData(const TMatrixReal& x);
 
     TMatrixReal correlationMatrix() const;
     TMatrixReal inputData() const;

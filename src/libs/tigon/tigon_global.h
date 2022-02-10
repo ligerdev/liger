@@ -100,7 +100,7 @@ class IKriging;
 class PolynomialRegression;
 class MultiPolynomialRegression;
 
-typedef TSharedPointer<IKriging>  KrigingSPtr;
+typedef TSharedPointer<IKriging> KrigingSPtr;
 typedef TSharedPointer<PolynomialRegression> PolyRegressionSPtr;
 typedef TSharedPointer<MultiPolynomialRegression> MPolyRegressionSPtr;
 

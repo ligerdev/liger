@@ -1,9 +1,22 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
+**
+** This file is part of Liger.
+**
+** GNU Lesser General Public License Usage
+** This file may be used under the terms of the GNU Lesser General
+** Public License version 3 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 3 requirements
+** will be met: http://www.gnu.org/licenses/lgpl-3.0.html.
+**
+****************************************************************************/
 #include <tigon/Operators/Filtrations/NSGAIIEliteSelection.h>
 #include <tigon/Representation/Mappings/IMapping.h>
 #include <tigon/Representation/Sets/ISet.h>
 #include <tigon/Utils/TigonUtils.h>
-
-
 
 namespace Tigon {
 namespace Operators {
@@ -31,6 +44,12 @@ void NSGAIIEliteSelection::initialise()
     addInputTag(Tigon::TForSelection);
     addOutputTag(Tigon::TForNextIteration);
 
+    addProperty("EliteRatio"
+                , TString("The ratio of solutions from the main population to be "
+                          "used for the elite population.\n"
+                          "Default is 0.5 (meaning half of the main population).")
+                , getTType(double));
+
     TP_defineEliteRatio(0.5);
 }
 
@@ -49,25 +68,18 @@ void NSGAIIEliteSelection::TP_defineEliteRatio(double r)
 
 void NSGAIIEliteSelection::evaluateNode()
 {
-    int i;
-    int r;
-    int popSize;
-    int rankSize;
-    int eliteSize;
-    int missingSolutions;
-
     // Init
     clearOutputSets();  //overrides the data from previous iteration
     ISet* oSet = appendOutputSet();
 
     // Define the elite size
     TVector<ISet*> allRanks = inputSets();
-    popSize = 0;
-    rankSize = allRanks.size();
-    for(r=0; r<rankSize; r++) {
+    int popSize = 0;
+    int rankSize = allRanks.size();
+    for(int r=0; r<rankSize; r++) {
         popSize += allRanks.at(r)->size();
     }
-    eliteSize = static_cast<int>(std::ceil(popSize*m_eliteRatio));
+    int eliteSize = static_cast<int>(std::ceil(popSize*m_eliteRatio));
 
     // Copy the first j ranks
     ISet* iSet;
@@ -81,7 +93,7 @@ void NSGAIIEliteSelection::evaluateNode()
     }
 
     // copy the remaining solutions from the next rank
-    missingSolutions = eliteSize - oSet->size();
+    int missingSolutions = eliteSize - oSet->size();
     if( (missingSolutions > 0) && hasNextInputSet()) {
 
         // definitions
@@ -96,7 +108,7 @@ void NSGAIIEliteSelection::evaluateNode()
         subsetSize = iSet->size();
 
         // make a vector of the cost of every solution
-        for(i=0; i<subsetSize; i++) {
+        for(int i=0; i<subsetSize; i++) {
             cost = iSet->at(i)->doubleCost();
             costVector.push_back(cost);
         }
@@ -105,7 +117,7 @@ void NSGAIIEliteSelection::evaluateNode()
         rsInd = Tigon::indSort(costVector);
 
         // append only the missing solutions
-        for(i=0; i<missingSolutions; i++) {
+        for(int i=0; i<missingSolutions; i++) {
             iSolution = iSet->at(rsInd[i]);
             oSet->append(iSolution);
         }

@@ -22,6 +22,10 @@ contains(DEFINES, MATLAB_API) {
   message("Does NOT include MATLAB plugin")
 }
 
+contains(DEFINES, CSDP_LIBRARY) {
+  SUBDIRS += csdp
+}
+
 for(l, SUBDIRS) {
     QTC_LIB_DEPENDS =
     include($$l/$${l}_dependencies.pri)

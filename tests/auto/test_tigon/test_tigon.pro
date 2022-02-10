@@ -20,7 +20,7 @@ SUBDIRS = \
     test_simplexlattice \
     test_smsemoa \
     test_fann \
-    test_statistics \
+    test_objectivereduction \
     test_moga \
     test_nsgaiii
 

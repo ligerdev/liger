@@ -18,7 +18,6 @@
 #include <tigon/tigon_global.h>
 #include <tigon/Operators/IOperator.h>
 
-
 namespace Tigon {
 namespace Operators {
 

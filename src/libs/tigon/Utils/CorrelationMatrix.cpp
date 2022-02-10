@@ -21,6 +21,7 @@ namespace Tigon {
 CorrelationMatrix::CorrelationMatrix()
 {
     // default values
+    m_x.resize(2, 3);
     m_x << 0.3, 0.4, 0.8,
            0.1, 0.7, 0.3;
     calculateCorrelationMatrix();
@@ -29,13 +30,13 @@ CorrelationMatrix::CorrelationMatrix()
 CorrelationMatrix::CorrelationMatrix(const TVector<TVector<double>>& x)
 {
     // input is MxN
-    insertData(x);
+    updateData(x);
 }
 
 CorrelationMatrix::CorrelationMatrix(const TMatrixReal &x)
 {
     // input is MxN
-    insertData(x);
+    updateData(x);
 }
 
 CorrelationMatrix::~CorrelationMatrix()
@@ -47,20 +48,20 @@ CorrelationMatrix::~CorrelationMatrix()
 void CorrelationMatrix::calculateCorrelationMatrix()
 {
     int N=m_x.cols();
-    double inverse = 1.0 / double(N-1);
+    double scaler = 1.0 / double(N-1);
 
     // 1) mean centre the matrix
     TMatrixReal centered = m_x.colwise() - m_x.rowwise().mean();
 
     // 2) determine the inverse of the standard deviation
-    TCVectorReal variance = inverse*centered.rowwise().squaredNorm();
+    TCVectorReal variance = scaler*centered.rowwise().squaredNorm();
     TCVectorReal istd     = variance.cwiseSqrt().cwiseInverse();
 
     // 3) normalise the matrix by using the standard deviation
     TMatrixReal centered_std = istd.asDiagonal() * centered;
 
     // 4) the correlation is given by R = (1/N-1) XX'
-    m_corrMatrix = inverse*(centered_std * centered_std.transpose());
+    m_corrMatrix = scaler*(centered_std * centered_std.transpose());
 
     // 5) Ensures that each feature is perfectly correlated with itself
     for(int i=0; i<m_x.rows(); i++) {
@@ -90,7 +91,7 @@ int CorrelationMatrix::nSamples() const
     }
 }
 
-void CorrelationMatrix::insertData(const TVector<TVector<double>>& x)
+void CorrelationMatrix::updateData(const TVector<TVector<double>>& x)
 {
     // input is MxN
     int M=x.size();
@@ -110,7 +111,7 @@ void CorrelationMatrix::insertData(const TVector<TVector<double>>& x)
     calculateCorrelationMatrix();
 }
 
-void CorrelationMatrix::insertData(const TMatrixReal& x)
+void CorrelationMatrix::updateData(const TMatrixReal& x)
 {
     // input is MxN
     int M=x.rows();
