@@ -23,6 +23,10 @@ win32: {
 
 include(matlabcheck.pri)
 
+linux-* {
+  DEFINES += CSDP_LIBRARY
+}
+
 defineReplace(cleanPath) {
     return($$clean_path($$1))
 }

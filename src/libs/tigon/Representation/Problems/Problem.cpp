@@ -100,7 +100,6 @@ Problem::Problem(const Problem &prob)
     , m_pvecExternal             (prob.m_pvecExternal)
     , m_pvecExternalGroups       (prob.m_pvecExternalGroups)
     , m_pvecExternalGroupsDependentVars (prob.m_pvecExternalGroupsDependentVars)
-    , m_essentialObjectives      (prob.m_essentialObjectives)
 {
     //TODO: implement IFunction::clone()
     //    m_fvec.clear();
@@ -1856,10 +1855,6 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         }
     }
 
-    if(m_essentialObjectives.size()!=nOVars) {
-        m_essentialObjectives.resize(nOVars,true);
-    }
-
     m_definitionStatus = FullyDefined;
     return m_definitionStatus;
 }
@@ -2188,17 +2183,6 @@ TVector<OptimizationType> Problem::getOptTypes(const TVector<ElementProperties> 
     std::transform(vec.begin(), vec.end(), std::back_inserter(types),
                    [](ElementProperties p){return p.optimizationType();});
     return types;
-}
-
-TVector<bool> Problem::essentialObjectives() const
-{
-    return m_essentialObjectives;
-}
-
-void Problem::defineEssentialObjectives(const TVector<bool> &essentialObjectives)
-{
-    m_essentialObjectives = essentialObjectives;
-    m_definitionStatus = UnprocessedChanges;
 }
 
 } // namespace Representation

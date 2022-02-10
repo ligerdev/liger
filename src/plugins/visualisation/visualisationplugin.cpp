@@ -19,6 +19,7 @@
 #include <visualisation/qvizscatterplotnodefactory.h>
 #include <visualisation/qvizparallelcoordinatesnodefactory.h>
 #include <visualisation/qvizglyphsplotnodefactory.h>
+#include <visualisation/qvizobjectiveranknodefactory.h>
 
 #include <coreplugin/icore.h>
 
@@ -31,6 +32,7 @@ VisualisationPlugin::VisualisationPlugin()
     , m_qvizScatterPlotNodeFactory(0)
     , m_qvizMScatterPlotNodeFactory(0)
     , m_qvizGlyphsPlotNodeFactory(0)
+    , m_qVizObjectiveRankNodeFactory(0)
 {
     // Create your members
 }
@@ -54,11 +56,13 @@ bool VisualisationPlugin::initialize(const QStringList &arguments, QString *erro
     m_qvizScatterPlotNodeFactory = new Visualisation::QVizScatterPlotNodeFactory;
     m_qvizMScatterPlotNodeFactory = new Visualisation::QVizMScatterPlotNodeFactory;
     m_qvizGlyphsPlotNodeFactory = new Visualisation::QVizGlyphsPlotNodeFactory;
+    m_qVizObjectiveRankNodeFactory = new Visualisation::QVizObjectiveRankNodeFactory;
 
     addAutoReleasedObject(m_qvizparallelcoordinatesnodefactory);
     addAutoReleasedObject(m_qvizScatterPlotNodeFactory);
     addAutoReleasedObject(m_qvizMScatterPlotNodeFactory);
     addAutoReleasedObject(m_qvizGlyphsPlotNodeFactory);
+    addAutoReleasedObject(m_qVizObjectiveRankNodeFactory);
 
     return true;
 }

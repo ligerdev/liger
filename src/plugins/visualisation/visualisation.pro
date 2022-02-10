@@ -34,12 +34,16 @@ win32 {
 SOURCES +=  \
     core/glyphsplotdatamodel.cpp \
     core/glyphsplotwidget.cpp \
+    core/objectiverankdatamodel.cpp \
+    core/objectiverankwidget.cpp \
     core/parallelcoordinatesplotdatamodel.cpp \
     core/scatterplotdatamodel.cpp \
     core/selectglyphsplotvarsform.cpp \
     core/selectscatterplotvarsform.cpp \
     qvizglyphsplotnode.cpp \
     qvizglyphsplotnodefactory.cpp \
+    qvizobjectiveranknode.cpp \
+    qvizobjectiveranknodefactory.cpp \
     visualisationplugin.cpp \
     qvizparallelcoordinatesnodefactory.cpp \
     qvizparallelcoordinatesnode.cpp \
@@ -60,12 +64,16 @@ SOURCES +=  \
 HEADERS +=  \
     core/glyphsplotdatamodel.h \
     core/glyphsplotwidget.h \
+    core/objectiverankdatamodel.h \
+    core/objectiverankwidget.h \
     core/parallelcoordinatesplotdatamodel.h \
     core/scatterplotdatamodel.h \
     core/selectglyphsplotvarsform.h \
     core/selectscatterplotvarsform.h \
     qvizglyphsplotnode.h \
     qvizglyphsplotnodefactory.h \
+    qvizobjectiveranknode.h \
+    qvizobjectiveranknodefactory.h \
     visualisationplugin.h  \
     visualisation_global.h  \
     visualisationconstants.h \

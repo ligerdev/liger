@@ -20,7 +20,6 @@
 #include <qtigon/dialogs/inputoutputcheckingform.h>
 #include <qtigon/dialogs/inputpropertiesdialog.h>
 #include <qtigon/dialogs/outputpropertiesdialog.h>
-#include <qtigon/dialogs/linkingvariablegrouppropertiesdialog.h>
 #include <qtigon/operators/problemgenerator/inputoutputprivatedata.h>
 
 #include <tigon/Operators/Formulations/ProblemGenerator/ProblemGenerator.h>
@@ -75,7 +74,6 @@ QOpProbFormulationNodeForm::QOpProbFormulationNodeForm(QWidget *parent) :
     m_inputoutputCheckingForm(new InputOutputCheckingForm),
     m_inputPropertiesDialog(new InputPropertiesDialog),
     m_outputPropertiesDialog(new OutputPropertiesDialog),
-    m_groupPropertiesDialog(new LinkingVariableGroupPropertiesDialog),
     m_pg(0),
     m_prob(ProblemSPtr(new Problem)),
     m_problemChanged(false)
@@ -89,8 +87,6 @@ QOpProbFormulationNodeForm::QOpProbFormulationNodeForm(QWidget *parent) :
             this, &QOpProbFormulationNodeForm::updateInputData);
     connect(m_outputPropertiesDialog, &OutputPropertiesDialog::updateData,
             this, &QOpProbFormulationNodeForm::updateOutputData);
-    connect(m_groupPropertiesDialog, &LinkingVariableGroupPropertiesDialog::updateData,
-            this, &QOpProbFormulationNodeForm::updateGroupData);
 
     createDockWidgets();
 }
@@ -101,7 +97,6 @@ QOpProbFormulationNodeForm::~QOpProbFormulationNodeForm()
     delete m_inputoutputCheckingForm;
     delete m_inputPropertiesDialog;
     delete m_outputPropertiesDialog;
-    delete m_groupPropertiesDialog;
 }
 
 void QOpProbFormulationNodeForm::setup(Tigon::Operators::ProblemGenerator *thisOp)
@@ -203,19 +198,6 @@ void QOpProbFormulationNodeForm::loadProblemToViews()
             QFont font = item->font();
             font.setItalic(true);
             item->setFont(font);
-        }
-    }
-    // Assign group information
-    TVector<TVector<int>> groups = m_prob->externalParameterGroups();
-    TStringList groupPathes = split(m_pg->externalParamGroupDataPathes(),
-                                    TagDelimiter);
-    int ngroups = static_cast<int>(groups.size());
-    for(int i=0; i<ngroups; i++) {
-        QString groupPath = toQString(groupPathes[i]);
-        for(int paraIdx : groups[i]) {
-            QString paramId = m_paramIDs[paraIdx];
-            m_inputData[paramId].setGroupID(i);
-            m_inputData[paramId].setGroupDataPath(groupPath);
         }
     }
 
@@ -478,11 +460,13 @@ void QOpProbFormulationNodeForm::variableToParameter(const InputPrivateData &old
     TVector<bool> isExternal;
     TVector<ElementProperties> pPrpts = problem->pPrpts();
     counter = 0;
+    int idx = -1;
     for(int i=0; i<pPrpts.size(); i++) {
         if(pPrpts[i].ID() == id) {
             // Transfered from variable
             parameterVector.push_back(IElementSPtr(new IElement(data.value)));
             isExternal.push_back(data.isExternal());
+            idx = parameterVector.size() - 1;
         } else {
             // Parameter still parameter
             parameterVector.push_back(m_prob->parameterVector()[counter]);
@@ -1445,6 +1429,7 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
         problem->definePVecPrpts(m_prob->pPrpts());
         problem->defineBoxConstraints(m_prob->boxConstraints());
         problem->defineParameterVector(m_prob->parameterVector());
+        problem->defineExternalParameters(m_prob->isExternalParameters());
 
         //! [] Update Uncertainties
         problem->defineDVecUncertainties(cloneDVecUncertaintyMapping());
@@ -1476,38 +1461,6 @@ void QOpProbFormulationNodeForm::updateOutputData(const OutputPrivateData &data)
     // Should not reach here if everything is OK
     qDebug() << "Not fully defined";
     loadProblemToViews();
-}
-
-void QOpProbFormulationNodeForm::updateGroupData(const QVector<int> &groupIDs,
-                                                 const QStringList &pathes)
-{
-    qDebug() << "update group data";
-    qDebug() << groupIDs;
-    qDebug() << pathes;
-
-    int ngroup = *std::max_element(groupIDs.begin(), groupIDs.end()) +1;
-
-    TVector<TVector<int>> groups(ngroup);
-    TStringList groupPathes(ngroup);
-    int counter = 0;
-    for(int i=0; i<m_paramIDs.size(); i++) {
-        QString paramID = m_paramIDs[i];
-        if(m_inputData[paramID].isExternal()) {
-            int groupID = groupIDs[counter];
-            QString groupDataPath = pathes[counter];
-            m_inputData[paramID].setGroupID(groupID);
-            m_inputData[paramID].setGroupDataPath(groupDataPath);
-            groups[groupID].push_back(i);
-            groupPathes[groupID] = groupDataPath.toStdString();
-            ++counter;
-        }
-    }
-
-    m_prob->defineParameterGroup(groups);
-    if(m_prob->processProblemDefinition() == FullyDefined) {
-        m_pg->defineExternalParamGroupDataPathes(join(groupPathes,
-                                                      Tigon::TagDelimiter));
-    }
 }
 
 void QOpProbFormulationNodeForm::clearContent()
@@ -1951,8 +1904,6 @@ void QOpProbFormulationNodeForm::showParamContextMenu(const QPoint &point)
                          &QOpProbFormulationNodeForm::renameParam);
         myMenu.addAction(tr("Show Properties"), this,
                          &QOpProbFormulationNodeForm::showParamPrptForm);
-        myMenu.addAction(tr("Group"), this,
-                         &QOpProbFormulationNodeForm::groupLinkingVariables);
         myMenu.exec(globalPos);
     }
 }
@@ -1976,24 +1927,6 @@ void QOpProbFormulationNodeForm::showParamPrptForm()
     m_inputPropertiesDialog->show();
     m_inputPropertiesDialog->raise();
 }
-
-void QOpProbFormulationNodeForm::groupLinkingVariables()
-{
-    // Setup
-    QStringList names;
-    QVector<int> groupId;
-    QStringList dataPatehs;
-    for(const QString & id : m_paramIDs) {
-        if(m_inputData[id].isExternal()) {
-            names.append(QString::fromStdString(m_inputData[id].prts.name()));
-            groupId.append(m_inputData[id].groupID());
-            dataPatehs.append(m_inputData[id].groupDataPath());
-        }
-    }
-    m_groupPropertiesDialog->setup(names, groupId, dataPatehs);
-    m_groupPropertiesDialog->show();
-}
-
 
 void QOpProbFormulationNodeForm::renameVar()
 {

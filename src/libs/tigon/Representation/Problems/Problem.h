@@ -254,10 +254,6 @@ public:
     // maximum number of runs so far
     int nMaxRuns() const;
 
-    /// Objective reduction
-    TVector<bool> essentialObjectives() const;
-    void defineEssentialObjectives(const TVector<bool> &essentialObjectives);
-
 private:
     /// Helper functions
     TStringList getIDs(const TVector<ElementProperties> &vec) const;
@@ -323,9 +319,6 @@ private:
     bool                       m_goalVecDefined;
     bool                       m_priorityVecDefined;
     bool                       m_thresholdVecDefined;
-
-    /// Objective reduction
-    TVector<bool>              m_essentialObjectives;
 
     /// *******************
     /// External parameters

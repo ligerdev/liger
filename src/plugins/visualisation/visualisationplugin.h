@@ -24,6 +24,7 @@ class QvizParallelCoordinatesNodeFactory;
 class QVizScatterPlotNodeFactory;
 class QVizMScatterPlotNodeFactory;
 class QVizGlyphsPlotNodeFactory;
+class QVizObjectiveRankNodeFactory;
 
 namespace Internal {
 
@@ -45,6 +46,7 @@ private:
     QVizScatterPlotNodeFactory* m_qvizScatterPlotNodeFactory;
     QVizMScatterPlotNodeFactory* m_qvizMScatterPlotNodeFactory;
     QVizGlyphsPlotNodeFactory* m_qvizGlyphsPlotNodeFactory;
+    QVizObjectiveRankNodeFactory* m_qVizObjectiveRankNodeFactory;
 };
 
 } // namespace Internal

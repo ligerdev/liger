@@ -150,6 +150,9 @@ SOURCES += \
     Operators/Initialisation/IInitialisation.cpp \
     Operators/Initialisation/LHSInit.cpp \
     Operators/Initialisation/RandomInit.cpp \
+    Operators/ObjectiveReduction/IObjectiveReduction.cpp \
+    Operators/ObjectiveReduction/LPCA.cpp \
+    Operators/ObjectiveReduction/NLMVUPCA.cpp \
     Operators/Perturbations/IPerturbation.cpp \
     Operators/Perturbations/IntegerMutation.cpp \
     Operators/Perturbations/PolynomialMutation.cpp \
@@ -173,6 +176,7 @@ SOURCES += \
     Representation/Mappings/IMappingPrivate.cpp \
     Representation/Properties/ElementProperties.cpp \
     Representation/Properties/ElementPropertiesFactory.cpp \
+    Representation/Properties/ObjectiveReductionData.cpp \
     Representation/Properties/ProblemProperties.cpp \
     Representation/Properties/ProblemPropertiesFactory.cpp \
     Representation/Sets/ISet.cpp \
@@ -252,6 +256,8 @@ SOURCES += \
     Representation/Functions/CODeM/GECCO2016.cpp \
     Representation/Functions/CODeM/UncertaintyKernel.cpp \
     Representation/Functions/MinEx.cpp \
+    Utils/ObjectiveReduction/MVUPCABasedObjectiveReduction.cpp \
+    Utils/ObjectiveReduction/PCABasedObjectiveReduction.cpp \
     Utils/TigonUtils.cpp \
     Utils/AbstractInterpolator.cpp \
     Utils/LinearInterpolator.cpp \
@@ -289,14 +295,19 @@ SOURCES += \
     Utils/MultiPolynomialRegression.cpp \
     Utils/HypercubeGrid.cpp \
     Utils/CorrelationMatrix.cpp \
-    Utils/ObjectiveReduction.cpp \
     Utils/Dominance/ConstrDomRelation.cpp \
     Utils/Dominance/DominanceRelation.cpp \
     Utils/Dominance/Preferability.cpp \
     Utils/Dominance/PreferabilityConstraintHandling.cpp
 
 HEADERS += \
+    Operators/ObjectiveReduction/IObjectiveReduction.h \
+    Operators/ObjectiveReduction/LPCA.h \
+    Operators/ObjectiveReduction/NLMVUPCA.h \
+    Representation/Properties/ObjectiveReductionData.h \
     Tigon.h \
+    Utils/ObjectiveReduction/MVUPCABasedObjectiveReduction.h \
+    Utils/ObjectiveReduction/PCABasedObjectiveReduction.h \
     tigon_global.h \
     tigonconstants.h \
     tigonengineregistry.h \
@@ -553,7 +564,6 @@ HEADERS += \
     Utils/MultiPolynomialRegression.h \
     Utils/HypercubeGrid.h \
     Utils/CorrelationMatrix.h \
-    Utils/ObjectiveReduction.h \
     Utils/Dominance/ConstrDomRelation.h \
     Utils/Dominance/DominanceRelation.h \
     Utils/Dominance/Preferability.h \

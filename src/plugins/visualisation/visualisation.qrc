@@ -92,6 +92,8 @@
         <file>html/glyphsplot.html</file>
         <file>lib/colorbar.js</file>
         <file>lib/d3.v6/d3.min.js</file>
+        <file>images/qvizobjectiveranknode.png</file>
+        <file>images/qvizobjectiveranknode.svg</file>
         <file>html/barplot.html</file>
         <file>lib/venn/venn.js</file>
     </qresource>

@@ -13,8 +13,8 @@
 ** will be met: http://www.gnu.org/licenses/lgpl-3.0.html.
 **
 ****************************************************************************/
-#ifndef OBJECTIVEREDUCTION_H
-#define OBJECTIVEREDUCTION_H
+#ifndef PCABASEDOBJECTIVEREDUCTION_H
+#define PCABASEDOBJECTIVEREDUCTION_H
 
 #include <tigon/tigon_global.h>
 #include <tigon/tigonconstants.h>
@@ -24,32 +24,44 @@
 #include <tigon/Utils/TigonUtils.h>
 #include <tigon/ExceptionHandling/TException.h>
 
-DISABLE_WARNINGS
 #include <eigen/Eigenvalues>
-ENABLE_WARNINGS
 
 using Tigon::Representation::ISet;
-using Tigon::Representation::IMappingSPtr;
 
 namespace Tigon {
 
-class LIGER_TIGON_EXPORT ObjectiveReduction
+class LIGER_TIGON_EXPORT PCABasedObjectiveReduction
 {
 public:
-    ObjectiveReduction();
-    ObjectiveReduction(ISet* set);
-    ObjectiveReduction(const TVector<IMappingSPtr>& sols);
-    ~ObjectiveReduction();
+    PCABasedObjectiveReduction();
+    virtual ~PCABasedObjectiveReduction();
 
+    void updateData(ISet* data);
+    void updateData(const TVector<TVector<double>>& data);
+    void updateData(const TMatrixReal& data);
+
+    int numberObjectives() const;
     TVector<int> essentialSet() const;
     TVector<int> redundantSet() const;
     TVector<double> error() const;
-    TMap<int, TVector<int>> correlationsBetweenObjectives() const;
+    TVector<double> variance() const;
+    TMap<int, TVector<int>> correlatedObjectiveSubSets() const;
 
-private:
+    CorrelationMatrix* correlationMatrix() const;
+    TVector<double> eigenValues() const;
+    TVector<TVector<double>> eigenVectors() const;
 
-    void framework(const TMatrixReal& objectives);
+protected:
+    void virtual runObjectiveReductionAlgorithm();
+    void algorithmCommonCode();
 
+    void defineCorrelatedObjectiveSubSets(const TMap<int, TVector<int>>& corr);
+    void defineEssentialSet(const TVector<int>& set);
+    void defineRedundantSet(const TVector<int>& set);
+    void defineError(const TVector<double>& err);
+    void defineVariance(const TVector<double>& var);
+    void defineEigenValues(const TVector<double>& lambda);
+    void defineEigenVectors(const TVector<TVector<double>>& V);
 
     // error measure
     TVector<double> error_measure(const TMap<int, TVector<int> > &corrSubsets);
@@ -76,6 +88,7 @@ private:
     // eigenvalues (m_lambda) and corresponding eivenvectors (m_V)
     void eigenDecomposition(const TMatrixReal& mx);
 
+private:
     // correlation matrix of the objective vectors from the population of
     // solutions provided as input
     CorrelationMatrix* m_corObject;
@@ -95,6 +108,9 @@ private:
     // error in eliminating objectives
     TVector<double> m_error;
 
+    // variance accounted by each objective
+    TVector<double> m_variance;
+
     // correlated sets of objectives
     TMap<int, TVector<int>> m_corrSubsets;
 
@@ -104,4 +120,4 @@ private:
 
 } // namespace Tigon
 
-#endif // OBJECTIVEREDUCTION_H
+#endif // PCABASEDOBJECTIVEREDUCTION_H

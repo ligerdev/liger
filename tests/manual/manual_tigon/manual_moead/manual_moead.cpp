@@ -28,7 +28,7 @@ void bmk_MOEAD_1()
     //int dVecSize = 7;
     int dVecSize = 12;
     int oVecSize = 3;
-    int populationSize = 55;
+    int populationSize = 200;
     int maxIter = 400;
 
     cout.precision(5);
@@ -42,19 +42,6 @@ void bmk_MOEAD_1()
     func->TP_defineNInputs(dVecSize);
     func->TP_defineNOutputs(oVecSize);
     prob->appendFunction(func);
-
-//    TVector<IElementSPtr> goals
-//            = {IElementSPtr(new IElement(RealType, -8.9884656743115785e+307))
-//               , IElementSPtr(new IElement(RealType, -8.9884656743115785e+307))
-//               , IElementSPtr(new IElement(RealType, -8.9884656743115785e+307))};
-
-//    TVector<IElementSPtr> goals
-//            = {IElementSPtr(new IElement(RealType, 0.6))
-//               , IElementSPtr(new IElement(RealType, 0.6))
-//               , IElementSPtr(new IElement(RealType, 0.6))};
-
-//    prob->problem()->defineGoalVector(goals);
-//    prob->problem()->processProblemDefinition();
 
     RandomInit* init = new RandomInit(prob);
     init->TP_defineSetSize(populationSize);
@@ -75,16 +62,6 @@ void bmk_MOEAD_1()
     for(iter=0;iter<maxIter;iter++) {
         alg->evaluate();
         alg->incrementIteration();
-
-        if(iter==200) {
-            TVector<IElementSPtr> goals
-                    = {IElementSPtr(new IElement(RealType, 0.4))
-                       , IElementSPtr(new IElement(RealType, 0.4))
-                       , IElementSPtr(new IElement(RealType, 0.4))};
-
-            prob->problem()->defineGoalVector(goals);
-            prob->problem()->processProblemDefinition();
-        }
 
         ISet* pop = alg->setWithTags(tags);
 
@@ -187,202 +164,6 @@ void bmk_MOEAD_2()
         }
         cout << "];" << endl;
         //}
-    }
-
-    delete alg;
-    delete evaluator;
-    delete init;
-    delete prob;
-    delete base;
-}
-
-void bmk_MOEAD_goalBelowSimplexLatticeObjectiveReduction() {
-
-    int M = 4;
-    int dVecSize = 12;
-    int oVecSize = M;
-    int populationSize = 210;
-    int maxIter = 200;
-
-    cout.precision(5);
-    TRAND.defineSeed(465654);
-
-    //Function Definition
-    IFunctionSPtr func = IFunctionSPtr(new DTLZ2);
-    func->TP_defineNInputs(dVecSize);
-    func->TP_defineNOutputs(oVecSize);
-
-    // MOEAD setup
-    PSetBase*              base = new PSetBase();
-    IFormulation* prob = new IFormulation(base);
-    prob->appendFunction(func);
-    RandomInit* init = new RandomInit(prob);
-    init->TP_defineSetSize(populationSize);
-    init->addOutputTag(Tigon::TForNeighbourhoods);
-    init->addOutputTag(Tigon::TFitness);
-    Evaluator* evaluator = new Evaluator(init);
-
-    MOEAD* alg = new MOEAD(evaluator);
-
-    TStringList tags;
-    tags << Tigon::TMainOptimizationSet;
-
-    TVector<double> goals;
-
-    for(int iter=0;iter<maxIter;iter++) {
-        alg->evaluate();
-        alg->incrementIteration();
-
-        cout << "iteration " << iter << endl;
-
-        if(iter==0) {
-            cout << endl;
-            cout << "Iteration{" << alg->currentIteration() << "} = [" << endl;
-            ISet* pop = alg->setWithTags(tags);
-            int N = pop->size();
-            for(int i=0; i<N; i++) {
-                TVector <double> vec = pop->at(i)->doubleObjectiveVec();
-                for(int var=0; var<oVecSize; var++) {
-                    cout << vec[var] << " ";
-                }
-                cout << "; ";
-            }
-            cout << "];" << endl;
-
-            cout << endl;
-            cout << "weight vector:" << endl;
-            cout << "[ ";
-            for(int i=0; i<N; i++) {
-                TVector <double> vec = pop->at(i)->weightingVec();
-                int vecSize = vec.size();
-                for(int j=0; j<vecSize; j++) {
-                    cout << vec[j] << " ";
-                }
-                cout << "; ";
-            }
-            cout << "];" << endl;
-
-            TVector<double> ideal = IElementVecToRealVec(base->idealVec());
-            TVector<double> nadir = IElementVecToRealVec(base->nadirVec());
-
-            cout << endl;
-            cout << "ideal vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << ideal[i] << " ";
-            }
-            cout << endl;
-
-            cout << endl;
-            cout << "nadir vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << nadir[i] << " ";
-            }
-            cout << endl;
-        }
-
-        if(iter==maxIter/2) {
-            cout << endl;
-            goals << 0.2 << 0.2 << 0.2 << 0.2;
-            cout << "goal vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << goals[i] << " ";
-            }
-            cout << endl;
-            TVector<ElementType> types(M, RealType);
-            prob->defineGoalVec(createIElementSPtrVector(goals, types));
-
-            TVector<bool> essentialObjs;
-            essentialObjs << true << true << true << false;
-            prob->problem()->defineEssentialObjectives(essentialObjs);
-
-            cout << endl;
-            cout << "Iteration{" << alg->currentIteration() << "} = [" << endl;
-            ISet* pop = alg->setWithTags(tags);
-            int N = pop->size();
-            for(int i=0; i<N; i++) {
-                TVector <double> vec = pop->at(i)->doubleObjectiveVec();
-                for(int var=0; var<oVecSize; var++) {
-                    cout << vec[var] << " ";
-                }
-                cout << "; ";
-            }
-            cout << "];" << endl;
-
-            TVector<double> ideal = IElementVecToRealVec(base->idealVec());
-            TVector<double> nadir = IElementVecToRealVec(base->nadirVec());
-
-            cout << endl;
-            cout << "ideal vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << ideal[i] << " ";
-            }
-            cout << endl;
-
-            cout << endl;
-            cout << "nadir vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << nadir[i] << " ";
-            }
-            cout << endl;
-        }
-
-        if(iter==(maxIter-1)) {
-            cout << endl;
-            cout << "Iteration{" << alg->currentIteration() << "} = [" << endl;
-            ISet* pop = alg->setWithTags(tags);
-            int N = pop->size();
-            for(int i=0; i<N; i++) {
-                TVector <double> vec = pop->at(i)->doubleObjectiveVec();
-                for(int var=0; var<oVecSize; var++) {
-                    cout << vec[var] << " ";
-                }
-                cout << "; ";
-            }
-            cout << "];" << endl;
-
-            cout << endl;
-            cout << "weight vector:" << endl;
-            cout << "[ ";
-            for(int i=0; i<N; i++) {
-                TVector <double> vec = pop->at(i)->weightingVec();
-                int vecSize = vec.size();
-                for(int j=0; j<vecSize; j++) {
-                    cout << vec[j] << " ";
-                }
-                cout << "; ";
-            }
-            cout << "];" << endl;
-
-            TVector <double> normGoalVector(oVecSize);
-            for(int i=0;i<oVecSize;i++) {
-                normGoalVector[i]=goals[i];
-            }
-            TVector<double> ideal = IElementVecToRealVec(base->idealVec());
-            TVector<double> nadir = IElementVecToRealVec(base->nadirVec());
-            normaliseToUnitBoxInMemory(normGoalVector, ideal, nadir);
-
-            cout << endl;
-            cout << "ideal vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << ideal[i] << " ";
-            }
-            cout << endl;
-
-            cout << endl;
-            cout << "nadir vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << nadir[i] << " ";
-            }
-            cout << endl;
-
-            cout << endl;
-            cout << "norm goal vector: ";
-            for(int i=0; i<oVecSize; i++) {
-                cout << normGoalVector[i] << " ";
-            }
-            cout << endl;
-
-        }
     }
 
     delete alg;
@@ -939,7 +720,6 @@ int main()
     // test MOEA/D with goals
 //    bmk_MOEAD_goalBelowSimplexLattice();
 //    bmk_MOEAD_goalAboveSimplexLattice();
-    //bmk_MOEAD_goalBelowSimplexLatticeObjectiveReduction();
 
     steady_clock::time_point end   = steady_clock::now();
 

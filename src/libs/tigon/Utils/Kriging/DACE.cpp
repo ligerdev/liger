@@ -54,8 +54,11 @@ DACE::DACE()
     theta << 67.023 << 75.23;
 
     updateData(x, y, theta);
+}
 
-    configureDACE();
+DACE::~DACE()
+{
+
 }
 
 void DACE::updateData(const TVector<TVector<double>>& x,
@@ -88,11 +91,6 @@ void DACE::updateData(const TVector<TVector<double>>& x,
         m_theta = theta; // user-defined theta
     }
     configureDACE();
-}
-
-DACE::~DACE()
-{
-
 }
 
 double DACE::interpolate(const TVector<double>& xstar)

@@ -44,7 +44,6 @@ namespace QTigon {
 class InputOutputCheckingForm;
 class InputPropertiesDialog;
 class OutputPropertiesDialog;
-class LinkingVariableGroupPropertiesDialog;
 class InputPrivateData;
 class OutputPrivateData;
 
@@ -85,7 +84,6 @@ private slots:
      */
     void updateInputData(const InputPrivateData& data);
     void updateOutputData(const OutputPrivateData& data);
-    void updateGroupData(const QVector<int> &groupIDs, const QStringList &pathes);
     void clearContent();
     void clearHightlight();
 
@@ -106,10 +104,12 @@ private slots:
     void showParamContextMenu(const QPoint &point);
     void showVarPrptForm();
     void showParamPrptForm();
-    void groupLinkingVariables();
     void renameVar();
     void renameParam();
 
+    // The generated code by the designed calls connectSlotsByName().
+    // This function automatically connects the following slots to the
+    // corresponding UI variables once a call to setupui() is placed.
     void on_actionSave_triggered();
     void on_actionLoad_triggered();
 
@@ -171,7 +171,6 @@ private:
     /// slot deleteLater() instead.
     InputPropertiesDialog*                  m_inputPropertiesDialog;
     OutputPropertiesDialog*                 m_outputPropertiesDialog;
-    LinkingVariableGroupPropertiesDialog*   m_groupPropertiesDialog;
     Tigon::Operators::ProblemGenerator*     m_pg;  // not responsible for deleteion
     Tigon::Representation::ProblemSPtr      m_prob;
 
