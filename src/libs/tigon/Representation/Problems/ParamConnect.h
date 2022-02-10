@@ -13,32 +13,38 @@
 ** will be met: http://www.gnu.org/licenses/lgpl-3.0.html.
 **
 ****************************************************************************/
-#ifndef SMSEMOA_H
-#define SMSEMOA_H
+#ifndef PARAMCONNECT_H
+#define PARAMCONNECT_H
 #include <tigon/tigon_global.h>
-#include <tigon/Algorithms/IAlgorithm.h>
+#include <tigon/tigonconstants.h>
 
 namespace Tigon {
-namespace Algorithms {
+namespace Representation {
 
-class LIGER_TIGON_EXPORT SMSEMOA : public IAlgorithm
+class LIGER_TIGON_EXPORT ParamConnect
 {
-    DECLARE_CLASS(Tigon::Algorithms::SMSEMOA)
-
 public:
-    SMSEMOA();
-    SMSEMOA(Tigon::Representation::IPSet* ipset);
-    ~SMSEMOA();
+    explicit ParamConnect();
+    ~ParamConnect();
 
-    // Information about the node.
-    TString name();
-    TString description();
+    void setIsConnected(bool isConnected);
+    void setOutputIdx(size_t outputIdx);
+    void setOutputType(OutputType outputType);
+    void setIsMaximization(bool isMaximization);
+
+    bool isConnected() const;
+    size_t outputIdx() const;
+    OutputType outputType() const;
+    bool isMaximization() const;
 
 private:
-        void initialise();
+    bool m_isConnected;
+    size_t m_outputIdx;
+    OutputType m_outputType;
+    bool m_isMaximization;
 };
 
-} // namespace Algorithms
+} // namespace Representation
 } // namespace Tigon
 
-#endif // SMSEMOA_H
+#endif // PARAMCONNECT_H

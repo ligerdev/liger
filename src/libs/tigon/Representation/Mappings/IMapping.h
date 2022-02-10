@@ -172,6 +172,7 @@ public:
     int evaluate();
     int parallelEvaluate();
     void registerForBatchEvaluation(BatchSolveRegister* batchReg);
+    void registerForBatchEvaluation(BatchSolveRegister *batchReg, int funcIdx);
 
     /// Log
     void defineLogManager(Log::LogManagerSPtr log);

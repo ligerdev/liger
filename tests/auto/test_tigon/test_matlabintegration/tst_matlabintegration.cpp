@@ -59,7 +59,7 @@ private slots:
     void test_loadMatlabFunctionFromWorkflow();
     void test_matlabFunctionEvaluation();
     void test_matlabFunctionBatchEvaluation();
-    void test_matlabEvaluatorCountError();
+    /*void test_matlabEvaluatorCountError();*/
     void test_matlabEvaluator();
     void test_cleanup();
 
@@ -1045,6 +1045,7 @@ void tst_matlabintegration::test_matlabFunctionBatchEvaluation()
     }
 }
 
+/* DEPRECATED
 void tst_matlabintegration::test_matlabEvaluatorCountError()
 {
     PSetBase* base = new PSetBase();
@@ -1080,6 +1081,7 @@ void tst_matlabintegration::test_matlabEvaluatorCountError()
     delete init;
     delete eval;
 }
+*/
 
 void tst_matlabintegration::test_matlabEvaluator()
 {

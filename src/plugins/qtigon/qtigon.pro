@@ -47,12 +47,6 @@ SOURCES += \
     algorithms/moead/qalgomoeadnodefactory.cpp  \
     algorithms/smsemoa/qalgosmsemoanode.cpp \
     algorithms/smsemoa/qalgosmsemoanodefactory.cpp \
-    algorithms/parego/qalgoparegonode.cpp \
-    algorithms/parego/qalgoparegonodefactory.cpp \
-    algorithms/sparego/qalgosparegonode.cpp \
-    algorithms/sparego/qalgosparegonodefactory.cpp \
-    algorithms/moga/qalgomoganode.cpp \
-    algorithms/moga/qalgomoganodefactory.cpp \
     dialogs/numinputoutputform.cpp \
     dialogs/inputpropertiesdialog.cpp \
     operators/evaluators/qopvalidationnode.cpp \
@@ -71,11 +65,16 @@ SOURCES += \
     operators/initialisations/qopuserdefinedinitnodefactory.cpp \
     dialogs/populationviewer.cpp \
     dialogs/qoperatordiagtabitem.cpp \
+    algorithms/parego/qalgoparegonode.cpp \
+    algorithms/parego/qalgoparegonodefactory.cpp \
     qtigonutils.cpp \
-    dialogs/linkingvariablegrouppropertiesdialog.cpp \
     dialogs/startnodedialog.cpp \
-    operators/initialisations/qopsparegoinitnodefactory.cpp \
+    algorithms/moga/qalgomoganode.cpp \
+    algorithms/moga/qalgomoganodefactory.cpp \
     operators/initialisations/qopsparegoinitnode.cpp \
+    operators/initialisations/qopsparegoinitnodefactory.cpp \
+    algorithms/sparego/qalgosparegonode.cpp \
+    algorithms/sparego/qalgosparegonodefactory.cpp \
     algorithms/nsgaiii/qalgonsgaiiinode.cpp \
     algorithms/nsgaiii/qalgonsgaiiinodefactory.cpp
 
@@ -106,12 +105,6 @@ HEADERS += \
     algorithms/moead/qalgomoeadnodefactory.h  \
     algorithms/smsemoa/qalgosmsemoanode.h \
     algorithms/smsemoa/qalgosmsemoanodefactory.h \
-    algorithms/parego/qalgoparegonode.h \
-    algorithms/parego/qalgoparegonodefactory.h \
-    algorithms/sparego/qalgosparegonode.h \
-    algorithms/sparego/qalgosparegonodefactory.h \
-    algorithms/moga/qalgomoganode.h \
-    algorithms/moga/qalgomoganodefactory.h \
     dialogs/numinputoutputform.h \
     dialogs/inputpropertiesdialog.h \
     operators/problemgenerator/inputoutputprivatedata.h \
@@ -131,11 +124,16 @@ HEADERS += \
     operators/initialisations/qopuserdefinedinitnodefactory.h \
     dialogs/populationviewer.h \
     dialogs/qoperatordiagtabitem.h \
+    algorithms/parego/qalgoparegonode.h \
+    algorithms/parego/qalgoparegonodefactory.h \
     qtigonutils.h \
-    dialogs/linkingvariablegrouppropertiesdialog.h \
     dialogs/startnodedialog.h \
-    operators/initialisations/qopsparegoinitnodefactory.h \
+    algorithms/moga/qalgomoganode.h \
+    algorithms/moga/qalgomoganodefactory.h \
     operators/initialisations/qopsparegoinitnode.h \
+    operators/initialisations/qopsparegoinitnodefactory.h \
+    algorithms/sparego/qalgosparegonode.h \
+    algorithms/sparego/qalgosparegonodefactory.h \
     algorithms/nsgaiii/qalgonsgaiiinode.h \
     algorithms/nsgaiii/qalgonsgaiiinodefactory.h
 
@@ -155,5 +153,4 @@ FORMS += \
     dialogs/inputoutputcheckingform.ui \
     dialogs/outputpropertiesdialog.ui \
     dialogs/populationviewer.ui \
-    dialogs/linkingvariablegrouppropertiesdialog.ui \
     dialogs/startnodedialog.ui

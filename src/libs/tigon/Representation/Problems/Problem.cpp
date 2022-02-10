@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** Copyright (C) 2012-2022 The University of Sheffield (www.sheffield.ac.uk)
 **
@@ -13,12 +13,12 @@
 ** will be met: http://www.gnu.org/licenses/lgpl-3.0.html.
 **
 ****************************************************************************/
+#include <tigon/Representation/Problems/Problem.h>
 #include <tigon/Representation/Elements/IElementOperations.h>
 #include <tigon/Representation/Elements/IElement.h>
 #include <tigon/Representation/Mappings/IMapping.h>
 #include <tigon/Representation/Sets/ISet.h>
 #include <tigon/Representation/Functions/IFunction.h>
-#include <tigon/Representation/Problems/Problem.h>
 #include <tigon/Representation/Properties/ProblemProperties.h>
 #include <tigon/Representation/Constraints/BoxConstraintsData.h>
 #include <tigon/Representation/Properties/ElementPropertiesFactory.h>
@@ -31,6 +31,8 @@
 #include <tigon/Representation/Distributions/IDistribution.h>
 
 #include <algorithm>
+#include <set>
+using std::set;
 
 namespace Tigon {
 namespace Representation {
@@ -96,10 +98,6 @@ Problem::Problem(const Problem &prob)
     , m_goalVecDefined           (prob.m_goalVecDefined)
     , m_priorityVecDefined       (prob.m_priorityVecDefined)
     , m_thresholdVecDefined      (prob.m_thresholdVecDefined)
-    , m_d2KrigingMap             (prob.m_d2KrigingMap)
-    , m_pvecExternal             (prob.m_pvecExternal)
-    , m_pvecExternalGroups       (prob.m_pvecExternalGroups)
-    , m_pvecExternalGroupsDependentVars (prob.m_pvecExternalGroupsDependentVars)
 {
     //TODO: implement IFunction::clone()
     //    m_fvec.clear();
@@ -169,38 +167,19 @@ Problem::Problem(const Problem &prob)
         m_thresholdVec.push_back(prob.m_thresholdVec[i]->clone());
     }
 
-    m_pvecExternalKrigings.clear();
-    for(size_t i=0; i<prob.m_pvecExternalKrigings.size(); i++) {
-        KrigingSPtr u;
-        if(prob.m_pvecExternalKrigings[i]) {
-            u = prob.m_pvecExternalKrigings[i];
-        }
-        m_pvecExternalKrigings.push_back(u);
+    m_pvecExternal.clear();
+    for(bool elem : prob.m_pvecExternal) {
+        m_pvecExternal.push_back(elem);
     }
 
-
-    for(size_t i=0; i<m_pvecExternalIndividualData.size(); i++) {
-        clearPointerVector(m_pvecExternalIndividualData[i]);
+    m_paramConnect.clear();
+    for(auto elem : prob.m_paramConnect) {
+        m_paramConnect.push_back(elem);
     }
 
-    m_pvecExternalIndividualData.resize(prob.m_pvecExternalIndividualData.size());
-    for(size_t i=0; i<m_pvecExternalIndividualData.size(); i++) {
-        for(size_t j=0; j<m_pvecExternalIndividualData[i].size(); j++) {
-            IDistribution* u = 0;
-            if(prob.m_pvecExternalIndividualData[i][j] != nullptr) {
-                u = prob.m_pvecExternalIndividualData[i][j]->clone();
-            }
-            m_pvecExternalIndividualData[i].push_back(u);
-        }
-    }
-
-    m_pvecExternalGroupData.clear();
-    // for each group
-    for(size_t i=0; i<prob.m_pvecExternalGroupData.size(); i++) {
-
-        TMap<int,TimeSeriesContainerSPtr> u;
-        u.insert(prob.m_pvecExternalGroupData[i].begin(),prob.m_pvecExternalGroupData[i].end());
-        m_pvecExternalGroupData.push_back(u);
+    m_connectedFunctions.clear();
+    for(TVector<int> elem : prob.m_connectedFunctions) {
+        m_connectedFunctions.push_back(elem);
     }
 }
 
@@ -223,6 +202,8 @@ Problem::~Problem()
     m_goalVec.clear();
     m_priorityVec.clear();
     m_thresholdVec.clear();
+    m_paramConnect.clear();
+    m_connectedFunctions.clear();
 
     if(!m_fvec.empty()) {
         for(size_t i=0; i<m_fvec.size(); i++) {
@@ -270,13 +251,6 @@ Problem::~Problem()
 
     if(m_boxConstraints) {
         m_boxConstraints.reset();
-    }
-
-    if(!m_pvecExternalIndividualData.empty()) {
-        for(size_t i=0; i<m_pvecExternalIndividualData.size(); i++) {
-            clearPointerVector(m_pvecExternalIndividualData[i]);
-        }
-        m_pvecExternalIndividualData.clear();
     }
 }
 
@@ -549,8 +523,8 @@ void Problem::defineProbProperties(ProblemProperties probprp)
 void Problem::defineDVecPrpts(const TVector<ElementProperties> &dvecPrpts)
 {
     m_dvecPrpts = dvecPrpts;
-    int n = m_dvecPrpts.size();
-    for(int i=0; i<m_f2dMap.size(); i++) {
+    size_t n = m_dvecPrpts.size();
+    for(size_t i=0; i<m_f2dMap.size(); i++) {
         if(m_f2dMap[i].size() != n) {
             fill(m_f2dMap[i], -1, n);
         }
@@ -562,13 +536,13 @@ void Problem::defineDVecPrpts(const TVector<ElementProperties> &dvecPrpts)
 void Problem::defineOVecPrpts(const TVector<ElementProperties> &ovecPrpts)
 {
     m_ovecPrpts = ovecPrpts;
-    int n = m_ovecPrpts.size();
-    for(int i = 0; i < n; i++) {
+    size_t n = m_ovecPrpts.size();
+    for(size_t i = 0; i < n; i++) {
         if(m_ovecPrpts[i].optimizationType() == NonOptimization) {
             m_ovecPrpts[i].setOptimizationType(Minimization);
         }
     }
-    for(int i=0; i<m_f2oMap.size(); i++) {
+    for(size_t i=0; i<m_f2oMap.size(); i++) {
         if(m_f2oMap[i].size() != n) {
             fill(m_f2oMap[i], -1, n);
         }
@@ -580,8 +554,8 @@ void Problem::defineOVecPrpts(const TVector<ElementProperties> &ovecPrpts)
 void Problem::definePVecPrpts(const TVector<ElementProperties> &pvecPrpts)
 {
     m_pvecPrpts = pvecPrpts;
-    int n = m_pvecPrpts.size();
-    for(int i=0; i<m_f2pMap.size(); i++) {
+    size_t n = m_pvecPrpts.size();
+    for(size_t i=0; i<m_f2pMap.size(); i++) {
         if(m_f2pMap[i].size() != n) {
             fill(m_f2pMap[i], -1, n);
         }
@@ -593,13 +567,13 @@ void Problem::definePVecPrpts(const TVector<ElementProperties> &pvecPrpts)
 void Problem::defineCVecPrpts(const TVector<ElementProperties> &cvecPrpts)
 {
     m_cvecPrpts = cvecPrpts;
-    int n = m_cvecPrpts.size();
-    for(int i = 0; i < n; i++) {
+    size_t n = m_cvecPrpts.size();
+    for(size_t i = 0; i < n; i++) {
         if(m_cvecPrpts[i].optimizationType() == NonOptimization) {
             m_cvecPrpts[i].setOptimizationType(Minimization);
         }
     }
-    for(int i=0; i<m_f2cMap.size(); i++) {
+    for(size_t i=0; i<m_f2cMap.size(); i++) {
         if(m_f2cMap[i].size() != n) {
             fill(m_f2cMap[i], -1, n);
         }
@@ -611,9 +585,9 @@ void Problem::defineCVecPrpts(const TVector<ElementProperties> &cvecPrpts)
 void Problem::defineUVecPrpts(const TVector<ElementProperties> &uvecPrpts)
 {
     m_uvecPrpts = uvecPrpts;
-    int n = m_uvecPrpts.size();
+    size_t n = m_uvecPrpts.size();
 
-    for(int i=0; i<m_f2uMap.size(); i++) {
+    for(size_t i=0; i<m_f2uMap.size(); i++) {
         if(m_f2uMap[i].size() != n) {
             fill(m_f2uMap[i], -1, n);
         }
@@ -625,7 +599,7 @@ void Problem::defineUVecPrpts(const TVector<ElementProperties> &uvecPrpts)
 void Problem::defineDVecTypes(const TVector<ElementType> &dvecTypes)
 {
     if(m_dvecPrptsDefined) {
-        for(int i=0; i<m_dvecPrpts.size(); i++) {
+        for(size_t i=0; i<m_dvecPrpts.size(); i++) {
             m_dvecPrpts[i].setType(dvecTypes[i]);
         }
     } else {
@@ -638,7 +612,7 @@ void Problem::defineDVecTypes(const TVector<ElementType> &dvecTypes)
 void Problem::defineOVecTypes(const TVector<ElementType> &ovecTypes)
 {
     if(m_ovecPrptsDefined) {
-        for(int i=0; i<m_ovecPrpts.size(); i++) {
+        for(size_t i=0; i<m_ovecPrpts.size(); i++) {
             m_ovecPrpts[i].setType(ovecTypes[i]);
         }
     } else {
@@ -651,7 +625,7 @@ void Problem::defineOVecTypes(const TVector<ElementType> &ovecTypes)
 void Problem::definePVecTypes(const TVector<ElementType> &pvecTypes)
 {
     if(m_pvecPrptsDefined) {
-        for(int i=0; i<m_pvecPrpts.size(); i++) {
+        for(size_t i=0; i<m_pvecPrpts.size(); i++) {
             m_pvecPrpts[i].setType(pvecTypes[i]);
         }
     } else {
@@ -664,7 +638,7 @@ void Problem::definePVecTypes(const TVector<ElementType> &pvecTypes)
 void Problem::defineCVecTypes(const TVector<ElementType> &cvecTypes)
 {
     if(m_cvecPrptsDefined) {
-        for(int i=0; i<m_cvecPrpts.size(); i++) {
+        for(size_t i=0; i<m_cvecPrpts.size(); i++) {
             m_cvecPrpts[i].setType(cvecTypes[i]);
         }
     } else {
@@ -677,7 +651,7 @@ void Problem::defineCVecTypes(const TVector<ElementType> &cvecTypes)
 void Problem::defineUVecTypes(const TVector<ElementType> &uvecTypes)
 {
     if(m_uvecPrptsDefined) {
-        for(int i=0; i<m_uvecPrpts.size(); i++) {
+        for(size_t i=0; i<m_uvecPrpts.size(); i++) {
             m_uvecPrpts[i].setType(uvecTypes[i]);
         }
     } else {
@@ -728,7 +702,7 @@ void Problem::redefineParamType(int idx, ElementType paramType)
 void Problem::defineOVecOptimizationTypes(const TVector<OptimizationType> &ovecOptTypes)
 {
     if(m_ovecPrptsDefined) {
-        for(int i=0; i<m_ovecPrpts.size(); i++) {
+        for(size_t i=0; i<m_ovecPrpts.size(); i++) {
             if(ovecOptTypes[i] != NonOptimization) {
                 m_ovecPrpts[i].setOptimizationType(ovecOptTypes[i]);
             }
@@ -741,7 +715,7 @@ void Problem::defineOVecOptimizationTypes(const TVector<OptimizationType> &ovecO
 void Problem::defineCVecOptimizationTypes(const TVector<OptimizationType> &cvecOptTypes)
 {
     if(m_cvecPrptsDefined) {
-        for(int i=0; i<m_cvecPrpts.size(); i++) {
+        for(size_t i=0; i<m_cvecPrpts.size(); i++) {
             if(cvecOptTypes[i] != NonOptimization) {
                 m_cvecPrpts[i].setOptimizationType(cvecOptTypes[i]);
             }
@@ -772,7 +746,7 @@ void Problem::redefineCnstOptimizationType(int idx, OptimizationType optType)
 
 void Problem::defineFunctionVec(const TVector<IFunctionSPtr> &fvec)
 {
-    for(int i=0; i<fvec.size(); i++) {
+    for(size_t i=0; i<fvec.size(); i++) {
         appendFunction(fvec[i]);
     }
 
@@ -894,7 +868,7 @@ void Problem::defineNadirVector(const TVector<IElementSPtr> &nadir)
 void Problem::defineParameterVector(const TVector<IElementSPtr> &pvec)
 {
     if(!(m_parameterVec.empty())) {
-        for(int i=0; i<m_parameterVec.size(); i++) {
+        for(size_t i=0; i<m_parameterVec.size(); i++) {
             m_parameterVec[i].reset();
         }
     }
@@ -924,7 +898,7 @@ void Problem::redefineDVarUncertainty(int idx, UncertaintyMapping* umap)
 void Problem::defineFuncOutUncertainties(const TVector<TVector<UncertaintyMapping*> > &umaps)
 {
     if(!(m_fOutUncertainties.empty())) {
-        for(int i=0; i<m_fOutUncertainties.size(); i++) {
+        for(size_t i=0; i<m_fOutUncertainties.size(); i++) {
             clearPointerVector(m_fOutUncertainties[i]);
         }
     }
@@ -962,7 +936,7 @@ bool Problem::updateIdeal(const TVector<IElementSPtr> &newVec)
 {
     bool ret = false;
     if(newVec.size() == m_ideal.size()) {
-        for(int i=0; i<newVec.size(); i++) {
+        for(size_t i=0; i<newVec.size(); i++) {
             if(*(newVec[i]) < *(m_ideal[i])) {
                 m_ideal[i] = newVec[i]->clone();
                 ret = true;
@@ -976,7 +950,7 @@ bool Problem::updateAntiIdeal(const TVector<IElementSPtr> &newVec)
 {
     bool ret = false;
     if(newVec.size() == m_antiIdeal.size()) {
-        for(int i=0; i<newVec.size(); i++) {
+        for(size_t i=0; i<newVec.size(); i++) {
             if(*(newVec[i]) > *(m_antiIdeal[i])) {
                 m_antiIdeal[i] = newVec[i]->clone();
                 ret = true;
@@ -990,7 +964,7 @@ bool Problem::updateNadir(const TVector<IElementSPtr> &newVec)
 {
     bool ret = false;
     if(newVec.size() == m_nadir.size()) {
-        for(int i=0; i<newVec.size(); i++) {
+        for(size_t i=0; i<newVec.size(); i++) {
             if(*(newVec[i]) > *(m_nadir[i])) {
                 m_nadir[i] = newVec[i]->clone();
                 ret = true;
@@ -1017,45 +991,65 @@ void Problem::appendFunction(IFunctionSPtr func,
     int nOutputs = func->TP_nOutputs();
 
     TVector<bool> inParamBool(nInputs, false);
-    for(int i=0; i<inParamIdx.size(); i++) {
-        if(!isInRange(inParamIdx[i], nInputs)) {
+    for(auto parIdx : inParamIdx) {
+        if(!isInRange(parIdx, nInputs)) {
             return;
         } else {
-            inParamBool[inParamIdx[i]] = true;
-        }
-    }
-
-    TVector<bool> outObjBool(nOutputs, false);
-    if(outObjIdx.empty()) {
-        fill(outObjBool, true);
-    } else {
-        for(int i=0; i<outObjIdx.size(); i++) {
-            if(!isInRange(outObjIdx[i], nOutputs)) {
-                return;
-            } else {
-                outObjBool[outObjIdx[i]] = true;
-            }
+            inParamBool[parIdx] = true;
         }
     }
 
     TVector<bool> outConstrBool(nOutputs, false);
-    for(int i=0; i<outConstrIdx.size(); i++) {
-        if(!isInRange(outConstrIdx[i], nOutputs)) {
+    for(auto constrIdx : outConstrIdx) {
+        if(!isInRange(constrIdx, nOutputs)) {
             return;
         } else {
-            outConstrBool[outConstrIdx[i]] = true;
+            outConstrBool[constrIdx] = true;
         }
     }
 
-    if(outUnuIdx.size() !=0) {
-        TVector<bool> outUnuBool(nOutputs, false);
-        for(int i=0; i<outUnuIdx.size(); i++) {
-            if(!isInRange(outUnuIdx[i], nOutputs)) {
+    TVector<bool> outObjBool(nOutputs, false);
+    for(auto objIdx : outObjIdx) {
+        if(!isInRange(objIdx, nOutputs)) {
+            return;
+        } else {
+            outObjBool[objIdx] = true;
+        }
+    }
+
+    for(auto unuIdx : outUnuIdx) {
+        if(!isInRange(unuIdx, nOutputs)) {
+            return;
+        } else {
+            outObjBool[unuIdx] = false;
+            outConstrBool[unuIdx] = false;
+        }
+    }
+
+    // case where all outputs provided are empty,
+    // then all outputs are set to objectives
+    if(outConstrIdx.empty() && outObjIdx.empty() && outUnuIdx.empty()) {
+        fill(outObjBool, true);
+    }
+
+    // case where only constraints have been set,
+    // and if the number of outputs is higher than the number of constraints
+    // then set the remaining outputs as objectives
+    if( ((!outConstrIdx.empty()) && outObjIdx.empty() && outUnuIdx.empty()) &&
+        (static_cast<int>(outConstrIdx.size()) < nOutputs) ) {
+
+        TVector<int> remainingOutputs;
+        for(int i=0; i<nOutputs; i++) {
+            if(std::find(outConstrIdx.begin(), outConstrIdx.end(), i) ==
+                         outConstrIdx.end()) {
+                remainingOutputs.push_back(i);
+            }
+        }
+        for(auto objIdx : remainingOutputs) {
+            if(!isInRange(objIdx, nOutputs)) {
                 return;
             } else {
-                outObjBool[outUnuIdx[i]] = false;
-                outConstrBool[outUnuIdx[i]] = false;
-                outUnuBool[outUnuIdx[i]] = true;
+                outObjBool[objIdx] = true;
             }
         }
     }
@@ -1093,7 +1087,7 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
             TVector<ElementProperties> inputs  = m_fvec[i]->inputPrpts();
             TVector<ElementProperties> outputs = m_fvec[i]->outputPrpts();
 
-            for(int j=0; j<inputs.size(); j++) {
+            for(size_t j=0; j<inputs.size(); j++) {
                 if(m_fInPMap[i][j]) { // the input is a parameter
                     // check if the parameter already exists
                     if(indexOf(params, inputs[j].ID()) == -1) {
@@ -1108,7 +1102,7 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
                 }
             }
 
-            for(int j=0; j<outputs.size(); j++) {
+            for(size_t j=0; j<outputs.size(); j++) {
                 if( m_fOutOMap[i][j] || m_fOutCMap[i][j] ) {
                     if(m_fOutOMap[i][j]) { // the output is an objective
                         // check if the objective already exists
@@ -1140,9 +1134,9 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
         for(int i=0; i<nFuncs; i++) {
             // inputs
             TVector<ElementProperties> inputs  = m_fvec[i]->inputPrpts();
-            for(int j=0; j<inputs.size(); j++) {
+            for(size_t j=0; j<inputs.size(); j++) {
                 // decision variables
-                for(int k=0; k<dVars.size(); k++) {
+                for(size_t k=0; k<dVars.size(); k++) {
                     if(dVars[k] == inputs[j].ID()) {
                         m_f2dMap[i][k] = j;
                     }
@@ -1150,7 +1144,7 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
                 }
 
                 // parameters
-                for(int k=0; k<params.size(); k++) {
+                for(size_t k=0; k<params.size(); k++) {
                     if(params[k] == inputs[j].ID()) {
                         m_f2pMap[i][k] = j;
                     }
@@ -1159,23 +1153,23 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
 
             // outputs
             TVector<ElementProperties> outputs = m_fvec[i]->outputPrpts();
-            for(int j=0; j<outputs.size(); j++) {
+            for(size_t j=0; j<outputs.size(); j++) {
 
-                for(int k=0; k<oVars.size(); k++) {
+                for(size_t k=0; k<oVars.size(); k++) {
                     if(oVars[k] == outputs[j].ID()) {
                         m_f2oMap[i][k] = j;
                     }
 
                 }
 
-                for(int k=0; k<uVars.size(); k++) {
+                for(size_t k=0; k<uVars.size(); k++) {
                     if(uVars[k] == outputs[j].ID()) {
                         m_f2uMap[i][k] = j;
                     }
 
                 }
 
-                for(int k=0; k<constrs.size(); k++) {
+                for(size_t k=0; k<constrs.size(); k++) {
                     if(constrs[k] == outputs[j].ID()) {
                         m_f2cMap[i][k] = j;
                     }
@@ -1392,6 +1386,7 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
                 m_definitionStatus = IllDefinedPVecMaps;
                 return m_definitionStatus;
             }
+
         }
     }
 
@@ -1776,87 +1771,200 @@ ProblemDefinitionStatus Problem::processProblemDefinition()
     // number of external parameters
     int nExternal = std::count(m_pvecExternal.cbegin(), m_pvecExternal.cend(), true);
 
-    // If the m_pvecExternalKrigings has the wrong size, resize it.
-    if(m_pvecExternalKrigings.size() != nExternal) {
-        m_pvecExternalKrigings.clear();
-        m_pvecExternalKrigings.resize(nExternal);
-    } else {
-        // If the m_pvecExternalKrigings has the correct size and are defined
-        // remove the prior distribution
-        int ct = 0;
-        for(size_t i=0; i<m_parameterVec.size(); i++) {
-            if(m_pvecExternal[i]) {
-                if(m_pvecExternalKrigings[ct]) { // is kriging defined
-                    m_parameterVec[i]->defineDist(nullptr); // remove prior
+    fill(m_paramConnect, ParamConnect(), nParams);
+    fill(m_connectedFunctions, TVector<int>(), m_fvec.size());
+
+    if((nFuncs > 1) && (nExternal > 0)) {
+
+        // initialize the mapping between external parameters and function outputs
+        TVector<TVector<int>> ext2fMap;
+        fill(ext2fMap, TVector<int>{-1,-1}, nParams);
+
+        for(int i=1; i<nFuncs; i++) {
+            TVector<ElementProperties> outputs = m_fvec[i-1]->outputPrpts();
+            std::set<int> connections;
+            for(int j=i; j<nFuncs; j++) {
+                TVector<ElementProperties> inputs  = m_fvec[j]->inputPrpts();
+
+                for(int k=0; k<outputs.size(); k++) {
+                    TString outputID = outputs[k].ID();
+
+                    for(ElementProperties input : inputs) {
+                        TString inputID  = input.ID();
+
+                        if(outputID==inputID) {
+                            // check if input is an external parameter
+                            for(size_t l=0; l<pPrpts.size(); l++) {
+                                if(m_pvecExternal[l]) {
+                                    if(pPrpts[l].ID() == inputID) {
+                                        // Parameter l is connected to the kth
+                                        // output of the (i-1)th function
+                                        ext2fMap[l][0] = i-1; // function
+                                        ext2fMap[l][1] = k;   // output
+                                        connections.insert(j); // unique vector
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                ++ct;
             }
-        }
-    }
 
-    // If the m_pvecExternalIndividualData has the wrong size, resize it
-    if(m_pvecExternalIndividualData.size() != m_parameterVec.size()) {
-        m_pvecExternalIndividualData.clear();
-        m_pvecExternalIndividualData.resize(m_parameterVec.size());
-    }
-    // Attach the prior
-    for(size_t i=0; i<m_parameterVec.size(); i++) {
-        if(m_pvecExternalIndividualData[i].empty() && m_pvecExternal[i]) {
-            if(m_parameterVec[i]->dist()) {
-                m_pvecExternalIndividualData[i].push_back(m_parameterVec[i]->dist()->clone());
-            // m_parameterVec[i]->defineDist(nullptr); // do not delete
+            for(int j : connections) {
+                m_connectedFunctions[i-1].push_back(j);
             }
-        }
-    }
 
-    /// ************************************************
-    /// Deal with external parameters that are in groups
-    /// ************************************************
-
-    // if there are groups defined
-    if(!m_pvecExternalGroups.empty()) {
-
-        // checks that the vector that stores the groups has the same size
-        // as the vector that stores the dependent variables
-        if(m_pvecExternalGroups.size()!=m_pvecExternalGroupsDependentVars.size()) {
-            m_definitionStatus = IllDefinedParameterGroups;
-            return m_definitionStatus;
         }
 
-        // checks that the vector that stores the groups has the same size
-        // as the vector that stores the containers of data
-        if(m_pvecExternalGroups.size()!=m_pvecExternalGroupData.size()) {
-            m_definitionStatus = IllDefinedParameterGroups;
-            return m_definitionStatus;
-        }
+        TStringList pIDs = pVecIDs();
+        for(size_t i=0; i<pIDs.size(); i++) {
+            if(isExternalParameters()[i]) {
+                TVector<int> eMap = ext2fMap[i];
+                int funcIdx = eMap[0];
 
-        // for each group
-        for(size_t i=0; i<m_pvecExternalGroups.size(); i++) {
-            // for each element in the group
-            for(size_t j=0; j<m_pvecExternalGroups[i].size(); j++) {
+                if(funcIdx >= 0) { // The parameter is connected
 
-                // check if the parameter id in the group is valid
-                int nparams = m_parameterVec.size();
-                if(m_pvecExternalGroups[i][j]>=nparams) {
-                    m_definitionStatus = IllDefinedParameterGroups;
-                    return m_definitionStatus;
+                    int outputIdx = eMap[1];
+                    bool outputFound = false;
+
+                    // check objectives map
+                    TVector<int> objMap = f2oMap()[funcIdx];
+                    for(size_t j=0; j<objMap.size(); j++) {
+                        if(objMap[j] == outputIdx) {
+                            m_paramConnect[i].setIsConnected(true);
+                            m_paramConnect[i].setOutputIdx(j);
+                            m_paramConnect[i].setOutputType(OutputType::Objective);
+                            if(m_ovecPrpts[j].optimizationType()==Maximization) {
+                                m_paramConnect[i].setIsMaximization(true);
+                            } else {
+                                m_paramConnect[i].setIsMaximization(false);
+                            }
+                            outputFound = true;
+                            break;
+                        }
+                    }
+
+                    if(!outputFound) {
+                        // check constraints map
+                        TVector<int> ctrMap = f2cMap()[funcIdx];
+                        for(size_t j=0; j<ctrMap.size(); j++) {
+                            if(ctrMap[j] == outputIdx) {
+                                m_paramConnect[i].setIsConnected(true);
+                                m_paramConnect[i].setOutputIdx(j);
+                                m_paramConnect[i].setOutputType(OutputType::Constraint);
+                                if(m_cvecPrpts[j].optimizationType()==Maximization) {
+                                    m_paramConnect[i].setIsMaximization(true);
+                                } else {
+                                    m_paramConnect[i].setIsMaximization(false);
+                                }
+                                outputFound = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if(!outputFound) {
+                        // check unused map
+                        TVector<int> uMap = f2uMap()[funcIdx];
+                        for(size_t j=0; j<uMap.size(); j++) {
+                            if(uMap[j] == outputIdx) {
+                                m_paramConnect[i].setIsConnected(true);
+                                m_paramConnect[i].setOutputIdx(j);
+                                m_paramConnect[i].setOutputType(OutputType::Unused);
+                                m_paramConnect[i].setIsMaximization(false);
+                                break;
+                            }
+                        }
+                    }
                 }
-
-                // the parameter id in the group needs to be flagged as external
-                if(!m_pvecExternal[m_pvecExternalGroups[i][j]]) {
-                    m_definitionStatus = IllDefinedParameterGroups;
-                    return m_definitionStatus;
-                }
-
-                // if the external parameter belongs to a group then
-                // remove the prior
-                m_parameterVec[m_pvecExternalGroups[i][j]]->defineDist(nullptr);
             }
         }
     }
 
     m_definitionStatus = FullyDefined;
     return m_definitionStatus;
+}
+
+/// *******************
+/// External parameters
+/// *******************
+
+TVector<bool> Problem::paramConnectIsConnected() const
+{
+    TVector<bool> lst;
+    std::transform(m_paramConnect.begin(), m_paramConnect.end(), std::back_inserter(lst),
+                   [](ParamConnect p){return p.isConnected();});
+    return lst;
+
+}
+
+bool Problem::paramConnectIsConnected(size_t idx) const
+{
+    if(isInRange(idx, m_paramConnect.size())) {
+        return m_paramConnect[idx].isConnected();
+    } else {
+        // ERROR
+        throw TException("Tigon::Representation::Problem", DomainException);
+    }
+}
+
+TVector<size_t> Problem::paramConnectOutputIdx() const
+{
+    TVector<size_t> lst;
+    std::transform(m_paramConnect.begin(), m_paramConnect.end(), std::back_inserter(lst),
+                   [](ParamConnect p){return p.outputIdx();});
+    return lst;
+}
+
+size_t Problem::paramConnectOutputIdx(size_t idx) const
+{
+    if(isInRange(idx, m_paramConnect.size())) {
+        return m_paramConnect[idx].outputIdx();
+    } else {
+        // ERROR
+        throw TException("Tigon::Representation::Problem", DomainException);
+    }
+}
+
+TVector<OutputType> Problem::paramConnectOutputType() const
+{
+    TVector<OutputType> lst;
+    std::transform(m_paramConnect.begin(), m_paramConnect.end(), std::back_inserter(lst),
+                   [](ParamConnect p){return p.outputType();});
+    return lst;
+}
+
+OutputType Problem::paramConnectOutputType(size_t idx) const
+{
+    if(isInRange(idx, m_paramConnect.size())) {
+        return m_paramConnect[idx].outputType();
+    } else {
+        // ERROR
+        throw TException("Tigon::Representation::Problem", DomainException);
+    }
+}
+
+TVector<bool> Problem::paramConnectIsMaximization() const
+{
+    TVector<bool> lst;
+    std::transform(m_paramConnect.begin(), m_paramConnect.end(), std::back_inserter(lst),
+                   [](ParamConnect p){return p.isMaximization();});
+    return lst;
+}
+
+bool Problem::paramConnectIsMaximization(size_t idx) const
+{
+    if(isInRange(idx, m_paramConnect.size())) {
+        return m_paramConnect[idx].isMaximization();
+    } else {
+        // ERROR
+        throw TException("Tigon::Representation::Problem", DomainException);
+    }
+}
+
+TVector<TVector<int>> Problem::connectedFunctions() const
+{
+    return m_connectedFunctions;
 }
 
 TVector<bool> Problem::isExternalParameters() const
@@ -1867,270 +1975,6 @@ TVector<bool> Problem::isExternalParameters() const
 int Problem::numberExternalParameters() const
 {
     return std::count(m_pvecExternal.cbegin(), m_pvecExternal.cend(), true);
-}
-
-TVector<int> Problem::externalParametersIndices() const
-{
-    TVector<int> indices;
-
-    for(size_t i=0; i<m_pvecExternal.size(); i++) {
-        if(m_pvecExternal[i]) {
-            indices.push_back(i);
-        }
-    }
-
-    return indices;
-}
-
-/// ********************************
-/// External parameters (Individual)
-/// ********************************
-
-TVector<bool> Problem::usePriorForExternalParameters() const
-{
-    TVector<bool> res;
-    int nExt = m_pvecExternalKrigings.size();
-    res.reserve(nExt);
-    std::transform(m_pvecExternalKrigings.cbegin(),
-                   m_pvecExternalKrigings.cend(),
-                   std::back_inserter(res),
-                   [](const KrigingSPtr& kpt) {return !bool(kpt);});
-    return res;
-}
-
-void Problem::allocateParameterKrigings(int size)
-{
-    m_pvecExternalKrigings.resize(size);
-}
-
-TVector<KrigingSPtr> Problem::externalParameterKrigings() const
-{
-    return m_pvecExternalKrigings;
-}
-
-void Problem::defineExternalParameterKriging(int idx, KrigingSPtr externalParameterKriging)
-{
-    m_pvecExternalKrigings[idx] = externalParameterKriging;
-    m_definitionStatus = UnprocessedChanges;
-}
-
-void Problem::allocateDVec2KrigingsMap(int size)
-{
-    m_d2KrigingMap.resize(size);
-}
-
-TVector<TVector<int> > Problem::dVec2KrigingMap() const
-{
-    return m_d2KrigingMap;
-}
-
-void Problem::defineDVec2KrigingMap(int idx, const TVector<int> &d2kMap)
-{
-    m_d2KrigingMap[idx] = d2kMap;
-    m_definitionStatus = UnprocessedChanges;
-}
-
-void Problem::allocateExtIndividualParams(int size)
-{
-    m_pvecExternalIndividualData.resize(size);
-}
-
-TVector<IDistribution*> Problem::externalParameterList(int idx) const
-{
-    if(idx>=(int)m_pvecExternalIndividualData.size()) {
-        throw TException("Tigon::Representation::Problem",
-                         DomainException);
-    }
-    return m_pvecExternalIndividualData[(size_t)idx];
-}
-
-void Problem::addExtParamData(int idx, IDistribution* dist)
-{
-    if(idx>=(int)m_pvecExternalIndividualData.size()) {
-        throw TException("Tigon::Representation::Problem",
-                         DomainException);
-    }
-
-    m_pvecExternalIndividualData[(size_t)idx].push_back(dist);
-}
-
-/// ****************************
-/// External parameters (Groups)
-/// ****************************
-
-TVector<bool> Problem::isExternalParameterInGroup()
-{
-    TVector<bool> res;
-
-    if(!m_parameterVec.empty()) {
-        fill(res, false, m_parameterVec.size());
-
-        if(!m_pvecExternalGroups.empty()) {
-            for(size_t i=0; i<m_pvecExternalGroups.size(); i++) {
-                for(size_t j=0; j<m_pvecExternalGroups[i].size(); j++) {
-                    int pIndex = m_pvecExternalGroups[i][j];
-                    res[pIndex] = true;
-                }
-            }
-        }
-    }
-
-    return res;
-}
-
-void Problem::allocateParameterGroups(int size)
-{
-    m_pvecExternalGroups.resize(size);
-    m_pvecExternalGroupsDependentVars.resize(size);
-    m_pvecExternalGroupData.resize(size);
-}
-
-TVector<TVector<int>> Problem::externalParameterGroups() const
-{
-    return m_pvecExternalGroups;
-}
-
-TVector<int> Problem::extGroupDependentVars(size_t idx) const
-{
-    if(m_pvecExternalGroupsDependentVars.empty()) {
-        throw TException("Tigon::Representation::Problem",
-                         NullPointerException);
-    }
-
-    if(idx>=m_pvecExternalGroupsDependentVars.size()){
-        throw TException("Tigon::Representation::Problem",
-                         DomainException);
-    }
-
-    return m_pvecExternalGroupsDependentVars[idx];
-}
-
-void Problem::defineParameterGroup(const TVector<TVector<int> > &groups)
-{
-    allocateParameterGroups(groups.size());
-    m_pvecExternalGroups = groups;
-    m_definitionStatus = UnprocessedChanges;
-}
-
-void Problem::defineParameterGroup(int idx, const TVector<int>& group)
-{
-    if(m_pvecExternalGroups.empty()) {
-        throw TException("Tigon::Representation::Problem",
-                         NullPointerException);
-    }
-
-    if(idx>=m_pvecExternalGroups.size()){
-        throw TException("Tigon::Representation::Problem",
-                         DomainException);
-    }
-    m_pvecExternalGroups[idx] = group;
-
-    m_definitionStatus = UnprocessedChanges;
-}
-
-void Problem::defineGroupDependentVars(int idx, const TVector<int> &vars)
-{
-    if(m_pvecExternalGroupsDependentVars.empty()) {
-        throw TException("Tigon::Representation::Problem",
-                         NullPointerException);
-    }
-
-    if(idx>=m_pvecExternalGroupsDependentVars.size()){
-        throw TException("Tigon::Representation::Problem",
-                         DomainException);
-    }
-
-    m_pvecExternalGroupsDependentVars[idx] = vars;
-}
-
-void Problem::addGroupData(int idx, SampleVectorsSPtr data, int id)
-{
-    if(m_pvecExternalGroupData.empty()) {
-        throw TException("Tigon::Representation::Problem", NullPointerException);
-    }
-
-    if(idx>=m_pvecExternalGroupData.size()){
-        throw TException("Tigon::Representation::Problem",
-                         DomainException);
-    }
-
-    // if the id does not exists in the map
-    if( m_pvecExternalGroupData[idx].count(id)==0 ) {
-
-        // create a new container object
-        TimeSeriesContainerSPtr containerObj =
-                TimeSeriesContainerSPtr(new TimeSeriesContainer());
-
-        /// \deprecated for TTP
-        /// \todo create a constant for the default id
-        // if is not the prior (or default) id
-//        if(!(id==0)) {
-//            // get the prior
-//            SampleVectorsSPtr prior =
-//                    m_pvecExternalGroupData[idx].at(0)->sampledVal(0);
-//            // add the prior
-//            containerObj->addData(prior);
-//        }
-        // add the data
-        containerObj->addData(data);
-        // add the container to the problem for the given id
-        (m_pvecExternalGroupData[idx])[id] = containerObj;
-
-    } else {
-
-        // gets a pointer to the current container
-        TimeSeriesContainerSPtr containerObj =
-                (m_pvecExternalGroupData[idx]).at(id);
-        // adds more data
-        containerObj->addData(data);
-    }
-}
-
-TimeSeriesContainerSPtr Problem::groupData(int idx, int id)
-{
-    if(m_pvecExternalGroupData.empty()) {
-        throw TException("Tigon::Representation::Problem",
-                         NullPointerException);
-    }
-
-    if(idx>=m_pvecExternalGroupData.size()){
-        throw TException("Tigon::Representation::Problem",
-                         DomainException);
-    }
-
-    if( m_pvecExternalGroupData[idx].count(id)==0 ) {
-        // the id does not exist in the map
-        // return the data associated with the default id
-        return (m_pvecExternalGroupData[idx]).at(0);
-    }
-    else {
-        return (m_pvecExternalGroupData[idx]).at(id);
-    }
-}
-
-int Problem::nMaxRuns() const
-{
-    int nruns = 1;
-
-    // for each group of external parameters
-    for(auto groupExtParam : m_pvecExternalGroupData) {
-        // get the keys of the group
-        TVector <int> keys = getMapKeys(groupExtParam);
-
-        // for each key
-        for(auto key : keys) {
-            int nr = groupExtParam.at(key)->nRuns();
-            nruns = std::max(nruns,nr);
-        }
-    }
-
-    // for each individual external parameters
-    for(auto individualExtParam : m_pvecExternalIndividualData) {
-        int nr = individualExtParam.size();
-        nruns = std::max(nruns,nr);
-    }
-
-    return nruns;
 }
 
 /// ****************

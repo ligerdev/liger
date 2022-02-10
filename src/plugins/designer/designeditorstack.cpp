@@ -85,13 +85,24 @@ int DesignEditorStack::indexOfDesignEditor(const QObject *xmlEditor) const
 
 EditorData DesignEditorStack::activeEditor() const
 {
+    /// WARNING: temporary fix
+    /// TODO: Currently when Liger is started there is only one editor, and the
+    /// following code returns the editor independently if it is active or not.
+    /// This is to address a crash that happens during debug mode. The crash
+    /// happens when this function is called by the EmailNotifierPlugin more
+    /// precisely, DesignEditorW::instance()->activeEngine().
+    /// During debug mode when Liger is started the function isActive() below
+    /// returns false. To prevent the crash the existing editor needs to be
+    /// returned, not a new objective of EditorData.
+    if(m_designEditors.size() == 1) {
+        return m_designEditors[0];
+    }
+
     // TODO: Should return the data from the active editor.
     // DONE: Now need to test that the correct data is returned.
-    for(int i=0; i < m_designEditors.size(); i++) {
-        EditorData cur = m_designEditors.at(i);
+    for(EditorData cur : m_designEditors) {
         bool res = (cur.widgetHost->designWindow()->isActive());
-        if(res)
-            return cur;
+        if(res) return cur;
     }
 
     return EditorData();

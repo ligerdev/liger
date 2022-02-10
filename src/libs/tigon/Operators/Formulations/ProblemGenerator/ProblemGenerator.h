@@ -44,8 +44,6 @@ class LIGER_TIGON_EXPORT ProblemGenerator : public IFormulation
     READ(ubounds, ubounds)
     READ(paramValueVec, paramValueVec)
     READ(externalParam, externalParam)
-    READ(externalParamGroups, externalParamGroups)
-    READ(externalParamGroupDataPathes, externalParamGroupDataPathes)
     READ(setGoals, setGoals)
     READ(goals, goals)
     READ(priorities, priorities)
@@ -69,8 +67,6 @@ class LIGER_TIGON_EXPORT ProblemGenerator : public IFormulation
     WRITE(ubounds, TString, defineUbounds)
     WRITE(paramValueVec, TString, defineParamValues)
     WRITE(externalParam, TString, defineExternalParam)
-    WRITE(externalParamGroups, TString, defineExternalParamGroups)
-    WRITE(externalParamGroupDataPathes, TString, defineExternalParamGroupDataPathes)
     WRITE(setGoals, TString, defineSetGoals)
     WRITE(goals, TString, defineGoals)
     WRITE(priorities, TString, definePriorities)
@@ -167,26 +163,18 @@ public:
     void defineParamValues(const TString& value);
     TString externalParam() const;
     void defineExternalParam(const TString& value);
-    TString externalParamGroupDataPathes() const;
-    void defineExternalParamGroupDataPathes(const TString &pathes);
-    TString externalParamGroups() const;
-    void defineExternalParamGroups(const TString& groupsString);
-    /*!
-     * \brief Loads group data for external parameters
-     */
-    void processExternalParamGroupData();
 
     /// Set Goals
     TString setGoals() const;
     void defineSetGoals(const TString& setGoalString);
 
-    /// Priorities
-    TString priorities() const;
-    void definePriorities(const TString& priorityString);
-
     /// Goals
     TString goals() const;
     void defineGoals(const TString& goalString);
+
+    /// Priorities
+    TString priorities() const;
+    void definePriorities(const TString& priorityString);
 
     /// Thresholds
     TString thresholds() const;
@@ -222,8 +210,6 @@ private:
     TVector<IElement>      m_upperBounds;
     TVector<IElementSPtr>  m_paramValues;
     TVector<bool>          m_isExternalParams;
-    TVector<TVector<int>>  m_externalParamGroups;
-    TStringList            m_groupDataPathes;
     TVector<bool>          m_setGoalVec;
     TVector<IElementSPtr>  m_goalVec;
     TVector<int>           m_priorityVec;
@@ -255,8 +241,6 @@ private:
     TVector<TVector<UncertaintyMapping*> > JsonStringToUncertaintyMapping2D(const TString& mappingString);
 
     TVector<IElementSPtr> realVecToElemVec(const TVector<double>& vec);
-
-    bool m_groupedDataProcessed;
 };
 
 } // namespace Operators

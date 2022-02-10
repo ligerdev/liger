@@ -86,7 +86,13 @@ const char DTDiscreteUniformDistType[] = "DiscreteUniform Distribution Type";
 enum OptimizationType {
     Minimization,
     Maximization,
-    NonOptimization,
+    NonOptimization
+};
+
+enum OutputType {
+    Objective,
+    Constraint,
+    Unused
 };
 
 enum ProblemType {

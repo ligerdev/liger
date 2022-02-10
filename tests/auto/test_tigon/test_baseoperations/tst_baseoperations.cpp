@@ -4326,49 +4326,88 @@ void tst_baseoperations::test_ProblemFormulationMultiFunctions()
 
     // Append functions with defined constraint indexes
     prmtrsIdx = TVector<int>(0);
-    TVector<int> cnstrnIdx1(1);
-    cnstrnIdx1[0] = 1;
+    TVector<int> cnstrnIdx1{1};
     TVector<int> cnstrnIdx2(0);
     prob = Problem();
+    // 1st function: 1st output is an objective and the 2nd is a constraint
     prob.appendFunction(func1, prmtrsIdx, cnstrnIdx1);
+    // 2nd function: the output is an objective
     prob.appendFunction(func2, prmtrsIdx, cnstrnIdx2);
+
+    stat = prob.processProblemDefinition();
+
+    // Check first function maps
+    QCOMPARE(prob.f2oMap()[0][1], -1);
+    QCOMPARE((int)prob.f2pMap()[0].size(), 0);
+    QCOMPARE((int)prob.f2dMap()[0].size(), 3);
+    QCOMPARE((int)prob.f2cMap()[0].size(), 1);
+    QCOMPARE((int)prob.f2oMap()[0].size(), 2);
+    QCOMPARE((int)prob.f2uMap()[0].size(), 0);
+    QCOMPARE(prob.f2oMap()[0][0], 0);
+    QCOMPARE(prob.f2oMap()[0][1], -1);
+    QCOMPARE(prob.f2cMap()[0][0], 1);
+
+    // Check second function maps
+    QCOMPARE((int)prob.f2pMap()[1].size(), 0);
+    QCOMPARE((int)prob.f2dMap()[1].size(), 3);
+    QCOMPARE((int)prob.f2cMap()[1].size(), 1);
+    QCOMPARE((int)prob.f2oMap()[1].size(), 2);
+    QCOMPARE((int)prob.f2uMap()[1].size(), 0);
+    QCOMPARE(prob.f2oMap()[1][0], -1);
+    QCOMPARE(prob.f2oMap()[1][1], 0);
+    QCOMPARE(prob.f2cMap()[1][0], -1);
+    QCOMPARE(stat, FullyDefined);
+
+    // Append functions with defined unused indexes
+    prmtrsIdx = TVector<int>(0);
+    TVector<int> objectIdx1{0};
+    TVector<int> objectIdx2(0);
+    cnstrnIdx1 = TVector<int>(0);
+    cnstrnIdx2 = TVector<int>{0};
+    TVector<int> unusedIdx1{1};
+    TVector<int> unusedIdx2(0);
+
+    prob = Problem();
+    // 1st function: 1st output is an objective and the 2nd is a constraint
+    prob.appendFunction(func1, prmtrsIdx, cnstrnIdx1, objectIdx1, unusedIdx1);
+    // 2nd function: the output is a constraint
+    prob.appendFunction(func2, prmtrsIdx, cnstrnIdx2, objectIdx2, unusedIdx2);
 
     stat = prob.processProblemDefinition();
     // The specified output is both a constraint and an objective
     QCOMPARE((int)prob.f2pMap()[0].size(), 0);
     QCOMPARE((int)prob.f2dMap()[0].size(), 3);
     QCOMPARE((int)prob.f2cMap()[0].size(), 1);
-    QCOMPARE((int)prob.f2oMap()[0].size(), 3);
-    QCOMPARE((int)prob.f2uMap()[0].size(), 0);
+    QCOMPARE((int)prob.f2oMap()[0].size(), 1);
+    QCOMPARE((int)prob.f2uMap()[0].size(), 1);
     QCOMPARE(prob.f2oMap()[0][0], 0);
-    QCOMPARE(prob.f2oMap()[0][1], 1);
-    QCOMPARE(prob.f2oMap()[0][2], -1);
-    QCOMPARE(prob.f2cMap()[0][0], 1);
+    QCOMPARE(prob.f2cMap()[0][0], -1);
+    QCOMPARE(prob.f2uMap()[0][0], 1);
 
     QCOMPARE((int)prob.f2pMap()[1].size(), 0);
     QCOMPARE((int)prob.f2dMap()[1].size(), 3);
     QCOMPARE((int)prob.f2cMap()[1].size(), 1);
-    QCOMPARE((int)prob.f2oMap()[1].size(), 3);
-    QCOMPARE((int)prob.f2uMap()[1].size(), 0);
+    QCOMPARE((int)prob.f2oMap()[1].size(), 1);
+    QCOMPARE((int)prob.f2uMap()[1].size(), 1);
     QCOMPARE(prob.f2oMap()[1][0], -1);
-    QCOMPARE(prob.f2oMap()[1][1], -1);
-    QCOMPARE(prob.f2oMap()[1][2], 0);
-    QCOMPARE(prob.f2cMap()[1][0], -1);
+    QCOMPARE(prob.f2cMap()[1][0], 0);
+    QCOMPARE(prob.f2uMap()[1][0], -1);
     QCOMPARE(stat, FullyDefined);
 
     // Append functions with defined unused indexes
     prmtrsIdx = TVector<int>(0);
-    TVector<int> objectIdx(0);
+    objectIdx1 = TVector<int>{0};
+    objectIdx2 = TVector<int>(0);
     cnstrnIdx1 = TVector<int>(0);
     cnstrnIdx2 = TVector<int>(0);
-    TVector<int> unusedIdx1(1);
-    unusedIdx1[0] = 1;
-    TVector<int> unusedIdx2(1);
-    unusedIdx2[0] = 0;
+    unusedIdx1 = TVector<int>{1};
+    unusedIdx2 = TVector<int>{0};
 
     prob = Problem();
-    prob.appendFunction(func1, prmtrsIdx, cnstrnIdx1, objectIdx, unusedIdx1);
-    prob.appendFunction(func2, prmtrsIdx, cnstrnIdx2, objectIdx, unusedIdx2);
+    // 1st function: 1st output is an objective and the 2nd unused
+    prob.appendFunction(func1, prmtrsIdx, cnstrnIdx1, objectIdx1, unusedIdx1);
+    // 2nd function: the output is unused
+    prob.appendFunction(func2, prmtrsIdx, cnstrnIdx2, objectIdx2, unusedIdx2);
 
     stat = prob.processProblemDefinition();
     // The specified output is both a constraint and an objective
@@ -4389,6 +4428,35 @@ void tst_baseoperations::test_ProblemFormulationMultiFunctions()
     QCOMPARE(prob.f2oMap()[1][0], -1);
     QCOMPARE(prob.f2uMap()[1][0], -1);
     QCOMPARE(prob.f2uMap()[1][1], 0);
+    QCOMPARE(stat, FullyDefined);
+
+    prmtrsIdx = TVector<int>(0);
+    cnstrnIdx1 = TVector<int>{1};
+    cnstrnIdx2 = TVector<int>{0};
+
+    prob = Problem();
+    // 1st function: 1st output is not set and the 2nd is a constraint
+    prob.appendFunction(func1, prmtrsIdx, cnstrnIdx1);
+    // 2nd function: the output is a constraint
+    prob.appendFunction(func2, prmtrsIdx, cnstrnIdx2);
+
+    stat = prob.processProblemDefinition();
+    // The specified output is both a constraint and an objective
+    QCOMPARE((int)prob.f2pMap()[0].size(), 0);
+    QCOMPARE((int)prob.f2dMap()[0].size(), 3);
+    QCOMPARE((int)prob.f2cMap()[0].size(), 2);
+    QCOMPARE((int)prob.f2oMap()[0].size(), 1);
+    QCOMPARE(prob.f2oMap()[0][0], 0);
+    QCOMPARE(prob.f2cMap()[0][0], 1);
+    QCOMPARE(prob.f2cMap()[0][1], -1);
+
+    QCOMPARE((int)prob.f2pMap()[1].size(), 0);
+    QCOMPARE((int)prob.f2dMap()[1].size(), 3);
+    QCOMPARE((int)prob.f2cMap()[1].size(), 2);
+    QCOMPARE((int)prob.f2oMap()[1].size(), 1);
+    QCOMPARE(prob.f2oMap()[1][0], -1);
+    QCOMPARE(prob.f2cMap()[1][0], -1);
+    QCOMPARE(prob.f2cMap()[1][1], 0);
     QCOMPARE(stat, FullyDefined);
 }
 
@@ -6507,6 +6575,15 @@ public:
         : QSharedData(other), id(other.id), name(other.name) { }
     ~EmployeeData() { }
 
+    EmployeeData &operator =(const EmployeeData &other)
+    {
+        // check of self-assignment
+        if(this != &other) {
+            id = other.id; name = other.name;
+        }
+        return *this;
+    }
+
     int id;
     TString name;
 };
@@ -6524,6 +6601,16 @@ public:
         : d (other.d)
     {
     }
+
+    Employee &operator =(const Employee &other)
+    {
+        // check of self-assignment
+        if(this != &other) {
+            d = other.d;
+        }
+        return *this;
+    }
+
     void setId(int id) { d->id = id; }
     void setName(TString name) { d->name = name; }
 

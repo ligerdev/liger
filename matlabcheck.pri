@@ -11,6 +11,8 @@ linux-* {
   MATLAB_VERSIONS += "R2019b"
   MATLAB_VERSIONS += "R2020a"
   MATLAB_VERSIONS += "R2020b"
+  MATLAB_VERSIONS += "R2021a"
+  MATLAB_VERSIONS += "R2021b"
 
   TMP = $$system(whereis matlab)
   MATLABEXE = $$split(TMP," ")
@@ -102,6 +104,8 @@ win32 {
   MATLAB_VERSIONS_CPP += "R2019b"
   MATLAB_VERSIONS_CPP += "R2020a"
   MATLAB_VERSIONS_CPP += "R2020b"
+  MATLAB_VERSIONS_CPP += "R2021a"
+  MATLAB_VERSIONS_CPP += "R2021b"
 
   # Use command WHERE to find where MATLAB is installed
   # Use a silent call (/Q) that does not generate any output, just to check the error status

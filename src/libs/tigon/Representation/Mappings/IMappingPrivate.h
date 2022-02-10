@@ -27,11 +27,11 @@ public:
     explicit IMappingPrivate();
     ~IMappingPrivate();
 
-    TVector<IElementSPtr>  m_dvec;
-    TVector<IElementSPtr>  m_pvec;
-    TVector<IElementSPtr>  m_ovec;
-    TVector<IElementSPtr>  m_cvec;
-    TVector<IElementSPtr>  m_uvec;
+    TVector<IElementSPtr>  m_dvec; // decision variables
+    TVector<IElementSPtr>  m_pvec; // parameters
+    TVector<IElementSPtr>  m_ovec; // objective functions
+    TVector<IElementSPtr>  m_cvec; // constraints
+    TVector<IElementSPtr>  m_uvec; // unused outputs
 
     TVector<double>        m_wvec;
 

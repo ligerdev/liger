@@ -36,6 +36,7 @@
 #include <tigon/Representation/Container/TimeSeriesContainer.h>
 
 #include <future>
+#include <set>
 using namespace std;
 
 namespace Tigon {
@@ -110,8 +111,8 @@ ProblemDefinitionStatus IMapping::defineProblem(ProblemSPtr prob)
     m_problem = prob;
 
     createDecisionVariables();
-    createParameters();
     createOutputVectors();
+    createParameters();
 
     int ovecSize = d->m_ovec.size();
     if(ovecSize > 0) {
@@ -160,9 +161,14 @@ bool IMapping::defineDecisionVar(int idx, const IElement &val)
         }
 
         // Update evaluation status
-        for(int i=0; i<m_problem->functionVec().size(); i++) {
+        for(int i=0; i<static_cast<int>(m_problem->functionVec().size()); i++) {
             if(m_problem->f2dMap()[i][idx] >= 0) {
                 defineFuncEvaluated(i, false);
+
+                TVector<int> cFs = m_problem->connectedFunctions()[i];
+                for(int j : cFs) {
+                    defineFuncEvaluated(j, false);
+                }
             }
         }
 
@@ -187,9 +193,14 @@ bool IMapping::defineDecisionVar(int idx, IElementSPtr val)
         }
 
         // Update evaluation status
-        for(int i=0; i<m_problem->functionVec().size(); i++) {
+        for(int i=0; i<static_cast<int>(m_problem->functionVec().size()); i++) {
             if(m_problem->f2dMap()[i][idx] >= 0) {
                 defineFuncEvaluated(i, false);
+
+                TVector<int> cFs = m_problem->connectedFunctions()[i];
+                for(int j : cFs) {
+                    defineFuncEvaluated(j, false);
+                }
             }
         }
         return true;
@@ -201,13 +212,12 @@ bool IMapping::defineDecisionVar(int idx, IElementSPtr val)
 
 bool IMapping::defineDecisionVec(const TVector<IElement> &dvec)
 {
-    int N = d->m_dvec.size();
-    if(N != dvec.size()) {
+    if(d->m_dvec.size() != dvec.size()) {
         // ERROR
         throw TException(className(), DomainException);
     }
 
-    for(int i=0; i<N; i++) {
+    for(size_t i=0; i<d->m_dvec.size(); i++) {
         d->m_dvec[i]->defineValue(dvec[i]);
         if(dvec[i].dist() != nullptr) {
             d->m_dvec[i]->defineDist(dvec[i].dist()->clone());
@@ -222,13 +232,12 @@ bool IMapping::defineDecisionVec(const TVector<IElement> &dvec)
 
 bool IMapping::defineDecisionVec(const TVector<IElementSPtr> &dvec)
 {
-    int N = d->m_dvec.size();
-    if(N != dvec.size()) {
+    if(d->m_dvec.size() != dvec.size()) {
         // ERROR
         throw TException(className(), DomainException);
     }
 
-    for(int i=0; i<N; i++) {
+    for(size_t i=0; i<d->m_dvec.size(); i++) {
         d->m_dvec[i]->defineValue(dvec[i]->value());
         if(dvec[i]->dist() != nullptr) {
             d->m_dvec[i]->defineDist(dvec[i]->dist()->clone());
@@ -273,13 +282,12 @@ double IMapping::doubleParameterVar(int var) const
 
 bool IMapping::defineParameterVec(const TVector<IElement> &pvec)
 {
-    int N = d->m_pvec.size();
-    if(N != pvec.size()) {
+    if(d->m_pvec.size() != pvec.size()) {
         // ERROR
         throw TException(className(), DomainException);
     }
 
-    for(int i=0; i<N; i++) {
+    for(size_t i=0; i<d->m_pvec.size(); i++) {
         d->m_pvec[i]->defineValue(pvec[i]);
         if(pvec[i].dist() != nullptr) {
             d->m_pvec[i]->defineDist(pvec[i].dist()->clone());
@@ -293,13 +301,12 @@ bool IMapping::defineParameterVec(const TVector<IElement> &pvec)
 
 bool IMapping::defineParameterVec(const TVector<IElementSPtr> &pvec)
 {
-    int N = d->m_pvec.size();
-    if(N != pvec.size()) {
+    if(d->m_pvec.size() != pvec.size()) {
         // ERROR
         throw TException(className(), DomainException);
     }
 
-    for(int i=0; i<N; i++) {
+    for(size_t i=0; i<d->m_pvec.size(); i++) {
         d->m_pvec[i]->defineValue(pvec[i]->value());
         if(pvec[i]->dist() != nullptr) {
             d->m_pvec[i]->defineDist(pvec[i]->dist()->clone());
@@ -389,11 +396,10 @@ bool IMapping::defineObjectiveVar(int idx, IElementSPtr val)
 
 bool IMapping::defineObjectiveVec(const TVector<IElement> &ovec)
 {
-    int N = ovec.size();
-    if(N != d->m_ovec.size()) {
+    if(ovec.size() != d->m_ovec.size()) {
         throw TException(className(), DomainException);
     }
-    for(int i=0; i<N; i++) {
+    for(size_t i=0; i<d->m_ovec.size(); i++) {
         d->m_ovec[i]->defineValue(ovec[i]);
         if(ovec[i].dist() != nullptr) {
             d->m_ovec[i]->defineDist(ovec[i].dist()->clone());
@@ -405,9 +411,8 @@ bool IMapping::defineObjectiveVec(const TVector<IElement> &ovec)
 
 bool IMapping::defineObjectiveVec(const TVector<IElementSPtr> &ovec)
 {
-    int N = ovec.size();
-    if(N == d->m_ovec.size()) {
-        for(int i=0; i<N; i++) {
+    if(ovec.size() == d->m_ovec.size()) {
+        for(size_t i=0; i<d->m_ovec.size(); i++) {
             d->m_ovec[i]->defineValue(ovec[i]->value());
             if(ovec[i]->dist() != nullptr) {
                 d->m_ovec[i]->defineDist(ovec[i]->dist()->clone());
@@ -473,9 +478,8 @@ bool IMapping::defineConstraint(int idx, IElementSPtr val)
 
 bool IMapping::defineConstraintVec(const TVector<IElementSPtr> &cvec)
 {
-    int N = d->m_cvec.size();
-    if(cvec.size() == N) {
-        for(int i=0; i<N; i++) {
+    if(cvec.size() == d->m_cvec.size()) {
+        for(size_t i=0; i<d->m_cvec.size(); i++) {
             d->m_cvec[i]->defineValue(cvec[i]->value());
             if(cvec[i]->dist() != nullptr) {
                 d->m_cvec[i]->defineDist(cvec[i]->dist()->clone());
@@ -554,12 +558,11 @@ bool IMapping::defineUnused(int idx, IElementSPtr val)
 
 bool IMapping::defineUnusedVec(const TVector<IElement> &uvec)
 {
-    int N = d->m_uvec.size();
-    if(uvec.size() != N) {
+    if(uvec.size() != d->m_uvec.size()) {
         // ERROR
         return PROTOTYPE_BOOL_ERROR_CODE;
     }
-    for(int i=0; i<N; i++) {
+    for(size_t i=0; i<d->m_uvec.size(); i++) {
         d->m_uvec[i]->defineValue(uvec[i]);
         if(uvec[i].dist() != nullptr) {
             d->m_uvec[i]->defineDist(uvec[i].dist()->clone());
@@ -571,9 +574,8 @@ bool IMapping::defineUnusedVec(const TVector<IElement> &uvec)
 
 bool IMapping::defineUnusedVec(const TVector<IElementSPtr> &uvec)
 {
-    int N = d->m_uvec.size();
-    if(uvec.size() == N) {
-        for(int i=0; i<N; i++) {
+    if(uvec.size() == d->m_uvec.size()) {
+        for(size_t i=0; i<d->m_uvec.size(); i++) {
             d->m_uvec[i]->defineValue(uvec[i]->value());
             if(uvec[i]->dist() != nullptr) {
                 d->m_uvec[i]->defineDist(uvec[i]->dist()->clone());
@@ -667,8 +669,8 @@ bool IMapping::isEvaluated() const
         return false;
     }
 
-    for(int i = 0; i < d->m_isFuncEvaluated.size(); i++) {
-        if(!d->m_isFuncEvaluated[i]) {
+    for(auto isFuncEvaluated : d->m_isFuncEvaluated) {
+        if(!isFuncEvaluated) {
             return false;
         }
     }
@@ -680,8 +682,8 @@ bool IMapping::isObjectiveVecEvaluated() const
     if(d->m_isObjEvaluated.empty()) {
         return true;
     } else {
-        for(int i=0; i < d->m_isObjEvaluated.size(); i++) {
-            if(!(d->m_isObjEvaluated[i])) {
+        for(auto isObjEvaluated : d->m_isObjEvaluated) {
+            if(!isObjEvaluated) {
                 return false;
             }
         }
@@ -739,7 +741,7 @@ void IMapping::defineErrorFlag(bool flag)
 bool IMapping::isFeasible() const
 {
     TVector<IElementSPtr> thresholds = m_problem->thresholdVector();
-    for(int i = 0; i < thresholds.size(); i++) {
+    for(int i = 0; i < static_cast<int>(thresholds.size()); i++) {
         if(*constraintVar(i) > *thresholds[i]) {
             return false;
         }
@@ -824,15 +826,17 @@ TVector<IElementSPtr> IMapping::fetchInputs(int funcIdx)
     TVector<bool> inputsOK(inputs.size(), false);
     BoxConstraintsDataSPtr box = m_problem->boxConstraints();
 
-    for(size_t j=0; j<d->m_dvec.size(); j++) {
-        int idx = m_problem->f2dMap()[funcIdx][j];
+    // Decision variables
+    TVector<int> f2dMap = m_problem->f2dMap()[funcIdx];
+    for(size_t i=0; i<d->m_dvec.size(); i++) {
+        int idx = f2dMap[i];
         // Use a sample of the uncertain decision variable if the mapping is defined
         if(isInRange(idx, inputs.size()) && !inputsOK[idx]) {
-            if(m_problem->dVecUncertainties().at(j) == nullptr) {
-                inputs[idx]->defineValue(d->m_dvec[j]->value());
+            if(m_problem->dVecUncertainties().at(i) == nullptr) {
+                inputs[idx]->defineValue(d->m_dvec[i]->value());
             } else {
-                m_problem->dVecUncertainties().at(j)->
-                        evaluateUncertainty(d->m_dvec[j]);
+                m_problem->dVecUncertainties().at(i)->
+                        evaluateUncertainty(d->m_dvec[i]);
                 //inputs[idx]->defineValue(d->m_dvec[j]->sample());
 
                 /// \note A sample drawn from the random variable can be out of bounds.
@@ -841,11 +845,13 @@ TVector<IElementSPtr> IMapping::fetchInputs(int funcIdx)
                 /// To address this, check if the decision variable is within bounds
                 /// If not, truncate into feasible design
 
-                double dvalue = d->m_dvec[j]->sample();
-                IElement ub = box->upperBound(j);
-                IElement lb = box->lowerBound(j);
+                ms_mutex.lock();
+                double dvalue = d->m_dvec[i]->sample();
+                ms_mutex.unlock();
+                IElement ub = box->upperBound(i);
+                IElement lb = box->lowerBound(i);
 
-                dvalue = truncateValue(dvalue, d->m_dvec[j]->type(), ub, lb);
+                dvalue = truncateValue(dvalue, d->m_dvec[i]->type(), ub, lb);
                 inputs[idx]->defineValue(dvalue);
             }
             inputsOK[idx] = true;
@@ -853,33 +859,46 @@ TVector<IElementSPtr> IMapping::fetchInputs(int funcIdx)
             //throw TException(this->className(),RangeException);
         }
     }
-    for(size_t j =0; j<d->m_pvec.size(); j++) {
-        int idx = m_problem->f2pMap()[funcIdx][j];
+
+    // Parameters
+    TVector<int> f2pMap = m_problem->f2pMap()[funcIdx];
+    for(size_t i=0; i<d->m_pvec.size(); i++) {
+        int idx = f2pMap[i];
 
         if(isInRange(idx, inputs.size()) && !inputsOK[idx]) {
-            // The parameter vector is shared by all IMappings. When it is being
-            // samples, the disitribution members may change (the pdf is
-            // constructed at the first call). This locks the procedure to a
-            // single thread.
+            if(m_problem->isExternalParameters()[i]) {
+                double val = d->m_pvec[i]->value();
 
-            ms_mutex.lock();
-            if(m_problem->isExternalParameters()[j]) {
-                double val = d->m_pvec[j]->value();
+                // When fetching inputs for connected parameters, account for
+                // the fact that connected outputs might have been negated due
+                // to maximization (affects objectives and constraints only).
+                if(m_problem->paramConnectIsConnected(i)) {
+                    if(m_problem->paramConnectIsMaximization(i)) {
+                        val = -val;
+                    }
+                }
+
                 inputs[idx]->defineValue(val);
-            } else {
-                double val = d->m_pvec[j]->sample();
+            }
+            else {
+                // The sample function is not thread safe. All IMappings share
+                // the same pointer to the distribution of a parameter. When
+                // the function is called for the first time, the pdf (or cdf)
+                // is calculated. Multiple concurrent calls could lead to
+                // unwanted behaviour. This locks the call to a single thread.
+                ms_mutex.lock();
+                double val = d->m_pvec[i]->sample();
+                ms_mutex.unlock();
 
                 /// \todo this code is only temporary
                 /// there should be box constraints defined separately
                 /// for variables and parameters
                 IElement lb = func->boxConstraints()->lowerBound(idx);
                 IElement ub = func->boxConstraints()->upperBound(idx);
-                val = truncateValue(val, d->m_pvec[j]->type(), ub, lb);
+                val = truncateValue(val, d->m_pvec[i]->type(), ub, lb);
 
                 inputs[idx]->defineValue(val);
             }
-
-            ms_mutex.unlock();
 
             inputsOK[idx] = true;
         } else {
@@ -888,10 +907,9 @@ TVector<IElementSPtr> IMapping::fetchInputs(int funcIdx)
     }
 
     // Make sure all inputs are there
-    for(size_t j=0; j<inputsOK.size(); j++) {
-        if(!inputsOK[j]) {
-            // ERROR
-            return TVector<IElementSPtr>();
+    for(auto input : inputsOK) {
+        if(!input) {
+            return TVector<IElementSPtr>(); // ERROR
         }
     }
 
@@ -905,27 +923,27 @@ DirectedElements IMapping::fetchOutputs(int funcIdx)
     TVector<OptimizationType> optTypes(func->TP_nOutputs(), Minimization);
     TVector<bool> outputsOK(elements.size(), false);
 
-    for(size_t j=0; j<d->m_ovec.size(); j++) {
-        int idx = m_problem->f2oMap()[funcIdx][j];
+    for(size_t i=0; i<d->m_ovec.size(); i++) {
+        int idx = m_problem->f2oMap()[funcIdx][i];
         if(isInRange(idx, elements.size()) && !outputsOK[idx]) {
-            elements[idx] = d->m_ovec[j];
-            optTypes[idx] = m_problem->oPrpts()[j].optimizationType();
+            elements[idx] = d->m_ovec[i];
+            optTypes[idx] = m_problem->oPrpts()[i].optimizationType();
             outputsOK[idx] = true;
         }
     }
-    for(size_t j=0; j<d->m_cvec.size(); j++) {
-        int idx = m_problem->f2cMap()[funcIdx][j];
+    for(size_t i=0; i<d->m_cvec.size(); i++) {
+        int idx = m_problem->f2cMap()[funcIdx][i];
         if(isInRange(idx, elements.size()) && !outputsOK[idx]) {
-            elements[idx] = d->m_cvec[j];
-            optTypes[idx] = m_problem->cPrpts()[j].optimizationType();
+            elements[idx] = d->m_cvec[i];
+            optTypes[idx] = m_problem->cPrpts()[i].optimizationType();
             outputsOK[idx] = true;
         }
     }
 
-    for(size_t j=0; j<d->m_uvec.size(); j++) {
-        int idx = m_problem->f2uMap()[funcIdx][j];
+    for(size_t i=0; i<d->m_uvec.size(); i++) {
+        int idx = m_problem->f2uMap()[funcIdx][i];
         if(isInRange(idx, elements.size()) && !outputsOK[idx]) {
-            elements[idx] = d->m_uvec[j];
+            elements[idx] = d->m_uvec[i];
             optTypes[idx] = NonOptimization;;
             outputsOK[idx] = true;
         }
@@ -962,11 +980,6 @@ int IMapping::evaluate()
 {
     int evalCount = 0;
 
-    // if the IMapping is not evaluated
-    if(!this->isEvaluated()) {
-        processExternalParameters();
-    }
-
     int nfunctions = m_problem->functionVec().size();
 
     for(int i=0; i<nfunctions; i++) {
@@ -996,7 +1009,7 @@ int IMapping::evaluate()
             //            }
 
             // Negate the maximization outputs
-            for(int j = 0; j < outputs.elems.size(); j++) {
+            for(size_t j = 0; j < outputs.elems.size(); j++) {
                 if(outputs.optTypes[j] == Maximization) {
                     outputs.elems[j]->negate();
                 }
@@ -1005,6 +1018,7 @@ int IMapping::evaluate()
             // Update evaluation status
             defineFuncEvaluated(i, true);
             d->m_isScalarised = false;
+
             evalCount++;
         }
     }
@@ -1015,6 +1029,7 @@ int IMapping::parallelEvaluate()
 {
     int evalCount = 0;
 
+    /// \todo add interwoven sysetem handling for parallel evaluate
     /// \todo add output bounds handling for parallel evaluate
     TVector<future<void> > evalThreads;
     TVector<IFunctionSPtr> funcThreadMap; // for logging
@@ -1022,7 +1037,7 @@ int IMapping::parallelEvaluate()
     TVector<DirectedElements> funcOutThreadMap; // to add evaluation uncertainty
     TVector<TVector<IElementSPtr> > funcInThreadMap;  // and to log the evaluation
 
-    for(int i=0; i<m_problem->functionVec().size(); i++) {
+    for(int i=0; i<static_cast<int>(m_problem->functionVec().size()); i++) {
         if(!d->m_isFuncEvaluated[i]) {
             IFunctionSPtr func = m_problem->functionVec()[i];
 
@@ -1076,7 +1091,7 @@ int IMapping::parallelEvaluate()
         }
     }
 
-    for(int i = 0; i < evalThreads.size(); i++){
+    for(size_t i = 0; i < evalThreads.size(); i++){
         evalThreads[i].wait();   // Wait for all threads to finish
         ms_mutex.lock();
         if(log()->isLogEvaluation()) {
@@ -1087,7 +1102,7 @@ int IMapping::parallelEvaluate()
         applyEvaluationUncertainty(funcIndThreadMap[i], funcOutThreadMap[i].elems);
 
         // Negate the maximization outputs
-        for(int j = 0; j < funcOutThreadMap[i].elems.size(); j++) {
+        for(size_t j = 0; j < funcOutThreadMap[i].elems.size(); j++) {
             if(funcOutThreadMap[i].optTypes[j] == Maximization) {
                 funcOutThreadMap[i].elems[j]->negate();
             }
@@ -1103,12 +1118,7 @@ int IMapping::parallelEvaluate()
 
 void IMapping::registerForBatchEvaluation(BatchSolveRegister *batchReg)
 {
-    // if the IMapping is not evaluated
-    if(!this->isEvaluated()) {
-        processExternalParameters();
-    }
-
-    for(int i=0; i<m_problem->functionVec().size(); i++) {
+    for(int i=0; i<static_cast<int>(m_problem->functionVec().size()); i++) {
         if(!d->m_isFuncEvaluated[i]) {
             IFunctionSPtr func = m_problem->functionVec()[i];
 
@@ -1126,6 +1136,27 @@ void IMapping::registerForBatchEvaluation(BatchSolveRegister *batchReg)
             batchReg->registerForBatchSolve(func, inputs, outputs.elems);
             batchReg->setOptimizationType(func, outputs.optTypes);
         }
+    }
+}
+
+void IMapping::registerForBatchEvaluation(BatchSolveRegister *batchReg, int funcIdx)
+{
+    if(!d->m_isFuncEvaluated[funcIdx]) {
+        IFunctionSPtr func = m_problem->functionVec()[funcIdx];
+
+        // Fetch the inputs and outputs
+        TVector<IElementSPtr> inputs = fetchInputs(funcIdx);
+        if(inputs.empty()) {
+            return;
+        }
+        DirectedElements outputs = fetchOutputs(funcIdx);
+        if(outputs.elems.empty()) {
+            return;
+        }
+
+        // Register the function
+        batchReg->registerForBatchSolve(func, inputs, outputs.elems);
+        batchReg->setOptimizationType(func, outputs.optTypes);
     }
 }
 
@@ -1194,13 +1225,6 @@ void IMapping::copyMapping(const IMapping &mapping)
         d->m_dvec[i] = mapping.d->m_dvec[i]->clone();
     }
 
-    clearVector(d->m_pvec);
-    sz = mapping.d->m_pvec.size();
-    d->m_pvec.resize(sz);
-    for(int i = 0; i < sz; i++) {
-        d->m_pvec[i] = mapping.d->m_pvec[i]->clone();
-    }
-
     clearVector(d->m_ovec);
     int oSz = mapping.d->m_ovec.size();
     d->m_ovec.resize(oSz);
@@ -1233,6 +1257,32 @@ void IMapping::copyMapping(const IMapping &mapping)
     for(int i=0; i<sz; i++) {
         d->m_uvec[i] = mapping.d->m_uvec[i]->clone();
     }
+
+    clearVector(d->m_pvec);
+    sz = mapping.d->m_pvec.size();
+    d->m_pvec.resize(sz);
+    for(int i = 0; i < sz; i++) {
+
+        if(m_problem->isExternalParameters()[i]) {
+            if(m_problem->paramConnectIsConnected(i)) {
+                size_t idx = m_problem->paramConnectOutputIdx(i);
+                switch(m_problem->paramConnectOutputType(i)) {
+                case OutputType::Objective:
+                    d->m_pvec[i] = d->m_ovec[idx];
+                    break;
+                case OutputType::Constraint:
+                    d->m_pvec[i] = d->m_cvec[idx];
+                    break;
+                case OutputType::Unused:
+                    d->m_pvec[i] = d->m_uvec[idx];
+                    break;
+                }
+            }
+        }
+        else {
+            d->m_pvec[i] = mapping.d->m_pvec[i]->clone();
+        }
+    }
 }
 /*!
  * \brief IMapping::createDecisionVariables
@@ -1244,10 +1294,11 @@ void IMapping::createDecisionVariables()
     if(m_problem->isProblemDefined() == FullyDefined) {
         d->m_dvec.resize(m_problem->dPrpts().size());
         BoxConstraintsDataSPtr box = m_problem->boxConstraints();
-        for(int i=0; i<d->m_dvec.size(); i++) {
-            double initVal((box->lowerBound(i).value() + box->upperBound(i).value()) / 2.0);
-            d->m_dvec[i] = IElementSPtr(new IElement(m_problem->dPrpts().at(i).type(),
-                                                     initVal));
+        for(int i=0; i<static_cast<int>(d->m_dvec.size()); i++) {
+            double initVal((box->lowerBound(i).value() +
+                            box->upperBound(i).value()) / 2.0);
+            d->m_dvec[i] = IElementSPtr(new IElement(
+                             m_problem->dPrpts().at(i).type(), initVal));
         }
     } else {
         d->m_dvec = createIElementSPtrVector(m_problem->dPrpts());
@@ -1257,10 +1308,35 @@ void IMapping::createDecisionVariables()
 void IMapping::createParameters()
 {
     if(m_problem->isProblemDefined() == FullyDefined) {
-        d->m_pvec.clear();
-        for(const IElementSPtr &ptr : m_problem->parameterVector()) {
-            d->m_pvec.push_back(ptr->clone());
+
+        d->m_pvec.resize(m_problem->pPrpts().size());
+
+        for(size_t i=0; i<m_problem->pPrpts().size(); i++) {
+
+            if(m_problem->isExternalParameters()[i]) {
+                if(m_problem->paramConnectIsConnected(i)) {
+                    size_t idx = m_problem->paramConnectOutputIdx(i);
+                    switch(m_problem->paramConnectOutputType(i)) {
+                    case OutputType::Objective:
+                        d->m_pvec[i] = d->m_ovec[idx];
+                        break;
+                    case OutputType::Constraint:
+                        d->m_pvec[i] = d->m_cvec[idx];
+                        break;
+                    case OutputType::Unused:
+                        d->m_pvec[i] = d->m_uvec[idx];
+                        break;
+                    }
+                }
+            }
+            else {
+                d->m_pvec[i] = m_problem->parameterVector()[i]->clone();
+            }
         }
+        //        d->m_pvec.clear();
+        //        for(const IElementSPtr &ptr : m_problem->parameterVector()) {
+        //            d->m_pvec.push_back(ptr->clone());
+        //        }
     }
 }
 
@@ -1278,7 +1354,7 @@ void IMapping::createOutputVectors()
         d->m_cvec.resize(m_problem->cPrpts().size());
         d->m_uvec.resize(m_problem->uPrpts().size());
 
-        for(int i=0; i<m_problem->functionVec().size(); i++) {
+        for(size_t i=0; i<m_problem->functionVec().size(); i++) {
             for(int j=0; j<m_problem->functionVec().at(i)->TP_nOutputs(); j++) {
                 IElementSPtr elem(new IElement(m_problem->functionVec().at(i)->
                                                outputPrpts().at(j).type()));
@@ -1305,170 +1381,6 @@ void IMapping::createOutputVectors()
     }
 }
 
-//! \brief Calculate the value of the external parameters if any.
-/// \li If there is no external parameters, do nothing
-/// \li If usePrior is true, do nothing, as the parameter is configured as
-/// a certain distribution. We can just call sample() to use the prior distribution
-/// \li If usePrior is false, set the value of the parameter to some value interpolated
-/// from the kriging.
-void IMapping::processExternalParameters()
-{
-    int nExternal = m_problem->numberExternalParameters();
-
-    if(nExternal==0) {
-        // no external parameters
-        return;
-    }
-
-    /// ****************
-    /// SHARED VARIABLES
-    /// ****************
-
-    // process problem parameters if there is any krigings defined in the problem
-    if(!m_problem->externalParameterKrigings().empty()) {
-
-        // vector that indicates if a prior is to be used or not
-        TVector<bool> usePrior= m_problem->usePriorForExternalParameters();
-        int counter = 0;
-        for(size_t i=0; i<m_problem->parameterVector().size(); i++) {
-            if(m_problem->isExternalParameters()[i]) {
-                if(!usePrior[counter]) {
-                    if(!m_problem->externalParameterKrigings()[counter]) {
-                        throw TException(className(), "Missing Kriging Model");
-                    }
-
-                    TVector<int> qIndex = m_problem->dVec2KrigingMap()[counter];
-
-                    if(qIndex.size() == 0) {
-                        throw TException(className(), "Missing dVec2KrigingMap");
-                    }
-
-                    // Populate the query point
-                    TVector<double> qx;
-                    qx.reserve(qIndex.size());
-                    std::transform(qIndex.begin(), qIndex.end(),
-                                   std::back_inserter(qx),
-                                   [this](int idx){
-                        return this->d->m_dvec[idx]->value();
-                    });
-
-                    // Use qx to get the value of the external parameter and
-                    // assign this value to the local copy of this parameter
-                    // in imapping private
-                    double qy = m_problem
-                            ->externalParameterKrigings()[counter]
-                            ->interpolate(qx);
-                    d->m_pvec[i]->defineValue(qy);
-
-                } else {
-
-                    // use the prior
-                    double val = d->m_pvec[i]->sample();
-                    d->m_pvec[i]->defineValue(val);
-                }
-                ++counter;
-            }
-        }
-    }
-
-    return;
-
-    /// *******************
-    /// NO SHARED VARIABLES
-    /// *******************
-
-    TVector<bool> extParamsInGroups = m_problem->isExternalParameterInGroup();
-
-    // this flag ensures that the same run id is set for all
-    // individual external parameters for a single evaluation
-    bool flag1=false;
-    int runSingleNumberIdx;
-
-    // for all parameters
-    for(size_t i=0; i<m_problem->parameterVector().size(); i++) {
-        // it is an external parameter
-        if(m_problem->isExternalParameters()[i]) {
-            // does not belong to a group
-            if(!extParamsInGroups[i]) {
-
-                TVector<IDistribution*> extParamDistList =
-                        m_problem->externalParameterList(i);
-                // there is data
-                if(!extParamDistList.empty()) {
-
-                    if(flag1==false) {
-                        runSingleNumberIdx=generateRandomNumberTimePreference(
-                                    extParamDistList.size(),0.7);
-                        flag1=true;
-                    }
-
-                    double value = extParamDistList[runSingleNumberIdx]->sample();
-                    d->m_pvec[i]->defineValue(value);
-
-                    // set the solution with the sampled run index
-                    d->m_runNumber=runSingleNumberIdx+1;
-                }
-            }
-        }
-    }
-
-    // process external parameters that are in a group
-    if(!m_problem->externalParameterGroups().empty()) {
-
-        TVector<TVector<int>> extParamGroups =
-                m_problem->externalParameterGroups();
-
-        // for each group of external parameters
-        for(size_t i=0; i<extParamGroups.size(); i++) {
-
-            RealVector groupDataSeries;
-
-            // read the indices of the dependent variables
-            TVector<int> idxDVars = m_problem->extGroupDependentVars(i);
-            SampleVectorsSPtr container;
-            int runNumberIdx;
-
-            // if there is no dependent variables
-            if(idxDVars.empty()) {
-
-                runNumberIdx = m_problem->groupData(i)->sampleIdx();
-                // data series from the ith group for the default id
-                container = m_problem->groupData(i)
-                                     ->sampledVal(runNumberIdx);
-            } else {
-
-                TVector<int> dependentVars(idxDVars.size());
-                for(size_t j=0; j<idxDVars.size(); j++) {
-                    dependentVars[j] = (d->m_dvec[idxDVars[j]]->value<int>());
-                }
-
-                int id = TTP_hash(dependentVars);
-
-                runNumberIdx = m_problem->groupData(i,id)->sampleIdx();
-                // data series from the ith group for the given id
-                container = m_problem->groupData(i,id)
-                                     ->sampledVal(runNumberIdx);
-            }
-
-            // set the solution with the sampled run index
-            d->m_runNumber=runNumberIdx+1;
-
-            /// \todo consider searching the container
-
-            // define the values of the input linking variables
-            groupDataSeries = container->sample();
-            int nParamsInGroup = extParamGroups[i].size();
-            // for each parameter in the group
-            for(int j=0; j<nParamsInGroup; j++) {
-                double value = groupDataSeries.at(j);
-                d->m_pvec[extParamGroups[i][j]]->defineValue(value);
-            }
-        }
-    }
-
-    return;
-}
-
 void IMapping::defineFuncEvaluated(int idx, bool status)
 {
     if(isInRange(idx, d->m_isFuncEvaluated.size())) {
@@ -1476,14 +1388,14 @@ void IMapping::defineFuncEvaluated(int idx, bool status)
             d->m_isFuncEvaluated[idx] = status;
 
             TVector<int> omap = m_problem->f2oMap().at(idx);
-            for(int i=0; i<omap.size(); i++) {
+            for(size_t i=0; i<omap.size(); i++) {
                 if(omap[i] >= 0) {
                     d->m_isObjEvaluated[i] = status;
                 }
             }
 
             TVector<int> cmap = m_problem->f2cMap().at(idx);
-            for(int i=0; i<cmap.size(); i++) {
+            for(size_t i=0; i<cmap.size(); i++) {
                 if(cmap[i] >= 0) {
                     d->m_isConstEvaluated[i] = status;
                 }
@@ -1499,7 +1411,7 @@ void IMapping::applyEvaluationUncertainty(int funcIdx, TVector<IElementSPtr> fun
     TVector<UncertaintyMapping*> umaps =
             m_problem->funcOutUncertainties().at(funcIdx);
     IElementSPtr uncertainOutput(new IElement(RealType));
-    for(int i=0; i<funcOutputs.size(); i++) {
+    for(size_t i=0; i<funcOutputs.size(); i++) {
         if(umaps[i] != nullptr) {
             uncertainOutput->defineValue(funcOutputs[i]->value());
             umaps[i]->evaluateUncertainty(uncertainOutput);

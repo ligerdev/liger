@@ -75,7 +75,7 @@ void tst_problemgenerator::test_properties()
 {
     ProblemGenerator* pg = new ProblemGenerator();
     std::cout << join(pg->propertyNames(), ";") << std::endl;
-    QCOMPARE(pg->propertyCount(), 25);
+    QCOMPARE(bool(pg->propertyCount()==23), true);
 }
 
 void tst_problemgenerator::test_MultiFunctionPathes()
@@ -149,8 +149,7 @@ void tst_problemgenerator::test_InternalProb_DTLZProbs()
     foreach(const TString& probName, probs) {
         PSetBase* base = new PSetBase();
         ProblemGenerator* pg = new ProblemGenerator(base);
-        IFunctionSPtr func = pg->createFunction(FuncTypeStrInternal,
-                                                "Tigon::Representation::" + probName);
+        IFunctionSPtr func = pg->createFunction(FuncTypeStrInternal, "Tigon::Representation::" + probName);
         ProblemSPtr prob = pg->problem();
         func->TP_defineNInputs(nVar);
         func->TP_defineNOutputs(nObj);

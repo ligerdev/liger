@@ -191,8 +191,12 @@ ProblemSPtr testProblem()
     for(int i=0; i<nConsts; i++) {
         constraints << i;
     }
+    TVector<int> objectives;
+    for(int i=0; i<nObjs; i++) {
+        objectives << i;
+    }
     ProblemSPtr   prob(new Problem);
-    prob->appendFunction(func, params, constraints);
+    prob->appendFunction(func, params, constraints, objectives);
     prob->processProblemDefinition();
 
     /// Decision variable uncertainty
@@ -224,16 +228,19 @@ ProblemSPtr testProblem()
 
     /// Goals
     TVector<IElementSPtr> goals = prob->goalVector();
+    TVector<bool> setGoals = prob->setGoalVector();
     // Pressure load
-    goals[0]->defineValue(70.0);
+    goals[0]->defineValue(70.0); setGoals[0] = true;
     // Max Y cell regional displacement
-    goals[1]->defineValue(1.625);
+    goals[1]->defineValue(1.625); setGoals[1] = true;
     // Max Y delta between cells
-    goals[2]->defineValue(1.2);
+    goals[2]->defineValue(1.2); setGoals[2] = true;
     // Left tab max axial
-    goals[3]->defineValue(90.0);
+    goals[3]->defineValue(90.0); setGoals[3] = true;
     // Right tab max axial
-    goals[4]->defineValue(90.0);
+    goals[4]->defineValue(90.0); setGoals[4] = true;
+
+    prob->defineSetGoalVector(setGoals);
 
     /// Parameters
     TVector<double> samps;
