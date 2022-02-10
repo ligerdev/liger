@@ -26,13 +26,13 @@ class LIGER_TIGON_EXPORT SMSEMOA : public IAlgorithm
     DECLARE_CLASS(Tigon::Algorithms::SMSEMOA)
 
 public:
-        SMSEMOA();
-        SMSEMOA(Tigon::Representation::IPSet* ipset);
-        ~SMSEMOA();
+    SMSEMOA();
+    SMSEMOA(Tigon::Representation::IPSet* ipset);
+    ~SMSEMOA();
 
-        // Information about the node.
-        TString name();
-        TString description();
+    // Information about the node.
+    TString name();
+    TString description();
 
 private:
         void initialise();
