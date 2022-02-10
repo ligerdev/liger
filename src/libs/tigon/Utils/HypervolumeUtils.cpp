@@ -22,35 +22,41 @@ namespace Tigon {
 
 double hypervolume(ISet* set)
 {
-    int n = set->size();
-    if(n==0) {
+    if(set->size()==0) {
         return 0.0;
     }
-    TVector<TVector<double> > vectorsSet;
-    for(int i=0; i<n; i++) {
-        TVector<double> vec = set->at(i)->doubleObjectiveVec();
+
+    TVector<TVector<double>> vectorsSet;
+    vectorsSet.reserve(set->size());
+    for(IMappingSPtr sol : set->all()) {
+        TVector<double> vec = sol->doubleObjectiveVec();
         vectorsSet.push_back(vec);
     }
 
     return hypervolume(vectorsSet);
 }
 
-double hypervolume(ISet* set, const TVector<double> ref)
+double hypervolume(ISet* set, const TVector<double>& ref)
 {
-    int n = set->size();
-    if(n==0) {
+    if(set->size()==0) {
         return 0.0;
     }
-    TVector<TVector<double> > vectorsSet;
-    for(int i=0; i<n; i++) {
-        TVector<double> vec = set->at(i)->doubleObjectiveVec();
+
+    if(set->at(0)->doubleObjectiveVec().size() != ref.size()) {
+        return 0.0;
+    }
+
+    TVector<TVector<double>> vectorsSet;
+    vectorsSet.reserve(set->size());
+    for(IMappingSPtr sol : set->all()) {
+        TVector<double> vec = sol->doubleObjectiveVec();
         vectorsSet.push_back(vec);
     }
 
     return hypervolume(vectorsSet, ref);
 }
 
-double hypervolume(TVector<TVector<double > > set)
+double hypervolume(const TVector<TVector<double>>& set)
 {
     // reference point is the maximum in every dimension
     int n = set.size();
@@ -69,7 +75,8 @@ double hypervolume(TVector<TVector<double > > set)
     return hypervolume(set, refPoint);
 }
 
-double hypervolume(TVector<TVector<double > > set, const TVector<double> ref)
+double hypervolume(const TVector<TVector<double>>& set,
+                   const TVector<double>& ref)
 {
     int n = set.size();
     if(n==0) {

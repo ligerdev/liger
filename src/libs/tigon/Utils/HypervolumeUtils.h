@@ -29,11 +29,11 @@ using namespace Tigon::Representation;
 
 LIGER_TIGON_EXPORT double hypervolume(ISet* set);
 LIGER_TIGON_EXPORT double hypervolume(ISet*                set,
-                                     const TVector<double> ref);
+                                      const TVector<double>& ref);
 
-LIGER_TIGON_EXPORT double hypervolume(TVector<TVector<double > > set);
-LIGER_TIGON_EXPORT double hypervolume(TVector<TVector<double > > set,
-                                     const TVector<double>      ref);
+LIGER_TIGON_EXPORT double hypervolume(const TVector<TVector<double >>& set);
+LIGER_TIGON_EXPORT double hypervolume(const TVector<TVector<double >>& set,
+                                      const TVector<double>&      ref);
 
 } // namespace Tigon
 #endif // HYPERVOLUMEUTILS_H
