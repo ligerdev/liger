@@ -2,22 +2,24 @@
 <LigerData>
   <ProcessNode ClassName="QTigon::MasterStartNode">
     <GUIProperties>
-      <NodeId>08a4b561-0d5e-48a0-84a2-4f2d525ab8b9</NodeId>
-      <xpos>-607</xpos>
-      <ypos>-125</ypos>
+      <NodeId>af4895f1-2a32-4378-9447-5910032a31b8</NodeId>
+      <xpos>-243</xpos>
+      <ypos>-89</ypos>
+      <isUserDefinedSeed>false</isUserDefinedSeed>
+      <userDefinedSeed>65792</userDefinedSeed>
     </GUIProperties>
-    <Properties/>
+    <Properties ProcessType="MASTER_START_NODE"/>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpProbGeneratorNode">
     <GUIProperties>
-      <NodeId>80e8b5ba-7672-4eac-b3e1-962d0421b7f1</NodeId>
-      <xpos>-482</xpos>
-      <ypos>-124</ypos>
+      <NodeId>2efa7fb1-0acf-44ef-8787-76c1cb0bd435</NodeId>
+      <xpos>-145</xpos>
+      <ypos>-92</ypos>
     </GUIProperties>
     <Properties ProcessType="PROBLEM_NODE">
       <TigonOperator>Tigon::Operators::ProblemGenerator</TigonOperator>
       <funcTypes>Python</funcTypes>
-      <funcPathes>E:/Projects/Liger/share/liger/examples/python/DTLZ1.py</funcPathes>
+      <funcPathes>/home/jduro/liger/ce/liger-ce/share/liger/examples/python/DTLZ1.py</funcPathes>
       <funcPrpts>[{&quot;NumberOfInputs&quot;:&quot;5&quot;,&quot;NumberOfOutputs&quot;:&quot;2&quot;}]</funcPrpts>
       <iprts>[[{&quot;description&quot;:&quot;x1&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;x1&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;x2&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;x2&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;x3&quot;,&quot;idx&quot;:2,&quot;name&quot;:&quot;x3&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;x4&quot;,&quot;idx&quot;:3,&quot;name&quot;:&quot;x4&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;x5&quot;,&quot;idx&quot;:4,&quot;name&quot;:&quot;x5&quot;,&quot;optimizationType&quot;:2,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</iprts>
       <oprts>[[{&quot;description&quot;:&quot;y1&quot;,&quot;idx&quot;:0,&quot;name&quot;:&quot;y1&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;},{&quot;description&quot;:&quot;y2&quot;,&quot;idx&quot;:1,&quot;name&quot;:&quot;y2&quot;,&quot;optimizationType&quot;:0,&quot;type&quot;:&quot;Real Type&quot;,&quot;unit&quot;:&quot;&quot;}]]</oprts>
@@ -25,7 +27,6 @@
       <ubounds>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:1}]</ubounds>
       <paramValueVec>[]</paramValueVec>
       <externalParam>[]</externalParam>
-      <externalParamGroups>[]</externalParamGroups>
       <setGoals>[false,false]</setGoals>
       <goals>[{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307},{&quot;type&quot;:&quot;Real Type&quot;,&quot;value&quot;:-8.9884656743115785e+307}]</goals>
       <priorities>[1,1]</priorities>
@@ -36,25 +37,26 @@
       <f2pMap>[[]]</f2pMap>
       <f2oMap>[[0,1]]</f2oMap>
       <f2cMap>[[]]</f2cMap>
+      <f2uMap>[[]]</f2uMap>
     </Properties>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpLHSInitNode">
     <GUIProperties>
-      <NodeId>81583083-4617-4be7-810a-b69070945fdd</NodeId>
-      <xpos>-373</xpos>
-      <ypos>-123</ypos>
+      <NodeId>2fe9b650-42e4-47e8-8a8a-975c88865268</NodeId>
+      <xpos>-60</xpos>
+      <ypos>-92</ypos>
     </GUIProperties>
     <Properties ProcessType="OPERATOR_NODE">
       <TigonOperator>Tigon::Operators::LHSInit</TigonOperator>
       <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
-      <OptimizationSetSize>150</OptimizationSetSize>
+      <OptimizationSetSize>100</OptimizationSetSize>
     </Properties>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QOpEvaluatorNode">
     <GUIProperties>
-      <NodeId>e390e487-637d-4af8-a2dd-974b0fbb9592</NodeId>
-      <xpos>-256</xpos>
-      <ypos>-123</ypos>
+      <NodeId>fc0af6c3-eb08-4dcb-8b41-435a21e0e51d</NodeId>
+      <xpos>30</xpos>
+      <ypos>-93</ypos>
     </GUIProperties>
     <Properties ProcessType="OPERATOR_NODE">
       <TigonOperator>Tigon::Operators::Evaluator</TigonOperator>
@@ -67,16 +69,27 @@
   </ProcessNode>
   <ProcessNode ClassName="QTigon::QAlgoNSGAIINode">
     <GUIProperties>
-      <NodeId>eaa53ab6-eb64-4425-930e-3df5d5c9f014</NodeId>
-      <xpos>-134</xpos>
-      <ypos>-122</ypos>
+      <NodeId>167a3432-6eb1-4261-a642-3d1126752071</NodeId>
+      <xpos>120</xpos>
+      <ypos>-89</ypos>
     </GUIProperties>
     <Properties ProcessType="ALGORITHM_NODE">
       <TigonAlgorithm>Tigon::Algorithms::NSGAII</TigonAlgorithm>
       <TigonOperator>
-        <Name>Tigon::Operators::NonDominanceRankingConstraintHandling</Name>
+        <Name>Tigon::Operators::StrategyVariablesInit</Name>
+        <OutputTags>MAIN_OPTIMIZATION_SET;FOR_EVALUATION</OutputTags>
+        <OptimizationSetSize>0</OptimizationSetSize>
+        <UseStrategyVariables>false</UseStrategyVariables>
+        <WidthPercentReal>0.1</WidthPercentReal>
+        <WidthPercentInteger>0.33</WidthPercentInteger>
+      </TigonOperator>
+      <TigonOperator>
+        <Name>Tigon::Operators::NonDominanceRanking</Name>
         <OutputTags>FOR_SELECTION;FITNESS</OutputTags>
         <InputTags>MAIN_OPTIMIZATION_SET</InputTags>
+        <IsConstrainedHandlingUsed>true</IsConstrainedHandlingUsed>
+        <IsPreferabilityUsed>true</IsPreferabilityUsed>
+        <IsWeakDom>true</IsWeakDom>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::NSGAIICrowding</Name>
@@ -86,6 +99,7 @@
         <Name>Tigon::Operators::NSGAIIEliteSelection</Name>
         <OutputTags>FOR_NEXT_ITERATION;FOR_SELECTION;FOR_MODIFICATION</OutputTags>
         <InputTags>FITNESS;FOR_SELECTION</InputTags>
+        <EliteRatio>0.5</EliteRatio>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::TournamentFiltrationForDirection</Name>
@@ -103,11 +117,25 @@
         <CrossoverDistributionIndex>15</CrossoverDistributionIndex>
       </TigonOperator>
       <TigonOperator>
+        <Name>Tigon::Operators::DiscreteCrossover</Name>
+        <OutputTags>FOR_DIRECTION</OutputTags>
+        <SolutionCrossoverProbability>0.9</SolutionCrossoverProbability>
+        <VariableCrossoverProbability>0.5</VariableCrossoverProbability>
+        <VariableSwapCrossoverProbability>0.5</VariableSwapCrossoverProbability>
+      </TigonOperator>
+      <TigonOperator>
         <Name>Tigon::Operators::PolynomialMutation</Name>
         <OutputTags>FOR_PERTURBATION</OutputTags>
         <SolutionMutationProbability>1</SolutionMutationProbability>
         <VariableMutationProbability>0.1</VariableMutationProbability>
         <MutationDistributionIndex>20</MutationDistributionIndex>
+      </TigonOperator>
+      <TigonOperator>
+        <Name>Tigon::Operators::IntegerMutation</Name>
+        <OutputTags>FOR_PERTURBATION</OutputTags>
+        <SolutionMutationProbability>1</SolutionMutationProbability>
+        <VariableMutationProbability>0.1</VariableMutationProbability>
+        <WidthPercent>0.1</WidthPercent>
       </TigonOperator>
       <TigonOperator>
         <Name>Tigon::Operators::CategoricalPerturpation</Name>
@@ -122,21 +150,54 @@
       </TigonOperator>
     </Properties>
   </ProcessNode>
+  <ProcessNode ClassName="Visualisation::QvizParallelCoordinatesNode">
+    <GUIProperties>
+      <NodeId>d8ce09db-75ed-4471-9cfe-92c6c98e43b2</NodeId>
+      <xpos>-288</xpos>
+      <ypos>22</ypos>
+    </GUIProperties>
+    <Properties/>
+  </ProcessNode>
   <ProcessNode ClassName="Visualisation::QVizScatterPlotNode">
     <GUIProperties>
-      <NodeId>9f289cab-6dea-4d02-a4c9-9d8e0e9de41b</NodeId>
-      <xpos>-14</xpos>
-      <ypos>-124</ypos>
+      <NodeId>991277a6-67fb-426a-8560-5ad71f41c524</NodeId>
+      <xpos>-191</xpos>
+      <ypos>19</ypos>
+    </GUIProperties>
+    <Properties/>
+  </ProcessNode>
+  <ProcessNode ClassName="Visualisation::QVizMScatterPlotNode">
+    <GUIProperties>
+      <NodeId>91b74b24-22a2-484f-a0cb-b4950904b49f</NodeId>
+      <xpos>-96</xpos>
+      <ypos>15</ypos>
+    </GUIProperties>
+    <Properties/>
+  </ProcessNode>
+  <ProcessNode ClassName="Visualisation::QVizGlyphsPlotNode">
+    <GUIProperties>
+      <NodeId>ced1939e-ba3b-4541-8321-97cbc50367d8</NodeId>
+      <xpos>8</xpos>
+      <ypos>17</ypos>
+    </GUIProperties>
+    <Properties/>
+  </ProcessNode>
+  <ProcessNode ClassName="Visualisation::QVizObjectiveRankNode">
+    <GUIProperties>
+      <NodeId>10f2cb91-aace-40eb-9985-e47a0fe0f5fd</NodeId>
+      <xpos>95</xpos>
+      <ypos>14</ypos>
     </GUIProperties>
     <Properties/>
   </ProcessNode>
   <ProcessNode ClassName="QTigon::MasterEndNode">
     <GUIProperties>
-      <NodeId>83e3f565-33cb-4346-b045-0ffce6cc0e83</NodeId>
-      <xpos>126</xpos>
-      <ypos>-125</ypos>
+      <NodeId>34605e2b-1c0c-45c7-9441-2f79a0f323dd</NodeId>
+      <xpos>188</xpos>
+      <ypos>13</ypos>
       <isUseBudget>false</isUseBudget>
       <isUseIteration>true</isUseIteration>
+      <isEstimateTime>false</isEstimateTime>
       <iterPausePoints></iterPausePoints>
       <budgetPausePoints></budgetPausePoints>
       <iterPausePointType>Count</iterPausePointType>
@@ -151,44 +212,68 @@
     </GUIProperties>
     <Properties ProcessType="OPERATOR_NODE">
       <TigonOperator>Tigon::Operators::ITermination</TigonOperator>
-      <maxIter>150</maxIter>
+      <maxIter>100</maxIter>
       <budget>0</budget>
     </Properties>
   </ProcessNode>
   <Link>
-    <FromNode>08a4b561-0d5e-48a0-84a2-4f2d525ab8b9</FromNode>
+    <FromNode>af4895f1-2a32-4378-9447-5910032a31b8</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>80e8b5ba-7672-4eac-b3e1-962d0421b7f1</ToNode>
+    <ToNode>2efa7fb1-0acf-44ef-8787-76c1cb0bd435</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>9f289cab-6dea-4d02-a4c9-9d8e0e9de41b</FromNode>
+    <FromNode>2efa7fb1-0acf-44ef-8787-76c1cb0bd435</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>83e3f565-33cb-4346-b045-0ffce6cc0e83</ToNode>
+    <ToNode>2fe9b650-42e4-47e8-8a8a-975c88865268</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>80e8b5ba-7672-4eac-b3e1-962d0421b7f1</FromNode>
+    <FromNode>2fe9b650-42e4-47e8-8a8a-975c88865268</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>81583083-4617-4be7-810a-b69070945fdd</ToNode>
+    <ToNode>fc0af6c3-eb08-4dcb-8b41-435a21e0e51d</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>81583083-4617-4be7-810a-b69070945fdd</FromNode>
+    <FromNode>fc0af6c3-eb08-4dcb-8b41-435a21e0e51d</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>e390e487-637d-4af8-a2dd-974b0fbb9592</ToNode>
+    <ToNode>167a3432-6eb1-4261-a642-3d1126752071</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>e390e487-637d-4af8-a2dd-974b0fbb9592</FromNode>
+    <FromNode>167a3432-6eb1-4261-a642-3d1126752071</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>eaa53ab6-eb64-4425-930e-3df5d5c9f014</ToNode>
+    <ToNode>d8ce09db-75ed-4471-9cfe-92c6c98e43b2</ToNode>
     <ToPort>0</ToPort>
   </Link>
   <Link>
-    <FromNode>eaa53ab6-eb64-4425-930e-3df5d5c9f014</FromNode>
+    <FromNode>d8ce09db-75ed-4471-9cfe-92c6c98e43b2</FromNode>
     <FromPort>0</FromPort>
-    <ToNode>9f289cab-6dea-4d02-a4c9-9d8e0e9de41b</ToNode>
+    <ToNode>991277a6-67fb-426a-8560-5ad71f41c524</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>991277a6-67fb-426a-8560-5ad71f41c524</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>91b74b24-22a2-484f-a0cb-b4950904b49f</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>91b74b24-22a2-484f-a0cb-b4950904b49f</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>ced1939e-ba3b-4541-8321-97cbc50367d8</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>ced1939e-ba3b-4541-8321-97cbc50367d8</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>10f2cb91-aace-40eb-9985-e47a0fe0f5fd</ToNode>
+    <ToPort>0</ToPort>
+  </Link>
+  <Link>
+    <FromNode>10f2cb91-aace-40eb-9985-e47a0fe0f5fd</FromNode>
+    <FromPort>0</FromPort>
+    <ToNode>34605e2b-1c0c-45c7-9441-2f79a0f323dd</ToNode>
     <ToPort>0</ToPort>
   </Link>
 </LigerData>
